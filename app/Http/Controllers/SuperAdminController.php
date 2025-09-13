@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class SuperAdminController extends Controller
 {
@@ -12,28 +12,41 @@ class SuperAdminController extends Controller
         $this->middleware(['auth', 'role:superadmin']);
     }
 
-    /**
-     * Show all users for the superadmin.
-     */
     public function index()
     {
-        $users = User::all();
+        $users = User::with('roles')->get();
         return view('superadmin.users', compact('users'));
     }
 
-    /**
-     * Update user role.
-     */
     public function update(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'role' => 'required|string|in:superadmin,admin,customer',
+        $data = $request->validate([
+            'user_id' => ['required','exists:users,id'],
+            'role'    => ['required','in:superadmin,admin,customer'],
         ]);
 
-        $user = User::findOrFail($request->user_id);
-        $user->syncRoles([$request->role]);
+        $user = User::findOrFail($data['user_id']);
+        $user->syncRoles([$data['role']]);
 
         return back()->with('success', 'User role updated successfully.');
     }
+    public function store(Request $request)
+{
+    $data = $request->validate([
+        'name'     => 'required|string|max:255',
+        'email'    => 'required|email|unique:users,email',
+        'password' => 'required|string|min:6|confirmed',
+    ]);
+
+    $user = \App\Models\User::create([
+        'name'     => $data['name'],
+        'email'    => $data['email'],
+        'password' => bcrypt($data['password']),
+    ]);
+
+    $user->assignRole('admin'); // 👈 automatically admin
+
+    return back()->with('success', 'Admin account created successfully!');
+}
+
 }

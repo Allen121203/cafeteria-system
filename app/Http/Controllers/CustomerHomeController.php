@@ -4,17 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-namespace App\Http\Controllers;
-
 class CustomerHomeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth','role:customer']);
+    }
+
+    // Invokable so Route::get('/home', CustomerHomeController::class) works
     public function __invoke()
     {
-        $menuItems = [
-            ['name' => 'Chicken Meal', 'description' => 'Rice + chicken + drink', 'price' => 120],
-            ['name' => 'Pasta Plate', 'description' => 'Creamy pasta + bread', 'price' => 95],
-        ];
+        return view('customer.home');
+    }
 
-        return view('customer.home', compact('menuItems'));
+    public function store(Request $request)
+    {
+        // TODO: create reservation
+        return back()->with('success', 'Reservation submitted.');
     }
 }

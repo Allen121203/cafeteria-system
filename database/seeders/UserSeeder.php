@@ -10,18 +10,11 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create a default superadmin user
         $user = User::firstOrCreate(
-            ['email' => 'superadmin@example.com'], // change email if you want
-            [
-                'name' => 'Super Admin',
-                'password' => Hash::make('password123'), // change password if you want
-            ]
+            ['email' => 'superadmin@example.com'],
+            ['name' => 'Super Admin', 'password' => Hash::make('password123')]
         );
 
-        // Assign superadmin role
-        if (! $user->hasRole('superadmin')) {
-            $user->assignRole('superadmin');
-        }
+        if (! $user->hasRole('superadmin')) $user->assignRole('superadmin');
     }
 }

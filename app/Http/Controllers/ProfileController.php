@@ -14,10 +14,10 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(): View
     {
         return view('profile.edit', [
-            'user' => Auth::user(),
+            'user' => Auth::user(), // ✅ fixed
         ]);
     }
 
@@ -26,7 +26,7 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $user = Auth::user();
+        $user = Auth::user(); // ✅ fixed
 
         $user->fill($request->validated());
 
@@ -48,7 +48,7 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = Auth::user();
+        $user = Auth::user(); // ✅ fixed
 
         Auth::logout();
 

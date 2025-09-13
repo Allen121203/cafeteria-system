@@ -29,25 +29,32 @@ class RegisteredUserController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        {
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'address' => ['nullable', 'string', 'max:255'],
+                'contact_no' => ['nullable', 'string', 'max:20'],
+                'department' => ['nullable', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+            $user = User::create([
+                'name' => $request->name,
+                'address' => $request->address,
+                'contact_no' => $request->contact_no,
+                'department' => $request->department,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
 
-        $user->assignRole('customer');
-        
-        event(new Registered($user));
+            // default role = customer
+            $user->assignRole('customer');
 
-        Auth::login($user);
+            event(new Registered($user));
+            Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
-    }
+            return redirect()->route('customer.home');
+        }
+
 }
