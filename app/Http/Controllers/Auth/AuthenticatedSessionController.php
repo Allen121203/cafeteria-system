@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\AuditTrail;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -15,9 +16,9 @@ class AuthenticatedSessionController extends Controller
     public function create(): View|RedirectResponse
     {
         if (Auth::check()) {
-            if (Auth::user()->hasRole('superadmin')) return redirect()->route('superadmin.users');
-            if (Auth::user()->hasRole('admin'))      return redirect()->route('admin.dashboard');
-            if (Auth::user()->hasRole('customer'))   return redirect()->route('customer.home');
+            if (Auth::user()->role === 'superadmin') return redirect()->route('superadmin.users');
+            if (Auth::user()->role === 'admin')      return redirect()->route('admin.dashboard');
+            if (Auth::user()->role === 'customer')   return redirect()->route('customer.home');
 
             // No valid role? Force logout to avoid 403 loop
             Auth::logout();
@@ -31,19 +32,38 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-        request()->session()->regenerate();
+        $request->session()->regenerate();
 
-        if (Auth::user()->hasRole('superadmin')) return redirect()->route('superadmin.users');
-        if (Auth::user()->hasRole('admin'))      return redirect()->route('admin.dashboard');
+        // ✅ Log login action
+        AuditTrail::create([
+            'user_id' => auth()->id(),
+            'action'  => 'Logged in',
+            'module'  => 'auth',
+            'description' => 'User logged in successfully',
+        ]);
+
+        if (Auth::user()->role === 'superadmin') return redirect()->route('superadmin.users');
+        if (Auth::user()->role === 'admin')      return redirect()->route('admin.dashboard');
+
         return redirect()->route('customer.home');
     }
 
     // Logout
     public function destroy(Request $request): RedirectResponse
     {
+        // ✅ Log logout action before session ends
+        AuditTrail::create([
+            'user_id' => auth()->id(),
+            'action'  => 'Logged out',
+            'module'  => 'auth',
+            'description' => 'User logged out successfully',
+        ]);
+
         Auth::guard('web')->logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login');
+
+        return redirect('/');
     }
 }

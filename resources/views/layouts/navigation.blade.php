@@ -3,18 +3,18 @@
         <div class="flex justify-between h-16">
             {{-- Left: logo + links --}}
             <div class="flex items-center gap-6">
-                @if(Auth::user()->hasRole('superadmin'))
+                @if(Auth::user()->role === 'superadmin')
                     <a href="{{ route('superadmin.users') }}"><x-application-logo class="block h-9 w-auto" /></a>
-                @elseif(Auth::user()->hasRole('admin'))
+                @elseif(Auth::user()->role === 'admin')
                     <a href="{{ route('admin.dashboard') }}"><x-application-logo class="block h-9 w-auto" /></a>
                 @else
                     <a href="{{ route('customer.home') }}"><x-application-logo class="block h-9 w-auto" /></a>
                 @endif
 
                 <div class="hidden sm:flex space-x-8">
-                    @if(Auth::user()->hasRole('superadmin'))
+                    @if(Auth::user()->role === 'superadmin')
                         <x-nav-link :href="route('superadmin.users')" :active="request()->routeIs('superadmin.users')">Manage Users</x-nav-link>
-                    @elseif(Auth::user()->hasRole('admin'))
+                    @elseif(Auth::user()->role === 'admin')
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">Dashboard</x-nav-link>
                     @else
                         <x-nav-link :href="route('customer.home')" :active="request()->routeIs('customer.home')">Home</x-nav-link>
@@ -56,9 +56,9 @@
     {{-- Mobile menu --}}
     <div :class="{'block':open,'hidden':!open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            @if(Auth::user()->hasRole('superadmin'))
+            @if(Auth::user()->role === 'superadmin')
                 <x-responsive-nav-link :href="route('superadmin.users')" :active="request()->routeIs('superadmin.users')">Manage Users</x-responsive-nav-link>
-            @elseif(Auth::user()->hasRole('admin'))
+            @elseif(Auth::user()->role === 'admin')
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">Dashboard</x-responsive-nav-link>
             @else
                 <x-responsive-nav-link :href="route('customer.home')" :active="request()->routeIs('customer.home')">Home</x-responsive-nav-link>

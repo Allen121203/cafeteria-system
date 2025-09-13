@@ -26,12 +26,15 @@
                 <tr class="text-center">
                     <td class="border px-4 py-2">{{ $user->name }}</td>
                     <td class="border px-4 py-2">{{ $user->email }}</td>
-                    <td class="border px-4 py-2">{{ ucfirst($user->getRoleNames()->first()) }}</td>
+                    <td class="border px-4 py-2">{{ ucfirst($user->role) }}</td>
+
                     <td class="border px-4 py-2 space-x-2">
-                        @if($user->hasRole('admin'))
+                        @if($user->role === 'admin')
                             <!-- Edit -->
-                            <a href="{{ route('superadmin.users.edit', $user) }}"
-                               class="bg-blue-500 text-white px-2 py-1 rounded">Edit</a>
+                            <button onclick="openEditModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}')" 
+                                    class="px-2 py-1 bg-blue-600 text-white rounded">
+                                Edit
+                            </button>
                             <!-- Audit -->
                             <a href="{{ route('superadmin.users.audit', $user) }}"
                                class="bg-yellow-500 text-white px-2 py-1 rounded">Audit</a>
@@ -42,7 +45,7 @@
                                     class="bg-red-500 text-white px-2 py-1 rounded"
                                     onclick="return confirm('Delete this admin?')">Delete</button>
                             </form>
-                        @elseif($user->hasRole('customer'))
+                        @elseif($user->role === 'customer')
                             <!-- Audit -->
                             <a href="{{ route('superadmin.users.audit', $user) }}"
                                class="bg-yellow-500 text-white px-2 py-1 rounded">Audit</a>
@@ -79,4 +82,31 @@
         </form>
     </div>
 </div>
+
+<!-- Modal: Edit Admin -->
+<div id="editAdminModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded shadow w-96">
+        <h2 class="text-xl font-bold mb-4">Edit Admin</h2>
+        <form id="editAdminForm" method="POST">
+            @csrf @method('PATCH')
+            <input type="text" id="editName" name="name" placeholder="Name" class="border p-2 w-full mb-2" required>
+            <input type="email" id="editEmail" name="email" placeholder="Email" class="border p-2 w-full mb-2" required>
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" onclick="document.getElementById('editAdminModal').classList.add('hidden')"
+                        class="bg-gray-400 px-4 py-2 rounded">Cancel</button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JS -->
+<script>
+function openEditModal(id, name, email) {
+    document.getElementById('editAdminForm').action = `/superadmin/users/${id}`;
+    document.getElementById('editName').value = name;
+    document.getElementById('editEmail').value = email;
+    document.getElementById('editAdminModal').classList.remove('hidden');
+}
+</script>
 @endsection

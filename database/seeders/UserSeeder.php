@@ -10,11 +10,14 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $user = User::firstOrCreate(
-            ['email' => 'superadmin@example.com'],
-            ['name' => 'Super Admin', 'password' => Hash::make('password123')]
-        );
-
-        if (! $user->hasRole('superadmin')) $user->assignRole('superadmin');
+        User::create([
+            'name'       => 'Super Admin',
+            'email'      => 'superadmin@example.com',
+            'password'   => Hash::make('password123'), // change later
+            'role'       => 'superadmin',
+            'address'    => '',
+            'contact_no' => '09123456789',
+            'department' => '',
+        ]);
     }
 }
