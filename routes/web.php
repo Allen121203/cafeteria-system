@@ -40,8 +40,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 // Superadmin
 Route::middleware(['auth', 'role:superadmin'])->group(function () {
     Route::get('/superadmin/users', [SuperAdminController::class, 'index'])->name('superadmin.users');
-    Route::post('/superadmin/users/update', [SuperAdminController::class, 'update'])->name('superadmin.users.update');
+    Route::post('/superadmin/users/store', [SuperAdminController::class, 'store'])->name('superadmin.users.store');
+    Route::get('/superadmin/users/{user}/edit', [SuperAdminController::class, 'edit'])->name('superadmin.users.edit');
+    Route::put('/superadmin/users/{user}', [SuperAdminController::class, 'update'])->name('superadmin.users.update');
+    Route::delete('/superadmin/users/{user}', [SuperAdminController::class, 'destroy'])->name('superadmin.users.destroy');
+    Route::get('/superadmin/users/{user}/audit', [SuperAdminController::class, 'audit'])->name('superadmin.users.audit');
 });
+
 Route::post('/superadmin/users/store', [SuperAdminController::class, 'store'])->name('superadmin.users.store');
 
 // Breeze auth routes (login, register, password reset, logout)
