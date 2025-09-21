@@ -63,13 +63,8 @@
         </div>
         
     </div>
-                                <button t>
-                    Save Changes
-                </button>
-
-<form method="POST" action="{{ route('something.store') }}" data-confirm="true">
+<form method="POST" action="{{ route('profile.update') }}" data-confirm="true">
     @csrf
-    <!-- inputs -->
     <button type="submit" ype="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Save Changes</button>
 </form>
 

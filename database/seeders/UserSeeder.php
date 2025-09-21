@@ -10,14 +10,28 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name'       => 'Super Admin',
-            'email'      => 'superadmin@example.com',
-            'password'   => Hash::make('password123'), // change later
-            'role'       => 'superadmin',
-            'address'    => '',
-            'contact_no' => '09123456789',
-            'department' => '',
-        ]);
+        // ✅ Super Admin (create only if not exists)
+        User::firstOrCreate(
+            ['email' => 'superadmin@example.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password123'),
+                'role' => 'superadmin',
+                'contact_no' => '09123456789',
+            ]
+        );
+
+        // ✅ Create 5 Customers
+        for ($i = 1; $i <= 5; $i++) {
+            User::firstOrCreate(
+                ['email' => "customer{$i}@example.com"],
+                [
+                    'name' => "Customer {$i}",
+                    'password' => Hash::make('password123'),
+                    'role' => 'customer',
+                    'contact_no' => '0912345678' . $i,
+                ]
+            );
+        }
     }
 }

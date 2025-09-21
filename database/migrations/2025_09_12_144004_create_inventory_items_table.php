@@ -14,11 +14,15 @@ return new class extends Migration
     Schema::create('inventory_items', function (Blueprint $table) {
         $table->id();
         $table->string('name');
-        $table->integer('quantity');
-        $table->date('expiry_date')->nullable();
-        $table->string('category')->nullable(); // Dairy, Meat, etc.
+        $table->integer('qty');
+        $table->string('unit'); // e.g. kg, pcs, liters
+$table->enum('category', [
+    'Perishable', 'Condiments', 'Frozen', 'Beverages', 'Desserts', 'Others'
+]);
+$table->date('expiry_date')->nullable();
         $table->timestamps();
     });
+
     }
 
     /**
@@ -29,3 +33,4 @@ return new class extends Migration
         Schema::dropIfExists('inventory_items');
     }
 };
+

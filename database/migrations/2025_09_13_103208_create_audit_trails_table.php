@@ -13,10 +13,21 @@ return new class extends Migration
     {
         Schema::create('audit_trails', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
+
+            // Links audit trail to a user
+            $table->foreignId('user_id')
+                  ->constrained('users')
+                  ->onDelete('cascade');
+
+            // What action happened (login, logout, update, delete, etc.)
             $table->string('action');
-            $table->string('module')->nullable();
+
+            // Which part of the system (auth, profile, users, reservations, etc.)
+            $table->string('module')->default('general');
+
+            // Optional description (details of the action)
             $table->text('description')->nullable();
+
             $table->timestamps();
         });
     }

@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('menus', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');   // e.g. Breakfast Combo
-            $table->text('description')->nullable();
-            $table->timestamps();
-        });
-
+Schema::create('menu_items', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('menu_id')->constrained()->onDelete('cascade');
+    $table->string('name');   // e.g. Iced Coffee
+    $table->enum('type', ['food','drink','dessert']); // to distinguish
+    $table->timestamps();
+});
     }
 
     /**
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('menus');
+        Schema::dropIfExists('menu_items');
     }
 };
