@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MenuItem extends Model
 {
-    protected $fillable = ['menu_id', 'name', 'type'];
+    protected $fillable = ['menu_id','name','type'];
 
     public function menu()
     {
@@ -17,3 +17,4 @@ class MenuItem extends Model
         return $this->hasMany(Recipe::class);
     }
 }
+

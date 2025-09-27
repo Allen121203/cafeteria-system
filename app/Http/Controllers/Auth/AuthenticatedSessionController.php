@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 use App\Models\AuditTrail;
 
@@ -32,11 +33,11 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-        $request->session()->regenerate();
+        Session::regenerate();
 
         // ✅ Log login action
         AuditTrail::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'action'  => 'Logged in',
             'module'  => 'auth',
             'description' => 'User logged in successfully',
@@ -53,7 +54,7 @@ class AuthenticatedSessionController extends Controller
     {
         // ✅ Log logout action before session ends
         AuditTrail::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'action'  => 'Logged out',
             'module'  => 'auth',
             'description' => 'User logged out successfully',
@@ -61,8 +62,8 @@ class AuthenticatedSessionController extends Controller
 
         Auth::guard('web')->logout();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    Session::invalidate();
+    Session::regenerateToken();
 
         return redirect('/');
     }

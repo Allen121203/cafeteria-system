@@ -57,7 +57,7 @@
                 </a>
                 <a href="{{ route('admin.calendar') }}"
                    class="block px-3 py-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.calendar') ? 'bg-green-600' : '' }}">
-                    📆 Calendars
+                    📆 Calendar
                 </a>
             @endif
 

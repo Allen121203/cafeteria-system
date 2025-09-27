@@ -6,7 +6,7 @@
 <div class="bg-white p-6 rounded shadow">
     <h1 class="text-2xl font-bold mb-4">Audit Trail for {{ $user->name }}</h1>
 
-    @if(count($logs) > 0)
+    @if(!empty($audits) && $audits->isNotEmpty())
         <table class="w-full border-collapse border">
             <thead>
                 <tr class="bg-gray-200">
@@ -15,7 +15,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($logs as $log)
+                @forelse($audits as $log)
                     <tr>
                         <td class="border px-4 py-2">{{ $log->action }}</td>
                         <td class="border px-4 py-2">{{ $log->created_at->format('M d, Y h:i A') }}</td>

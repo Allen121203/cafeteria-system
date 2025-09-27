@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
 use Carbon\Carbon;
+use Illuminate\View\View;
 
 class CalendarController extends Controller
 {
-public function index(Request $request)
+public function index(Request $request): View
 {
     // Default: current month
     $month = $request->input('month', now()->format('Y-m'));

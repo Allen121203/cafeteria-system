@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-use Spatie\Permission\Models\Role;
 
 class RegisteredUserController extends Controller
 {
@@ -30,7 +29,7 @@ class RegisteredUserController extends Controller
      */
 public function store(Request $request): RedirectResponse
 {
-    $request->validate([
+    $data = $request->validate([
         'name' => ['required', 'string', 'max:255'],
         'address' => ['nullable', 'string', 'max:255'],
         'contact_no' => ['nullable', 'string', 'max:20'],
@@ -40,12 +39,12 @@ public function store(Request $request): RedirectResponse
     ]);
 
     $user = User::create([
-        'name'       => $request->name,
-        'email'      => $request->email,
-        'password'   => Hash::make($request->password),
-        'address'    => $request->address,
-        'contact_no' => $request->contact_no,
-        'department' => $request->department,
+        'name'       => $data['name'],
+        'email'      => $data['email'],
+        'password'   => Hash::make($data['password']),
+        'address'    => $data['address'] ?? null,
+        'contact_no' => $data['contact_no'] ?? null,
+        'department' => $data['department'] ?? null,
         'role'       => 'customer', // default
     ]);
 

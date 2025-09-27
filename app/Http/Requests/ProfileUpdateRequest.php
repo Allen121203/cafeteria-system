@@ -23,7 +23,7 @@ class ProfileUpdateRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore(optional($this->user())->id),
+                Rule::unique(User::class)->ignore(\Illuminate\Support\Facades\Auth::id() ?? null),
             ],
         ];
     }

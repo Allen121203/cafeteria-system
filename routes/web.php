@@ -6,7 +6,9 @@ use App\Http\Controllers\CustomerHomeController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\{
+    MenuController, RecipeController, ReservationController, CalendarController, InventoryItemController
+};
 // ---------- Index -> Login ----------
 Route::get('/', fn () => redirect()->route('login'))->name('home');
 
@@ -15,7 +17,7 @@ require __DIR__ . '/auth.php';
 
 // ---------- Dashboard redirect helper ----------
 Route::get('/dashboard', function () {
-    $user = auth()->user();
+    $user = \Illuminate\Support\Facades\Auth::user();
     if (!$user) return redirect()->route('login');
 
     return match ($user->role) {
@@ -49,21 +51,29 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])
-            ->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
 
-        Route::get('/reservations', [App\Http\Controllers\ReservationController::class, 'index'])
-            ->name('reservations');
+        Route::resource('inventory', InventoryItemController::class);
+        Route::resource('menus', MenuController::class);
+        Route::post('/menus/{menu}/items', [MenuController::class,'addItem'])->name('menus.items.store');
 
-        Route::get('/calendar', [App\Http\Controllers\CalendarController::class, 'index'])
-            ->name('calendar');
+        // Recipes
+        Route::get   ('/menu-items/{menuItem}/recipes', [RecipeController::class,'index'])->name('recipes.index');
+        Route::post  ('/menu-items/{menuItem}/recipes', [RecipeController::class,'store'])->name('recipes.store');
+        Route::delete('/menu-items/{menuItem}/recipes/{recipe}', [RecipeController::class,'destroy'])->name('recipes.destroy');
 
-        Route::resource('inventory', \App\Http\Controllers\InventoryItemController::class);
-        Route::resource('menus', \App\Http\Controllers\MenuController::class);
+        // Reservations (names align with your Blade: admin.reservations, admin.reservations.show, etc.)
+        Route::get  ('/reservations',                       [ReservationController::class,'index'])->name('reservations');
+        Route::get  ('/reservations/{reservation}',         [ReservationController::class,'show'])->name('reservations.show');
+        Route::patch('/reservations/{reservation}/approve', [ReservationController::class,'approve'])->name('reservations.approve');
+        Route::patch('/reservations/{reservation}/decline', [ReservationController::class,'decline'])->name('reservations.decline');
     });
+
 
 
 // ---------- Customer ----------
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/home', [CustomerHomeController::class, 'index'])->name('customer.home');
+    Route::post('/reservations', [CustomerHomeController::class, 'store'])->name('reservations.store');
 });

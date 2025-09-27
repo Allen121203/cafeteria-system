@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+
 class AdminDashboardController extends Controller
 {
     public function __construct()
@@ -12,24 +16,24 @@ class AdminDashboardController extends Controller
         $this->middleware(['auth','role:admin']);
     }
 
-    public function index()
+    public function index(): View
     {
         // TODO: load reservations/inventory as needed
         return view('admin.dashboard');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $data = $request->validate([
             'email' => 'required|email|unique:users',
             'name' => 'required',
             'password' => 'required|min:6|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
         ]);
 
         $user->assignRole('admin');
