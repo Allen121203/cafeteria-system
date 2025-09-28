@@ -1,4 +1,3 @@
-// database/migrations/xxxx_xx_xx_xxxxxx_add_decline_reason_to_reservations.php
 <?php
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

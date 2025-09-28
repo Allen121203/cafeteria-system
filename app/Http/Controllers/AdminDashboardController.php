@@ -6,8 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
+use App\Models\Reservation;
+use App\Models\ReservationItem;
+use App\Models\InventoryItem;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
 {
@@ -18,8 +22,23 @@ class AdminDashboardController extends Controller
 
     public function index(): View
     {
-        // TODO: load reservations/inventory as needed
-        return view('admin.dashboard');
+        $totalReservations = Reservation::count();
+        $pendingReservations = Reservation::where('status', 'pending')->count();
+        $menusSold = ReservationItem::sum('quantity');
+        $lowStocks = InventoryItem::where('qty', '<', 5)->get();
+        $outOfStocks = InventoryItem::where('qty', 0)->get();
+        $expiringSoon = InventoryItem::where('expiry_date', '<=', Carbon::now()->addDays(7))
+            ->where('expiry_date', '>=', Carbon::now())
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'totalReservations',
+            'pendingReservations',
+            'menusSold',
+            'lowStocks',
+            'outOfStocks',
+            'expiringSoon'
+        ));
     }
 
     public function store(Request $request): RedirectResponse

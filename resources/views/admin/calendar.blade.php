@@ -17,17 +17,17 @@
     </div>
 
     <div class="grid grid-cols-3 gap-6">
-        <!-- Sidebar List of ALL Approved Events -->
+        <!-- Sidebar List of Approved Events for the Month -->
         <div>
             <h2 class="font-bold mb-3">List of Events</h2>
             <ul class="space-y-2">
-                @forelse($allApproved as $event)
+                @forelse($monthlyApproved as $event)
                     <li class="border p-2 rounded bg-green-100">
-                        <strong>{{ $event->user->name }}</strong>  
+                        <strong>{{ $event->user->name }}</strong>
                         <div>{{ \Carbon\Carbon::parse($event->date)->format('M d, Y') }} - {{ $event->guests }} guests</div>
                     </li>
                 @empty
-                    <li class="text-gray-500">No approved reservations yet.</li>
+                    <li class="text-gray-500">No approved reservations for this month.</li>
                 @endforelse
             </ul>
         </div>

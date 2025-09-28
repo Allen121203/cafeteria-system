@@ -9,10 +9,9 @@ class AuditTrail extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'action',
-    ];
+// app/Models/AuditTrail.php
+protected $fillable = ['user_id','action','module','description'];
+
 
     // Relationship with user
     public function user()

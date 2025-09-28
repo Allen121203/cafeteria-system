@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 // app/Models/Menu.php
 class Menu extends Model
 {
-    protected $fillable = ['name','description','price','meal_time','menu_type','day_no','number'];
+    protected $fillable = ['name','description','price','meal_time','type'];
 
     public function items(){ return $this->hasMany(MenuItem::class); }
 

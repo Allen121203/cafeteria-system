@@ -66,105 +66,55 @@
     </span>
   </div>
 
-  {{-- Grid: 4 columns if we have day_no; else free grid --}}
-  @if($hasDayNo)
-    <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      @for($d=1; $d<=4; $d++)
-        @php $list = data_get($menusByDay, $d, collect()); @endphp
-        <div class="border rounded-xl p-4">
-          <div class="flex items-center justify-between">
-            <div class="text-xs uppercase tracking-wide text-slate-500">Day {{ $d }}</div>
-            @if($list->isEmpty())
-              <button type="button"
-                      @click='openCreate(@json($type), @json($meal), {{ $d }})'
-                      class="text-blue-600 text-sm">
-                Create
-              </button>
+  {{-- Show all menus in a responsive grid --}}
+  <div class="mt-5 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    @foreach(data_get($menusByDay, 'all', collect()) as $menu)
+      <div id="menu-card-{{ $menu->id }}" class="border rounded-lg p-4 h-full">
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="text-xs uppercase tracking-wide text-slate-500">
+              {{ strtoupper(str_replace('_',' ', $menu->meal_time ?? $meal)) }}
+            </div>
+            <h2 class="text-lg font-semibold">{{ $menu->name ?? 'Menu #'.$menu->id }}</h2>
+            <div class="text-slate-600 text-sm">
+              ₱{{ number_format($menu->price ?? $activePrice, 2) }} / head
+            </div>
+            @if(!empty($menu->description))
+              <p class="text-gray-600 text-sm mt-2">{{ $menu->description }}</p>
             @endif
           </div>
-
-          @forelse($list as $menu)
-            <div class="mt-3 rounded-lg border p-3">
-              <div class="flex items-start justify-between gap-3">
-                <div>
-                  <h2 class="font-semibold text-lg">{{ $menu->name ?? 'Menu #'.$menu->id }}</h2>
-                  <div class="text-xs text-gray-500 mt-0.5">
-                    <span class="px-2 py-0.5 rounded bg-gray-100">{{ strtoupper(str_replace('_',' ', $menu->meal_time ?? $meal)) }}</span>
-                    <span class="ml-2">₱{{ number_format($menu->price ?? $activePrice, 2) }} / head</span>
-                  </div>
-                  @if(!empty($menu->description))
-                    <p class="text-gray-600 text-sm mt-2">{{ $menu->description }}</p>
-                  @endif
-                </div>
-                <button type="button"
-                        @click='openEdit({{ $menu->id }}, @json($menu->name), @json($menu->description), @json($menu->menu_type), @json($menu->meal_time), {{ $menu->day_no ?? 1 }}, @json($menu->items->map(function($i) { return ["name" => $i->name, "type" => $i->type]; })->toArray()))'
-                        class="text-blue-600 text-sm">Edit</button>
-              </div>
-
-              {{-- Foods --}}
-              <div class="mt-3">
-                <div class="text-xs text-slate-500 mb-1">Foods ({{ $menu->items->count() }})</div>
-                @if($menu->items->count())
-                  <ul class="space-y-1 text-sm">
-                    @foreach($menu->items as $food)
-                      <li class="flex items-center justify-between">
-                        <span>{{ $food->name }} <span class="text-xs text-gray-500">({{ $food->type }})</span></span>
-                        <a href="{{ route('admin.recipes.index', $food) }}" class="text-green-700 text-xs underline">Recipe</a>
-                      </li>
-                    @endforeach
-                  </ul>
-                @else
-                  <div class="text-sm text-slate-500">No items yet.</div>
-                @endif
-              </div>
-            </div>
-          @empty
-            <p class="text-sm text-slate-500 mt-3">No bundle yet for Day {{ $d }}.</p>
-          @endforelse
-        </div>
-      @endfor
-    </div>
-  @else
-    {{-- No day_no column: show all in a responsive grid --}}
-    <div class="mt-5 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      @foreach(data_get($menusByDay, 'all', collect()) as $menu)
-        <div class="border rounded-lg p-4 h-full">
-          <div class="flex items-start justify-between">
-            <div>
-              <div class="text-xs uppercase tracking-wide text-slate-500">
-                {{ strtoupper(str_replace('_',' ', $menu->meal_time ?? $meal)) }}
-              </div>
-              <h2 class="text-lg font-semibold">{{ $menu->name ?? 'Menu #'.$menu->id }}</h2>
-              <div class="text-slate-600 text-sm">
-                ₱{{ number_format($menu->price ?? $activePrice, 2) }} / head
-              </div>
-            </div>
+          <div class="flex gap-2">
             <button type="button"
-                    @click='openEdit({{ $menu->id }}, @json($menu->name), @json($menu->description), @json($menu->menu_type), @json($menu->meal_time), {{ $menu->day_no ?? 1 }}, @json($menu->items->map(function($i) { return ["name" => $i->name, "type" => $i->type]; })->toArray()))'
+                    @click='openEdit({{ $menu->id }}, @json($menu->name), @json($menu->description), @json($menu->type), @json($menu->meal_time), @json($menu->items->map(function($i) { return ["name" => $i->name, "type" => $i->type]; })->toArray()))'
                     class="text-blue-600 text-sm">
               Edit
             </button>
-          </div>
-
-          <div class="mt-3">
-            <div class="text-xs text-slate-500 mb-1">Foods ({{ $menu->items->count() }})</div>
-            @if($menu->items->count())
-              <ul class="space-y-1">
-                @foreach($menu->items as $food)
-                  <li class="flex items-center justify-between text-sm">
-                    <span>{{ $food->name }} <span class="text-xs text-gray-500">({{ $food->type }})</span></span>
-                    <a href="{{ route('admin.recipes.index', $food) }}" class="text-green-700 text-xs underline">Recipe</a>
-                  </li>
-                @endforeach
-              </ul>
-            @else
-              <div class="text-sm text-slate-500">No items yet.</div>
-            @endif
+            <button type="button"
+                    @click='openDelete({{ $menu->id }}, @json($menu->name ?? ("Menu #".$menu->id)))'
+                    class="text-red-600 text-sm">
+              Delete
+            </button>
           </div>
         </div>
-      @endforeach
-    </div>
-  @endif
+
+        <div class="mt-3">
+          <div class="text-xs text-slate-500 mb-1">Foods ({{ $menu->items->count() }})</div>
+          @if($menu->items->count())
+            <ul class="space-y-1">
+              @foreach($menu->items as $food)
+                <li class="flex items-center justify-between text-sm">
+                  <span>{{ $food->name }} <span class="text-xs text-gray-500">({{ $food->type }})</span></span>
+                  <a href="{{ route('admin.recipes.index', $food) }}" class="text-green-700 text-xs underline">Recipe</a>
+                </li>
+              @endforeach
+            </ul>
+          @else
+            <div class="text-sm text-slate-500">No items yet.</div>
+          @endif
+        </div>
+      </div>
+    @endforeach
+  </div>
 
   {{-- CREATE MENU MODAL --}}
   <div x-cloak x-show="isCreateOpen" x-transition
@@ -181,7 +131,7 @@
 
         <div>
           <label class="block text-sm font-medium">Menu type</label>
-          <select name="menu_type" class="border rounded p-2 w-full mt-1" x-model="form.type">
+          <select name="type" class="border rounded p-2 w-full mt-1" x-model="form.type" required>
             <option value="standard">Standard Menu</option>
             <option value="special">Special Menu</option>
           </select>
@@ -189,7 +139,7 @@
 
         <div>
           <label class="block text-sm font-medium">Meal time</label>
-          <select name="meal_time" class="border rounded p-2 w-full mt-1" x-model="form.meal">
+          <select name="meal_time" class="border rounded p-2 w-full mt-1" x-model="form.meal" required>
             <option value="breakfast">Breakfast</option>
             <option value="am_snacks">AM Snacks</option>
             <option value="lunch">Lunch</option>
@@ -199,17 +149,8 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium">Day</label>
-          <select name="day_no" class="border rounded p-2 w-full mt-1" x-model="form.day">
-            <template x-for="d in [1,2,3,4]" :key="d">
-              <option :value="d" x-text="'Day ' + d"></option>
-            </template>
-          </select>
-        </div>
-
-        <div>
           <label class="block text-sm font-medium">Display name (optional)</label>
-          <input name="name" class="border rounded p-2 w-full mt-1" placeholder="e.g., Breakfast Day 1" x-model="form.name">
+          <input name="name" class="border rounded p-2 w-full mt-1" placeholder="e.g., Breakfast Menu" x-model="form.name">
         </div>
 
         <div>
@@ -239,7 +180,7 @@
 
         <div class="text-xs text-gray-600">
           Fixed price per head:
-          <span class="font-semibold" x-text="priceText()"></span>
+          <span class="font-semibold" x-text="priceText"></span>
           <span class="text-gray-500">(auto-applied on save)</span>
         </div>
 
@@ -266,7 +207,7 @@
 
         <div>
           <label class="block text-sm font-medium">Menu type</label>
-          <select name="menu_type" class="border rounded p-2 w-full mt-1" x-model="editForm.type">
+          <select name="type" class="border rounded p-2 w-full mt-1" x-model="editForm.type" required>
             <option value="standard">Standard Menu</option>
             <option value="special">Special Menu</option>
           </select>
@@ -274,7 +215,7 @@
 
         <div>
           <label class="block text-sm font-medium">Meal time</label>
-          <select name="meal_time" class="border rounded p-2 w-full mt-1" x-model="editForm.meal">
+          <select name="meal_time" class="border rounded p-2 w-full mt-1" x-model="editForm.meal" required>
             <option value="breakfast">Breakfast</option>
             <option value="am_snacks">AM Snacks</option>
             <option value="lunch">Lunch</option>
@@ -284,17 +225,8 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium">Day</label>
-          <select name="day_no" class="border rounded p-2 w-full mt-1" x-model="editForm.day">
-            <template x-for="d in [1,2,3,4]" :key="d">
-              <option :value="d" x-text="'Day ' + d"></option>
-            </template>
-          </select>
-        </div>
-
-        <div>
           <label class="block text-sm font-medium">Display name (optional)</label>
-          <input name="name" class="border rounded p-2 w-full mt-1" placeholder="e.g., Breakfast Day 1" x-model="editForm.name">
+          <input name="name" class="border rounded p-2 w-full mt-1" placeholder="e.g., Breakfast Menu" x-model="editForm.name">
         </div>
 
         <div>
@@ -324,7 +256,7 @@
 
         <div class="text-xs text-gray-600">
           Fixed price per head:
-          <span class="font-semibold" x-text="editPriceText()"></span>
+          <span class="font-semibold" x-text="editPriceText"></span>
           <span class="text-gray-500">(auto-applied on save)</span>
         </div>
 
@@ -336,71 +268,166 @@
     </div>
   </div>
 
+  {{-- DELETE MENU MODAL (teleported, same Alpine scope) --}}
+  <template x-teleport="body">
+    <div x-cloak x-show="isDeleteOpen"
+         @keydown.escape.window="closeDelete()"
+         class="fixed inset-0 z-[100]">
+      <div class="absolute inset-0 bg-black/40" @click="closeDelete()"></div>
+
+      <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div x-transition
+             class="relative bg-white w-full max-w-md rounded-xl shadow-lg p-6"
+             role="dialog" aria-modal="true"
+             aria-labelledby="delete-title" aria-describedby="delete-desc">
+
+          <button class="absolute top-2 right-3 text-gray-500 hover:text-black"
+                  @click="closeDelete()" aria-label="Close">✕</button>
+
+          <h2 id="delete-title" class="text-xl font-semibold mb-2">Delete Menu</h2>
+
+          <p id="delete-desc" class="text-gray-600 mb-4">
+            Are you sure you want to delete
+            <span class="font-semibold" x-text="deleteName || 'this menu'"></span>?
+            This action cannot be undone.
+          </p>
+
+          {{-- AJAX delete: stay on current page, remove card, close modal --}}
+          <form @submit.prevent="confirmDelete" class="flex justify-end gap-2">
+            @csrf
+            @method('DELETE')
+
+            <button type="button" @click="closeDelete()"
+                    class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
+
+            <button type="submit"
+                    class="px-4 py-2 bg-red-600 text-white rounded">
+              Delete
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </template>
+
 </div>
 
 {{-- Alpine component --}}
 <script>
   document.addEventListener('alpine:init', () => {
     Alpine.data('menuCreateModal', (opts = {}) => ({
+      // State
       isCreateOpen: false,
       isEditOpen: false,
+      isDeleteOpen: false,
+
+      deleteId: null,
+      deleteName: '',
+
       prices: opts.prices || {
         standard: { breakfast:150, am_snacks:150, lunch:300, pm_snacks:100, dinner:300 },
         special:  { breakfast:170, am_snacks:100, lunch:350, pm_snacks:150, dinner:350 },
       },
+
       form: {
         type:  opts.defaultType || 'standard',
         meal:  opts.defaultMeal || 'breakfast',
-        day:   1,
         name:  '',
         description: '',
         items: []
       },
+
       editForm: {
         id: null,
         type: 'standard',
         meal: 'breakfast',
-        day: 1,
         name: '',
         description: '',
         items: []
       },
 
-      openCreate(type = null, meal = null, day = 1) {
+      // Methods
+      openCreate(type = null, meal = null) {
         if (type) this.form.type = type;
         if (meal) this.form.meal = meal;
-        this.form.day  = day || 1;
         this.form.items = [];
         this.isCreateOpen = true;
       },
       close(){ this.isCreateOpen = false; },
 
-      openEdit(id, name, description, type, meal, day, items = []) {
+      openEdit(id, name, description, type, meal, items = []) {
         this.editForm.id = id;
         this.editForm.name = name || '';
         this.editForm.description = description || '';
         this.editForm.type = type || 'standard';
         this.editForm.meal = meal || 'breakfast';
-        this.editForm.day = day || 1;
-        this.editForm.items = items.map(item => ({ name: item.name, type: item.type }));
+        this.editForm.items = (items || []).map(i => ({ name: i.name, type: i.type }));
 
-        // ✅ Safe JS string: no broken quotes
+        // set form action safely
         this.$refs.editForm.action = `{{ url('/admin/menus') }}/${id}`;
 
         this.isEditOpen = true;
       },
       closeEdit(){ this.isEditOpen = false; },
 
-      priceText() {
+      openDelete(id, name = 'this menu') {
+        this.deleteId = id;
+        this.deleteName = name || 'this menu';
+        this.isDeleteOpen = true;
+        document.body.style.overflow = 'hidden';
+      },
+      closeDelete() {
+        this.isDeleteOpen = false;
+        this.deleteId = null;
+        this.deleteName = '';
+        document.body.style.overflow = '';
+      },
+
+      // AJAX delete, stay on current page and remove the card
+      async confirmDelete() {
+        if (!this.deleteId) return;
+
+        const url = `{{ url('/admin/menus') }}/${this.deleteId}`;
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        try {
+          const res = await fetch(url, {
+            method: 'POST', // Laravel DELETE via method spoofing
+            headers: {
+              'X-CSRF-TOKEN': token,
+              'X-Requested-With': 'XMLHttpRequest',
+              'Accept': 'application/json, text/plain, */*',
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: new URLSearchParams({ _method: 'DELETE' })
+          });
+
+          // 200/204 are typical; some apps redirect with 302 but we ignore response and proceed
+          if (!res.ok && res.status !== 204) {
+            console.warn('Delete failed', await res.text());
+          }
+
+          const card = document.getElementById('menu-card-' + this.deleteId);
+          if (card) card.remove();
+
+          this.closeDelete(); // close modal, stay on page
+        } catch (e) {
+          console.error('Delete error', e);
+          this.closeDelete();
+        }
+      },
+
+      // Price helpers (getters so they auto-react)
+      get priceText() {
         const t = this.form.type, m = this.form.meal;
         const v = (this.prices[t] && this.prices[t][m]) ? this.prices[t][m] : 0;
         return '₱' + Number(v).toFixed(2) + ' / head';
       },
-      editPriceText() {
+      get editPriceText() {
         const t = this.editForm.type, m = this.editForm.meal;
         const v = (this.prices[t] && this.prices[t][m]) ? this.prices[t][m] : 0;
         return '₱' + Number(v).toFixed(2) + ' / head';
-      }
+      },
     }));
   });
 </script>
