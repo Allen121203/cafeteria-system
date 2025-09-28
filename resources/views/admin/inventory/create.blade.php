@@ -1,9 +1,9 @@
 <!-- Modal Background -->
-<div id="addItemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+<div x-show="showModal" @click="showModal = false" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" x-cloak style="display: none;">
     <!-- Modal Box -->
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+    <div @click.stop class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
         <!-- Close Button -->
-        <button onclick="document.getElementById('addItemModal').classList.add('hidden')" 
+        <button @click="showModal = false"
                 class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
             &times;
         </button>
