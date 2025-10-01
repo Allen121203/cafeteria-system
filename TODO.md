@@ -1,3 +1,4 @@
-- [ ] Stage all changes with `git add .`
-- [ ] Commit changes with message "Update cafeteria system with latest changes"
-- [ ] Push to origin main with `git push origin main`
+- [x] Stage all changes with `git add .`
+- [x] Commit changes with message "Update cafeteria system with latest changes"
+- [x] Pull remote changes with `git pull origin main`
+- [x] Push to origin main with `git push origin main`
