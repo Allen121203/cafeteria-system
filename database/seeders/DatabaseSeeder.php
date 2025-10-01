@@ -15,7 +15,8 @@ public function run(): void
     $this->call([
         UserSeeder::class, // if you already have one
         ReservationSeeder::class,
+        MenusAndItemsSqlSeeder::class,
+
     ]);
 }
-
 }

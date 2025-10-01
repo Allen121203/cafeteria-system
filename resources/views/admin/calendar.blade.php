@@ -16,7 +16,7 @@
         <!-- Month Picker -->
         <form method="GET" action="{{ route('admin.calendar') }}" class="flex items-center gap-2">
             <label class="text-sm font-medium text-gray-700">Select Month:</label>
-            <input type="month" name="month" value="{{ $month }}"
+            <input type="month" name="month" value="{{ $month }}" id="month-picker"
                    class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 cursor-pointer">
         </form>
     </div>
@@ -106,4 +106,10 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('month-picker').addEventListener('change', function() {
+        this.form.submit();
+    });
+</script>
 @endsection

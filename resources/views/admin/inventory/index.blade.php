@@ -2,10 +2,11 @@
 @section('page-title', 'Inventory Management')
 
 @section('content')
-<div class="space-y-6" x-data="{ showModal: false }">
-    <!-- Header -->
+<div x-data="{ showModal: false }">
+    <!-- Match Reservations container: rounded-xl + shadow-lg + border + p-6 -->
     <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-        <div class="flex items-center justify-between">
+        <!-- Header (kept your icons/button) -->
+        <div class="flex items-center justify-between mb-6">
             <div class="flex items-center">
                 <svg class="w-8 h-8 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -20,45 +21,71 @@
                 Add Item
             </button>
         </div>
-    </div>
 
-    <!-- Table -->
-    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-        <div class="overflow-x-auto">
+        <!-- Category Filter Dropdown -->
+        <div class="mb-6">
+            <form method="GET" action="{{ route('admin.inventory.index') }}" class="flex items-center space-x-4">
+                <label for="category" class="text-sm font-medium text-gray-700">Filter by Category:</label>
+                <select name="category" id="category" onchange="this.form.submit()"
+                        class="block w-48 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                    <option value="">All Categories</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat }}" {{ $category == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
+                <!-- Preserve sort parameters -->
+                @if($sort)
+                    <input type="hidden" name="sort" value="{{ $sort }}">
+                @endif
+                @if($direction)
+                    <input type="hidden" name="direction" value="{{ $direction }}">
+                @endif
+            </form>
+        </div>
+
+        <!-- Table wrapper copied from Reservations: overflow-x-auto + rounded-xl + shadow-lg + border -->
+        <div class="overflow-x-auto bg-white rounded-xl shadow-lg border border-gray-200">
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <a href="?sort=name" class="hover:text-gray-700 transition-colors duration-200">Item</a>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <a href="?sort=name" class="hover:text-gray-700 transition-colors duration-200">Item Name</a>
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <a href="?sort=qty" class="hover:text-gray-700 transition-colors duration-200">Quantity</a>
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <a href="?sort=expiry_date" class="hover:text-gray-700 transition-colors duration-200">Expiry Date</a>
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
+
+                <!-- Match Reservations tbody + row styles -->
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($items as $item)
                         <tr class="hover:bg-gray-50 transition-colors duration-200">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $item->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ $item->name }}
+                            </td>
+
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 <span class="px-2 py-1 rounded-full text-xs font-semibold
                                     @if($item->qty <= 5) bg-red-100 text-red-800
-                                    @elseif($item->qty <= 10) bg-yellow-100 text-yellow-800
+                                    @elseif($item->qty <= 10) bg-amber-100 text-amber-800
                                     @else bg-green-100 text-green-800 @endif">
                                     {{ $item->qty }}
                                 </span>
                             </td>
+
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->unit }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->expiry_date ?? 'N/A' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->category }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->updated_at->diffForHumans() }}</td>
+
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
                                     <a href="{{ route('admin.inventory.edit', $item) }}"
@@ -68,6 +95,7 @@
                                         </svg>
                                         Edit
                                     </a>
+
                                     <form action="{{ route('admin.inventory.destroy', $item) }}" method="POST" class="inline">
                                         @csrf @method('DELETE')
                                         <button class="text-red-600 hover:text-red-900 transition-colors duration-200 flex items-center"
@@ -83,12 +111,12 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center">
+                            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                                 <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                 </svg>
-                                <p class="text-gray-500 text-lg">No inventory items found.</p>
-                                <p class="text-gray-400 mt-1">Start by adding your first item.</p>
+                                <p class="text-lg">No inventory items found.</p>
+                                <p class="text-sm text-gray-400 mt-1">Start by adding your first item.</p>
                             </td>
                         </tr>
                     @endforelse
@@ -96,6 +124,7 @@
             </table>
         </div>
     </div>
+
+    @include('admin.inventory.create')
 </div>
 @endsection
-@include('admin.inventory.create')

@@ -25,51 +25,80 @@ class MenuController extends Controller
 
     public function index(Request $request): View
     {
+        // Defaults: standard + breakfast
         $type = $request->query('type', 'standard');
         $meal = $request->query('meal', 'breakfast');
 
-        $q = Menu::with('items');
-
-        // Guarded filters – only apply if the columns exist
-        if (Schema::hasColumn('menus', 'type') && isset(self::TYPES[$type])) {
-            $q->where('type', $type);
+        // Sanitize type (only allow our keys)
+        if (!array_key_exists($type, self::TYPES)) {
+            $type = 'standard';
         }
-        if (Schema::hasColumn('menus', 'meal_time') && isset(self::MEALS[$meal])) {
-            $q->where('meal_time', $meal);
+        // Sanitize meal: allow 'all' or a valid key
+        if ($meal !== 'all' && !array_key_exists($meal, self::MEALS)) {
+            $meal = 'breakfast';
         }
 
-        // List all menus, ordered by created_at
-        $menusByDay = collect(['all' => $q->orderBy('created_at', 'desc')->get()]);
+        // Base query with relations
+        $base = Menu::with('items');
 
-        // Meal counts for the dropdown (guarded)
+        // Apply type filter if column exists
+        if (Schema::hasColumn('menus', 'type')) {
+            $base->where('type', $type);
+        }
+
+        // Build current list depending on meal
+        $currentQuery = clone $base;
+        if ($meal !== 'all' && Schema::hasColumn('menus', 'meal_time')) {
+            $currentQuery->where('meal_time', $meal);
+        }
+        $currentMenus = $currentQuery->orderBy('created_at', 'desc')->get();
+
+        // Menus by day (for convenience; 'all' = all meals for this type)
+        $menusByDay = [
+            'all'        => (clone $base)->orderBy('created_at', 'desc')->get(),
+            'breakfast'  => (clone $base)->where('meal_time', 'breakfast')->orderBy('created_at', 'desc')->get(),
+            'am_snacks'  => (clone $base)->where('meal_time', 'am_snacks')->orderBy('created_at', 'desc')->get(),
+            'lunch'      => (clone $base)->where('meal_time', 'lunch')->orderBy('created_at', 'desc')->get(),
+            'pm_snacks'  => (clone $base)->where('meal_time', 'pm_snacks')->orderBy('created_at', 'desc')->get(),
+            'dinner'     => (clone $base)->where('meal_time', 'dinner')->orderBy('created_at', 'desc')->get(),
+        ];
+
+        // Counts per meal (for current type)
         if (Schema::hasColumn('menus', 'meal_time')) {
             $counts = Menu::selectRaw('meal_time, COUNT(*) as total')
-                ->when(Schema::hasColumn('menus','type') && isset(self::TYPES[$type]),
-                    fn($qq) => $qq->where('type', $type))
+                ->when(Schema::hasColumn('menus', 'type'), fn($qq) => $qq->where('type', $type))
                 ->groupBy('meal_time')
                 ->pluck('total', 'meal_time');
         } else {
             $counts = collect();
         }
+        $totalCount = (int) ($counts->sum() ?? 0);
 
-        $activePrice = self::PRICE[$type][$meal] ?? null;
+        // Active price only when a single meal is chosen
+        $activePrice = ($meal !== 'all' && isset(self::PRICE[$type][$meal])) ? self::PRICE[$type][$meal] : null;
 
         return view('admin.menus.index', [
-            'type'        => $type,
-            'meal'        => $meal,
-            'types'       => self::TYPES,
-            'meals'       => self::MEALS,
-            'activePrice' => $activePrice,
-            'menusByDay'  => $menusByDay,
-            'counts'      => $counts,
+            'type'         => $type,
+            'meal'         => $meal,
+            'types'        => self::TYPES,
+            'meals'        => self::MEALS,
+            'activePrice'  => $activePrice,
+            'menusByDay'   => $menusByDay,
+            'currentMenus' => $currentMenus,
+            'counts'       => $counts,
+            'totalCount'   => $totalCount,
+            'priceMap'     => self::PRICE,
         ]);
     }
+
     public function create(Request $request): View
     {
         $type = $request->query('type', 'standard');
         $meal = $request->query('meal', 'breakfast');
 
-        // What columns exist right now?
+        if (!array_key_exists($type, self::TYPES)) $type = 'standard';
+        if (!array_key_exists($meal, self::MEALS)) $meal = 'breakfast';
+
         $has = [
             'type'        => Schema::hasColumn('menus', 'type'),
             'meal_time'   => Schema::hasColumn('menus', 'meal_time'),
@@ -80,6 +109,7 @@ class MenuController extends Controller
 
         $activePrice = ($has['price'] && isset(self::PRICE[$type][$meal])) ? self::PRICE[$type][$meal] : null;
 
+        // Reuse index view to keep UX consistent
         return view('admin.menus.index', [
             'type'        => $type,
             'meal'        => $meal,
@@ -87,12 +117,16 @@ class MenuController extends Controller
             'meals'       => self::MEALS,
             'activePrice' => $activePrice,
             'has'         => $has,
+            'priceMap'    => self::PRICE,
+            'menusByDay'  => ['all' => collect()],
+            'currentMenus'=> collect(),
+            'counts'      => collect(),
+            'totalCount'  => 0,
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
-        // Detect columns to validate only what exists
         $hasType   = Schema::hasColumn('menus', 'type');
         $hasMeal   = Schema::hasColumn('menus', 'meal_time');
         $hasName   = Schema::hasColumn('menus', 'name');
@@ -110,14 +144,12 @@ class MenuController extends Controller
 
         $data = $request->validate($rules);
 
-        // If price column exists, auto-set based on type+meal
         if ($hasPrice && $hasType && $hasMeal) {
             $type = $data['type'] ?? 'standard';
             $meal = $data['meal_time'] ?? 'breakfast';
             $data['price'] = self::PRICE[$type][$meal] ?? 0;
         }
 
-        // Build only fields that exist in DB
         $payload = [];
         foreach (['type','meal_time','name','description','price'] as $f) {
             if (isset($data[$f])) $payload[$f] = $data[$f];
@@ -131,13 +163,12 @@ class MenuController extends Controller
             }
         }
 
-        return redirect()->route('admin.menus.index')
+        return redirect()->route('admin.menus.index', ['type' => $payload['type'] ?? 'standard', 'meal' => $payload['meal_time'] ?? 'breakfast'])
             ->with('success', 'Menu created. Add at least 5 foods to complete the bundle.');
     }
 
     public function update(Request $request, Menu $menu): RedirectResponse
     {
-        // Similar to store, but for update
         $hasType   = Schema::hasColumn('menus', 'type');
         $hasMeal   = Schema::hasColumn('menus', 'meal_time');
         $hasName   = Schema::hasColumn('menus', 'name');
@@ -155,14 +186,12 @@ class MenuController extends Controller
 
         $data = $request->validate($rules);
 
-        // If price column exists, auto-set based on type+meal
         if ($hasPrice && $hasType && $hasMeal) {
             $type = $data['type'] ?? 'standard';
             $meal = $data['meal_time'] ?? 'breakfast';
             $data['price'] = self::PRICE[$type][$meal] ?? 0;
         }
 
-        // Build only fields that exist in DB
         $payload = [];
         foreach (['type','meal_time','name','description','price'] as $f) {
             if (isset($data[$f])) $payload[$f] = $data[$f];
@@ -199,5 +228,16 @@ class MenuController extends Controller
         ]);
 
         return back()->with('success', 'Menu item added.');
+    }
+
+    public function customerIndex(): View
+    {
+        $allMenus = Menu::with('items')->get();
+
+        $menus = $allMenus->groupBy('meal_time')->map(function ($mealsByMeal) {
+            return $mealsByMeal->groupBy('type');
+        });
+
+        return view('customer.menu', compact('menus'));
     }
 }

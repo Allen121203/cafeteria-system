@@ -14,10 +14,20 @@ class InventoryItemController extends Controller
         // Sorting options: name, qty, expiry_date
         $sort = request('sort', 'name');
         $direction = request('direction', 'asc');
+        $category = request('category');
 
-        $items = InventoryItem::orderBy($sort, $direction)->get();
+        $query = InventoryItem::query();
 
-        return view('admin.inventory.index', compact('items', 'sort', 'direction'));
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        $items = $query->orderBy($sort, $direction)->get();
+
+        // Get distinct categories for the dropdown
+        $categories = InventoryItem::distinct()->pluck('category')->sort();
+
+        return view('admin.inventory.index', compact('items', 'sort', 'direction', 'category', 'categories'));
     }
 
     public function create(): View

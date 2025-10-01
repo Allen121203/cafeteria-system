@@ -11,7 +11,7 @@ return new class extends Migration {
       $t->foreignId('menu_id')->constrained()->cascadeOnDelete();
       $t->string('name');
       // type helps you group: ulam/drink/dessert/etc.
-      $t->enum('type', ['ulam','drink','dessert','juice','other'])->default('other');
+      $t->enum('type', ['meal','drink','dessert','other'])->default('other');
       $t->timestamps();
       $t->unique(['menu_id','name']);
     });

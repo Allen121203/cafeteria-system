@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Schema;
 use App\Notifications\ReservationStatusChanged;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
@@ -111,5 +112,68 @@ class ReservationController extends Controller
                 Notification::route('vonage', $phone)->notify($notification);
             }
         }
+    }
+
+    public function create()
+    {
+        // Fetch all menus grouped by meal_time and type, eager load 'items' relationship
+        $menus = \App\Models\Menu::with('items')->get()->groupBy(['meal_time', 'type']);
+
+        // Pass the menus to the view
+        return view('customer.reservation_form_menu', compact('menus'));
+    }
+
+    public function store(Request $request)
+    {
+        // Validate the incoming request data
+        $validated = $request->validate([
+            'reservation_date' => 'required|date|after_or_equal:today',
+            'reservation_time' => 'required|date_format:H:i',
+            'notes' => 'nullable|string|max:1000',
+            'reservations' => 'required|array',
+            'reservations.*.category' => 'required|string',
+            'reservations.*.menu' => 'required|string',
+            'reservations.*.qty' => 'required|integer|min:0',
+        ]);
+
+        // Calculate total number of persons from menu selections
+        $totalPersons = 0;
+        foreach ($validated['reservations'] as $meal => $data) {
+            $totalPersons += $data['qty'];
+        }
+
+        // Create the reservation
+        $reservation = Reservation::create([
+            'user_id' => Auth::id(),
+            'event_name' => 'Catering Reservation', // Default event name, could be made dynamic
+            'event_date' => $validated['reservation_date'],
+            'event_time' => $validated['reservation_time'],
+            'number_of_persons' => $totalPersons,
+            'special_requests' => $validated['notes'],
+            'status' => 'pending',
+        ]);
+
+        // Save reservation items (menu selections)
+        foreach ($validated['reservations'] as $meal => $data) {
+            if ($data['qty'] > 0) {
+                // Find menu by name and meal_time
+                $menu = \App\Models\Menu::where('name', $data['menu'])
+                    ->where('meal_time', $meal)
+                    ->first();
+
+                if (!$menu) {
+                    // If menu not found, skip or handle error
+                    continue;
+                }
+
+                \App\Models\ReservationItem::create([
+                    'reservation_id' => $reservation->id,
+                    'menu_id' => $menu->id,
+                    'quantity' => $data['qty'],
+                ]);
+            }
+        }
+
+        return redirect()->route('reservation_details')->with('success', 'Reservation placed successfully!');
     }
 }

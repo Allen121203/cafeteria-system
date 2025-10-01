@@ -3,17 +3,20 @@
 
 @section('content')
 @php
+    // Price map (from controller or local fallback)
     $menuPrices = $priceMap ?? $prices ?? [
         'standard' => ['breakfast' => 150, 'am_snacks' => 150, 'lunch' => 300, 'pm_snacks' => 100, 'dinner' => 300],
         'special'  => ['breakfast' => 170, 'am_snacks' => 100, 'lunch' => 350, 'pm_snacks' => 150, 'dinner' => 350],
     ];
+    $type = $type ?? request('type', 'standard');
+    $meal = $meal ?? request('meal', 'breakfast');
 @endphp
 
 <style>[x-cloak]{ display:none !important; }</style>
 
 <div x-data='menuCreateModal({
         defaultType: @json($type),
-        defaultMeal: @json($meal),
+        defaultMeal: @json($meal === "all" ? "breakfast" : $meal),
         prices: @json($menuPrices)
      })'
      class="space-y-6">
@@ -37,90 +40,116 @@
         Add Menu
       </button>
     </div>
-  </div>
 
-  {{-- Type Tabs --}}
-  <div class="mt-4 flex gap-2">
-    @foreach($types as $key => $label)
-      <a href="{{ route('admin.menus.index', ['type'=>$key,'meal'=>$meal]) }}"
-         class="px-4 py-2 rounded-full border {{ $type === $key ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-transparent' }}">
-        {{ $label }}
-      </a>
-    @endforeach
-  </div>
 
-  {{-- Meal Filter --}}
-  <form method="GET" action="{{ route('admin.menus.index') }}" class="mt-4 flex items-center gap-3">
-    <input type="hidden" name="type" value="{{ $type }}">
-    <label class="text-sm text-gray-600">Meal time:</label>
-    <select name="meal" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200" onchange="this.form.submit()">
-      @foreach($meals as $key => $label)
-        @php $count = data_get($counts, $key, 0); @endphp
-        <option value="{{ $key }}" {{ $meal === $key ? 'selected' : '' }}>
-          {{ $label }} {{ $count ? "($count)" : '' }}
+
+{{-- Type Tabs (original active color) --}}
+<div class="flex gap-2 flex-wrap">
+  @foreach($types as $key => $label)
+    <a href="{{ route('admin.menus.index', ['type'=>$key,'meal'=>$meal]) }}"
+       class="px-4 py-2 rounded-full border transition-colors duration-200
+              {{ $type === $key
+                  ? 'bg-slate-900 text-white border-slate-900'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-transparent' }}">
+      {{ $label }}
+    </a>
+  @endforeach
+</div>
+
+
+    {{-- Meal Filter --}}
+    <form method="GET" action="{{ route('admin.menus.index') }}" class="mt-4 flex items-center gap-3 flex-wrap">
+      <input type="hidden" name="type" value="{{ $type }}">
+      <label class="text-sm text-gray-600">Meal time:</label>
+      <select name="meal"
+              class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+              onchange="this.form.submit()">
+        <option value="all" {{ $meal === 'all' ? 'selected' : '' }}>
+          All {{ !empty($totalCount) ? "($totalCount)" : '' }}
         </option>
-      @endforeach
-    </select>
-    @if(request('type') || request('meal'))
-      <a href="{{ route('admin.menus.index') }}" class="text-sm text-blue-700 underline">Clear</a>
+        @foreach($meals as $key => $label)
+          @php $count = data_get($counts ?? [], $key, 0); @endphp
+          <option value="{{ $key }}" {{ $meal === $key ? 'selected' : '' }}>
+            {{ $label }} {{ $count ? "($count)" : '' }}
+          </option>
+        @endforeach
+      </select>
+
+      @if(request('type') || request('meal'))
+        <a href="{{ route('admin.menus.index', ['type'=>'standard','meal'=>'breakfast']) }}" class="text-sm text-blue-700 underline">Clear</a>
+      @endif
+    </form>
+
+    {{-- Fixed price pill (hide on "All") --}}
+    @if($meal !== 'all' && !is_null($activePrice))
+      <div class="mt-3 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium">
+        <strong>{{ ucfirst($type) }}</strong> •
+        <strong>{{ data_get($meals, $meal, 'Meal') }}</strong> •
+        Fixed: <strong>₱{{ number_format($activePrice,2) }}</strong> / head
+      </div>
     @endif
-  </form>
 
-  {{-- Fixed price pill --}}
-  <div class="mt-3 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium">
-    <strong>{{ ucfirst($type) }}</strong> •
-    <strong>{{ data_get($meals, $meal, data_get($meals, 'breakfast', '')) }}</strong> •
-    Fixed: <strong>₱{{ number_format($activePrice,2) }}</strong> / head
-  </div>
+    {{-- Menus grid --}}
+    @php
+      // Prefer controller-provided $currentMenus; fallback to $menusByDay
+      $list = isset($currentMenus)
+                ? $currentMenus
+                : ($meal === 'all'
+                    ? data_get($menusByDay ?? [], 'all', collect())
+                    : data_get($menusByDay ?? [], $meal, collect()));
+    @endphp
 
-  {{-- Show all menus in a responsive grid --}}
-  <div class="mt-5 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-    @foreach(data_get($menusByDay, 'all', collect()) as $menu)
-      <div id="menu-card-{{ $menu->id }}" class="border rounded-lg p-4 h-full">
-        <div class="flex items-start justify-between">
-          <div>
-            <div class="text-xs uppercase tracking-wide text-slate-500">
-              {{ strtoupper(str_replace('_',' ', $menu->meal_time ?? $meal)) }}
+    <div class="mt-5 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      @forelse($list as $menu)
+        <div id="menu-card-{{ $menu->id }}"
+             class="border border-gray-200 rounded-xl shadow-sm p-4 h-full hover:shadow-md transition-shadow">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="text-xs uppercase tracking-wide text-slate-500">
+                {{ strtoupper(str_replace('_',' ', $menu->meal_time)) }}
+              </div>
+              <h2 class="text-lg font-semibold">{{ $menu->name ?? 'Menu #'.$menu->id }}</h2>
+              {{-- <div class="text-slate-600 text-sm">
+                ₱{{ number_format($menu->price ?? ($menuPrices[$menu->type][$menu->meal_time] ?? 0), 2) }} / head
+              </div> --}}
+              @if(!empty($menu->description))
+                <p class="text-gray-600 text-sm mt-2">{{ $menu->description }}</p>
+              @endif
             </div>
-            <h2 class="text-lg font-semibold">{{ $menu->name ?? 'Menu #'.$menu->id }}</h2>
-            <div class="text-slate-600 text-sm">
-              ₱{{ number_format($menu->price ?? $activePrice, 2) }} / head
+            <div class="flex gap-2">
+              <button type="button"
+                      @click='openEdit({{ $menu->id }}, @json($menu->name), @json($menu->description), @json($menu->type), @json($menu->meal_time), @json($menu->items->map(fn($i)=>["name"=>$i->name,"type"=>$i->type])->toArray()))'
+                      class="text-blue-600 text-sm">
+                Edit
+              </button>
+              <button type="button"
+                      @click='openDelete({{ $menu->id }}, @json($menu->name ?? ("Menu #".$menu->id)))'
+                      class="text-red-600 text-sm">
+                Delete
+              </button>
             </div>
-            @if(!empty($menu->description))
-              <p class="text-gray-600 text-sm mt-2">{{ $menu->description }}</p>
+          </div>
+
+          <div class="mt-3">
+            <div class="text-xs text-slate-500 mb-1">Foods ({{ $menu->items->count() }})</div>
+            @if($menu->items->count())
+              <ul class="space-y-1">
+                @foreach($menu->items as $food)
+                  <li class="flex items-center justify-between text-sm">
+                    <span>{{ $food->name }} <span class="text-xs text-gray-500">({{ $food->type }})</span></span>
+                    <a href="{{ route('admin.recipes.index', $food) }}" class="text-green-700 text-xs underline">Recipe</a>
+                  </li>
+                @endforeach
+              </ul>
+            @else
+              <div class="text-sm text-slate-500">No items yet.</div>
             @endif
           </div>
-          <div class="flex gap-2">
-            <button type="button"
-                    @click='openEdit({{ $menu->id }}, @json($menu->name), @json($menu->description), @json($menu->type), @json($menu->meal_time), @json($menu->items->map(function($i) { return ["name" => $i->name, "type" => $i->type]; })->toArray()))'
-                    class="text-blue-600 text-sm">
-              Edit
-            </button>
-            <button type="button"
-                    @click='openDelete({{ $menu->id }}, @json($menu->name ?? ("Menu #".$menu->id)))'
-                    class="text-red-600 text-sm">
-              Delete
-            </button>
-          </div>
         </div>
-
-        <div class="mt-3">
-          <div class="text-xs text-slate-500 mb-1">Foods ({{ $menu->items->count() }})</div>
-          @if($menu->items->count())
-            <ul class="space-y-1">
-              @foreach($menu->items as $food)
-                <li class="flex items-center justify-between text-sm">
-                  <span>{{ $food->name }} <span class="text-xs text-gray-500">({{ $food->type }})</span></span>
-                  <a href="{{ route('admin.recipes.index', $food) }}" class="text-green-700 text-xs underline">Recipe</a>
-                </li>
-              @endforeach
-            </ul>
-          @else
-            <div class="text-sm text-slate-500">No items yet.</div>
-          @endif
-        </div>
-      </div>
-    @endforeach
+      @empty
+        <div class="col-span-full text-center text-gray-500 py-8">No menus found.</div>
+      @endforelse
+    </div>
   </div>
 
   {{-- CREATE MENU MODAL --}}
@@ -214,7 +243,7 @@
 
         <div class="bg-green-50 border border-green-200 rounded-lg p-4">
           <div class="text-sm text-green-800">
-            Fixed price per head: 
+            Fixed price per head:
             <span class="font-semibold" x-text="priceText"></span>
             <span class="text-green-600">(auto-applied on save)</span>
           </div>
@@ -324,7 +353,7 @@
 
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div class="text-sm text-blue-800">
-            Fixed price per head: 
+            Fixed price per head:
             <span class="font-semibold" x-text="editPriceText"></span>
             <span class="text-blue-600">(auto-applied on save)</span>
           </div>
@@ -343,7 +372,7 @@
     </div>
   </div>
 
-  {{-- DELETE MENU MODAL (teleported, same Alpine scope) --}}
+  {{-- DELETE MENU MODAL (teleported) --}}
   <template x-teleport="body">
     <div x-cloak x-show="isDeleteOpen"
          @keydown.escape.window="closeDelete()"
@@ -372,12 +401,11 @@
         </div>
 
         <p id="delete-desc" class="text-gray-600 mb-6">
-          Are you sure you want to delete 
+          Are you sure you want to delete
           <span class="font-semibold text-gray-900" x-text="deleteName || 'this menu'"></span>?
           This action cannot be undone.
         </p>
 
-        {{-- AJAX delete: stay on current page, remove card, close modal --}}
         <form @submit.prevent="confirmDelete" class="flex justify-end gap-3">
           @csrf
           @method('DELETE')
@@ -399,8 +427,7 @@
     </div>
   </template>
 
-</div>
-
+  </div>
 {{-- Alpine component --}}
 <script>
   document.addEventListener('alpine:init', () => {
@@ -491,7 +518,6 @@
             body: new URLSearchParams({ _method: 'DELETE' })
           });
 
-          // 200/204 are typical; some apps redirect with 302 but we ignore response and proceed
           if (!res.ok && res.status !== 204) {
             console.warn('Delete failed', await res.text());
           }
@@ -506,14 +532,16 @@
         }
       },
 
-      // Price helpers (getters so they auto-react)
+      // Price helpers
       get priceText() {
         const t = this.form.type, m = this.form.meal;
+        if (m === 'all') return 'varies by meal';
         const v = (this.prices[t] && this.prices[t][m]) ? this.prices[t][m] : 0;
         return '₱' + Number(v).toFixed(2) + ' / head';
       },
       get editPriceText() {
         const t = this.editForm.type, m = this.editForm.meal;
+        if (m === 'all') return 'varies by meal';
         const v = (this.prices[t] && this.prices[t][m]) ? this.prices[t][m] : 0;
         return '₱' + Number(v).toFixed(2) + ' / head';
       },

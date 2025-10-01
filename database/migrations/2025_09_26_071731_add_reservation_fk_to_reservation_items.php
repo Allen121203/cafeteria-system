@@ -4,47 +4,70 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
+    // If you use a non-default connection, uncomment:
+    // protected $connection = 'mysql';
+
     public function up(): void
     {
-        Schema::table('reservation_items', function (Blueprint $table) {
-            // add reservation_id if it's missing
-            if (!Schema::hasColumn('reservation_items', 'reservation_id')) {
-                $table->foreignId('reservation_id')
-                      ->after('id')
-                      ->constrained('reservations')
-                      ->cascadeOnDelete();
-            }
+        if (! Schema::hasTable('reservations')) {
+            Schema::create('reservations', function (Blueprint $t) {
+                $t->id();
+                $t->foreignId('user_id')->constrained()->cascadeOnDelete();
 
-            // ensure menu_id exists too (Eloquent also expects this)
-            if (!Schema::hasColumn('reservation_items', 'menu_id')) {
-                $table->foreignId('menu_id')
-                      ->after('reservation_id')
-                      ->constrained('menus')
-                      ->cascadeOnDelete();
-            }
+                // "Rich" event fields (nullable so legacy seeders can still run)
+                $t->string('event_name')->nullable();
+                $t->date('event_date')->nullable();
+                $t->time('event_time')->nullable();
+                $t->unsignedInteger('number_of_persons')->nullable();
+                $t->text('special_requests')->nullable();
 
-            // ensure quantity exists
-            if (!Schema::hasColumn('reservation_items', 'quantity')) {
-                $table->unsignedInteger('quantity')->default(1)->after('menu_id');
-            }
+                // Legacy alias fields used by existing code/seeders
+                $t->date('date')->nullable();
+                $t->time('time')->nullable();
+                $t->unsignedInteger('guests')->nullable();
+
+                // Common fields
+                $t->enum('status', ['pending','approved','declined'])->default('pending');
+                $t->text('decline_reason')->nullable();
+
+                $t->timestamps();
+
+                // Optional: helpful index for filtering by time
+                $t->index(['event_date', 'event_time']);
+                $t->index(['date', 'time']);
+                $t->index(['status']);
+            });
+            return;
+        }
+
+        // Table exists — add any missing columns safely.
+        Schema::table('reservations', function (Blueprint $t) {
+            // Rich fields
+            if (!Schema::hasColumn('reservations','event_name'))        { $t->string('event_name')->nullable()->after('user_id'); }
+            if (!Schema::hasColumn('reservations','event_date'))        { $t->date('event_date')->nullable()->after('event_name'); }
+            if (!Schema::hasColumn('reservations','event_time'))        { $t->time('event_time')->nullable()->after('event_date'); }
+            if (!Schema::hasColumn('reservations','number_of_persons')) { $t->unsignedInteger('number_of_persons')->nullable()->after('event_time'); }
+            if (!Schema::hasColumn('reservations','special_requests'))  { $t->text('special_requests')->nullable()->after('number_of_persons'); }
+
+            // Legacy fields
+            if (!Schema::hasColumn('reservations','date'))              { $t->date('date')->nullable()->after('special_requests'); }
+            if (!Schema::hasColumn('reservations','time'))              { $t->time('time')->nullable()->after('date'); }
+            if (!Schema::hasColumn('reservations','guests'))            { $t->unsignedInteger('guests')->nullable()->after('time'); }
+
+            // Shared fields
+            if (!Schema::hasColumn('reservations','status'))            { $t->enum('status', ['pending','approved','declined'])->default('pending')->after('guests'); }
+            if (!Schema::hasColumn('reservations','decline_reason'))    { $t->text('decline_reason')->nullable()->after('status'); }
         });
     }
 
     public function down(): void
     {
-        Schema::table('reservation_items', function (Blueprint $table) {
-            if (Schema::hasColumn('reservation_items', 'reservation_id')) {
-                $table->dropForeign(['reservation_id']);
-                $table->dropColumn('reservation_id');
-            }
-            if (Schema::hasColumn('reservation_items', 'menu_id')) {
-                $table->dropForeign(['menu_id']);
-                $table->dropColumn('menu_id');
-            }
-            if (Schema::hasColumn('reservation_items', 'quantity')) {
-                $table->dropColumn('quantity');
-            }
-        });
+        // If the table was created by this migration originally, it's safe to drop it.
+        // If you're worried, you can instead drop columns conditionally.
+        if (Schema::hasTable('reservations')) {
+            Schema::drop('reservations');
+        }
     }
 };

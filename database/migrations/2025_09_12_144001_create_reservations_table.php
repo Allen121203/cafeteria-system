@@ -6,16 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-  public function up(): void {
-    Schema::create('reservation_items', function (Blueprint $t) {
-      $t->id();
-      $t->foreignId('reservation_id')->constrained()->cascadeOnDelete();
-      $t->foreignId('menu_id')->constrained()->cascadeOnDelete();
-      $t->unsignedInteger('quantity')->default(1); // number of bundles ordered
-      $t->timestamps();
-      $t->unique(['reservation_id','menu_id']);
-    });
-  }
+    public function up(): void {
+        Schema::create('reservations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('event_name');
+            $table->date('event_date');
+            $table->time('event_time');
+            $table->integer('number_of_persons');
+            $table->text('special_requests')->nullable();
+            $table->enum('status', ['pending', 'approved', 'declined'])->default('pending');
+            $table->text('decline_reason')->nullable();
+            $table->timestamps();
+        });
+    }
 
     public function down(): void
     {

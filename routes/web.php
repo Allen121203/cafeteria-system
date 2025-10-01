@@ -9,8 +9,16 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\{
     MenuController, RecipeController, ReservationController, CalendarController, InventoryItemController
 };
-// ---------- Index -> Login ----------
-Route::get('/', fn () => redirect()->route('login'))->name('home');
+use App\Models\Menu;
+
+// 1. PUBLIC MARKETING PAGES (No authentication required)
+Route::get('/', function () {
+    return view('customer.homepage');
+})->name('marketing.home');
+
+// 2. EXPLICIT LOGIN ROUTE (WAS '/' BEFORE)
+// Users click the 'Reserve' button, which points here.
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 
 // ---------- Breeze auth routes (login, register, logout, password, etc.) ----------
 require __DIR__ . '/auth.php';
@@ -73,7 +81,39 @@ Route::middleware(['auth', 'role:admin'])
 
 
 // ---------- Customer ----------
+// Customer
+
 Route::middleware(['auth', 'role:customer'])->group(function () {
-    Route::get('/home', [CustomerHomeController::class, 'index'])->name('customer.home');
-    Route::post('/reservations', [CustomerHomeController::class, 'store'])->name('reservations.store');
+    Route::get('/homepage', [CustomerHomeController::class, 'index'])->name('customer.home');
+});
+
+Route::get('/menu', [MenuController::class, 'customerIndex'])->name('menu');
+
+Route::get('/about', function () {
+    return view('customer.about');
+})->name('about');
+
+Route::get('/contact', function () {
+    return view('customer.contact');
+})->name('contact');
+
+// Group routes that require the user to be logged in (authenticated)
+Route::middleware(['auth'])->group(function () {
+    // 1. Route for displaying the initial reservation form (GET)
+    Route::get('/reservation_form', function () {
+        // This renders the view that contains the missing route link
+        return view('customer.reservation_form'); 
+    })->name('reservation_form'); 
+
+    // 2. Route for transitioning to the menu selection after basic reservation details are entered (GET/POST)
+    // NOTE: This route is temporarily allowing GET for debugging, should ideally be POST.
+    Route::match(['GET', 'POST'], '/reservation_form_menu', [ReservationController::class, 'create'])->name('reservation_form_menu');
+
+    // 3. NEW FIX: Route for handling the final submission and storing the reservation (POST)
+    Route::post('/reservation/store', [\App\Http\Controllers\ReservationController::class, 'store'])->name('reservation.store');
+
+    // 4. Route for viewing reservation details (Assuming this view is correct)
+    Route::get('/reservation/details', function () {
+        return view('customer.reservation_details');
+    })->name('reservation_details');
 });
