@@ -67,16 +67,51 @@
 </x-modal>
 
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Profile Information -->
-        <div class="space-y-6">
-            <div class="flex items-center">
-                <svg class="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+    <!-- Option Lists -->
+    <div class="space-y-4" x-data>
+        <!-- Profile Settings Option -->
+        <button type="button" @click="$dispatch('open-modal', 'profile-settings')" class="w-full bg-gray-50 rounded-lg p-4 text-left hover:bg-gray-100 transition-colors">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-lg font-medium text-gray-900">Profile Settings</span>
+                </div>
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
-                <h3 class="text-lg font-semibold text-gray-900">Profile Information</h3>
             </div>
-            <form method="POST" action="{{ route('profile.update') }}" class="space-y-6">
+        </button>
+
+        <!-- Change Password Option -->
+        <button type="button" @click="$dispatch('open-modal', 'change-password')" class="w-full bg-gray-50 rounded-lg p-4 text-left hover:bg-gray-100 transition-colors">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <span class="text-lg font-medium text-gray-900">Change Password</span>
+                </div>
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </div>
+        </button>
+    </div>
+
+    <!-- Profile Settings Modal -->
+    <x-modal name="profile-settings" class="w-full max-w-md mx-auto">
+        <div class="bg-white rounded-lg shadow-xl p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Profile Settings</h3>
+                <button @click="$dispatch('close-modal', 'profile-settings')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form method="POST" action="{{ route('profile.update') }}" class="space-y-4">
                 @csrf
                 @method('patch')
 
@@ -100,24 +135,28 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium shadow-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Update Profile
-                </button>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" @click="$dispatch('close-modal', 'profile-settings')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                        Update Profile
+                    </button>
+                </div>
             </form>
         </div>
+    </x-modal>
 
-        <!-- Reset Password -->
-        <div class="space-y-6">
-            <div class="flex items-center">
-                <svg class="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                </svg>
-                <h3 class="text-lg font-semibold text-gray-900">Reset Password</h3>
+    <!-- Change Password Modal -->
+    <x-modal name="change-password" class="w-full max-w-md mx-auto">
+        <div class="bg-white rounded-lg shadow-xl p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Change Password</h3>
+                <button @click="$dispatch('close-modal', 'change-password')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
-            <form method="POST" action="{{ route('password.update') }}" class="space-y-6">
+            <form method="POST" action="{{ route('password.update') }}" class="space-y-4">
                 @csrf
                 @method('put')
 
@@ -184,15 +223,15 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium shadow-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Update Password
-                </button>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" @click="$dispatch('close-modal', 'change-password')" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                        Update Password
+                    </button>
+                </div>
             </form>
         </div>
-    </div>
+    </x-modal>
 </div>
 
 <script>

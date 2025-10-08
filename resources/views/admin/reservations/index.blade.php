@@ -26,14 +26,7 @@
                 <option value="declined" {{ $status === 'declined' ? 'selected' : '' }}>Declined ({{ $declined }})</option>
             </select>
 
-            @if(request('status'))
-                <a href="{{ route('admin.reservations') }}" class="flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    Clear
-                </a>
-            @endif
+
         </form>
     </div>
 

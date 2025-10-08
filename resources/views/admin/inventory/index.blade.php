@@ -2,7 +2,7 @@
 @section('page-title', 'Inventory Management')
 
 @section('content')
-<div x-data="{ showModal: false }">
+<di x-data="{ showCreateModal: false, showEditModal: false, editingItem: null, updateRoute: '{{ route('admin.inventory.update', ':id') }}' }">
     <!-- Match Reservations container: rounded-xl + shadow-lg + border + p-6 -->
     <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
         <!-- Header (kept your icons/button) -->
@@ -13,7 +13,7 @@
                 </svg>
                 <h1 class="text-2xl font-bold text-gray-900">Inventory Management</h1>
             </div>
-            <button @click="showModal = true"
+            <button @click="showCreateModal = true"
                 class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-lg flex items-center">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -88,13 +88,14 @@
 
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
-                                    <a href="{{ route('admin.inventory.edit', $item) }}"
+                                    <button @click="editingItem = JSON.parse($el.dataset.item); showEditModal = true"
+                                       data-item='@json($item)'
                                        class="text-blue-600 hover:text-blue-900 transition-colors duration-200 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
                                         Edit
-                                    </a>
+                                    </button>
 
                                     <form action="{{ route('admin.inventory.destroy', $item) }}" method="POST" class="inline">
                                         @csrf @method('DELETE')
@@ -125,6 +126,139 @@
         </div>
     </div>
 
-    @include('admin.inventory.create')
-</div>
+    
+
+    <!-- Create Modal -->
+    <div x-show="showCreateModal" @click="showCreateModal = false" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" x-cloak style="display: none;">
+        <div @click.stop class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+            <button @click="showCreateModal = false"
+                    class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
+                &times;
+            </button>
+
+            <h2 class="text-xl font-bold mb-4">Add Inventory Item</h2>
+
+            <form action="{{ route('admin.inventory.store') }}" method="POST" class="space-y-4">
+                @csrf
+
+                <div>
+                    <label for="create_name" class="block text-sm font-medium">Item Name</label>
+                    <input type="text" name="name" id="create_name" required
+                        class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                </div>
+
+                <div>
+                    <label for="create_category" class="block text-sm font-medium">Category</label>
+                    <select name="category" id="create_category" required
+                        class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                        <option value="">-- Select Category --</option>
+                        <option value="Perishable">Perishable</option>
+                        <option value="Condiments">Condiments</option>
+                        <option value="Frozen">Frozen</option>
+                        <option value="Beverages">Beverages</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="create_qty" class="block text-sm font-medium">Quantity</label>
+                    <input type="number" name="qty" id="create_qty" min="1" required
+                        class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                </div>
+
+                <div>
+                    <label for="create_unit" class="block text-sm font-medium">Unit</label>
+                    <select name="unit" id="create_unit" required
+                        class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                        <option value="">-- Select Unit --</option>
+                        <option value="Pieces">Pieces</option>
+                        <option value="Kgs">Kgs</option>
+                        <option value="Liters">Liters</option>
+                        <option value="Packs">Packs</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="create_expiry_date" class="block text-sm font-medium">Expiry Date</label>
+                    <input type="date" name="expiry_date" id="create_expiry_date"
+                        class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                    <small class="text-gray-500">Leave blank if not applicable.</small>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit"
+                        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                        Save Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div x-show="showEditModal" @click="showEditModal = false; editingItem = null" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" x-cloak style="display: none;">
+        <div @click.stop class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+            <button @click="showEditModal = false; editingItem = null"
+                    class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
+                &times;
+            </button>
+
+            <h2 class="text-xl font-bold mb-4">Edit Inventory Item</h2>
+
+            <form x-bind:action="updateRoute.replace(':id', editingItem.id)" method="POST" class="space-y-4">
+                @csrf @method('PUT')
+
+                <div>
+                    <label for="edit_name" class="block text-sm font-medium">Item Name</label>
+                    <input type="text" name="name" id="edit_name" required x-bind:value="editingItem.name"
+                        class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                </div>
+
+                <div>
+                    <label for="edit_category" class="block text-sm font-medium">Category</label>
+                    <select name="category" id="edit_category" required x-bind:value="editingItem.category"
+                        class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                        <option value="">-- Select Category --</option>
+                        <option value="Perishable">Perishable</option>
+                        <option value="Condiments">Condiments</option>
+                        <option value="Frozen">Frozen</option>
+                        <option value="Beverages">Beverages</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="edit_qty" class="block text-sm font-medium">Quantity</label>
+                    <input type="number" name="qty" id="edit_qty" min="1" required x-bind:value="editingItem.qty"
+                        class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                </div>
+
+                <div>
+                    <label for="edit_unit" class="block text-sm font-medium">Unit</label>
+                    <select name="unit" id="edit_unit" required x-bind:value="editingItem.unit"
+                        class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                        <option value="">-- Select Unit --</option>
+                        <option value="Pieces">Pieces</option>
+                        <option value="Kgs">Kgs</option>
+                        <option value="Liters">Liters</option>
+                        <option value="Packs">Packs</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="edit_expiry_date" class="block text-sm font-medium">Expiry Date</label>
+                    <input type="date" name="expiry_date" id="edit_expiry_date" x-bind:value="editingItem.expiry_date"
+                        class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                    <small class="text-gray-500">Leave blank if not applicable.</small>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit"
+                        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                        Update Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection

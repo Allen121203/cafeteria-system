@@ -66,13 +66,35 @@
                     </svg>
                     Inventory
                 </a>
-                <a href="{{ route('admin.menus.index', ['type' => 'standard', 'meal' => 'breakfast']) }}"
-   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.menus.index') ? 'bg-green-600 shadow-lg' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                    </svg>
-                    Menus
-                </a>
+                <div class="relative" x-data="{ openMenus: {{ (request()->routeIs('admin.menus.*') || request()->routeIs('admin.recipes.index')) ? 'true' : 'false' }}, isOnMenusPage: {{ (request()->routeIs('admin.menus.*') || request()->routeIs('admin.recipes.index')) ? 'true' : 'false' }} }">
+                    <button @click="if (!isOnMenusPage) openMenus = !openMenus"
+                            class="flex items-center justify-between w-full px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ (request()->routeIs('admin.menus.*') || request()->routeIs('admin.recipes.index')) ? 'bg-green-600 shadow-lg' : '' }}">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                            Menus
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="openMenus ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div x-show="openMenus"
+                         @click.away="if (!isOnMenusPage) openMenus = false"
+                         class="ml-8 mt-1 space-y-1"
+                         @if(!(request()->routeIs('admin.menus.*') || request()->routeIs('admin.recipes.index'))) x-cloak @endif>
+                        <a href="{{ route('admin.menus.index', ['type' => 'standard', 'meal' => 'breakfast']) }}"
+                           @click.stop
+                           class="block px-4 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.menus.index') ? 'bg-green-700' : '' }}">
+                            Manage Menus
+                        </a>
+                        <a href="{{ route('admin.menus.prices') }}"
+                           @click.stop
+                           class="block px-4 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.menus.prices') ? 'bg-green-700' : '' }}">
+                            Manage Prices
+                        </a>
+                    </div>
+                </div>
                 <a href="{{ route('admin.calendar') }}"
                    class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.calendar') ? 'bg-green-600 shadow-lg' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,7 +198,7 @@
                 <h2 class="text-xl font-bold text-gray-900">Confirm Logout</h2>
             </div>
         </div>
-        <p class="mb-8 text-gray-600">Are you sure you want to log out? You'll need to sign in again to access your account.</p>
+        <p class="mb-8 text-gray-600">Are you sure you want to log out?</p>
 
         <div class="flex justify-end gap-3">
             <button @click="confirmLogout = false"

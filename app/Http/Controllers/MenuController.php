@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use App\Models\MenuPrice;
+use App\Models\InventoryItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
@@ -18,10 +20,11 @@ class MenuController extends Controller
         'pm_snacks'  => 'PM Snacks',
         'dinner'     => 'Dinner',
     ];
-    private const PRICE = [
-        'standard' => ['breakfast'=>150, 'am_snacks'=>150, 'lunch'=>300, 'pm_snacks'=>100, 'dinner'=>300],
-        'special'  => ['breakfast'=>170, 'am_snacks'=>100, 'lunch'=>350, 'pm_snacks'=>150, 'dinner'=>350],
-    ];
+
+    private static function getPriceMap()
+    {
+        return MenuPrice::getPriceMap();
+    }
 
     public function index(Request $request): View
     {
@@ -39,7 +42,7 @@ class MenuController extends Controller
         }
 
         // Base query with relations
-        $base = Menu::with('items');
+        $base = Menu::with('items.recipes');
 
         // Apply type filter if column exists
         if (Schema::hasColumn('menus', 'type')) {
@@ -75,7 +78,10 @@ class MenuController extends Controller
         $totalCount = (int) ($counts->sum() ?? 0);
 
         // Active price only when a single meal is chosen
-        $activePrice = ($meal !== 'all' && isset(self::PRICE[$type][$meal])) ? self::PRICE[$type][$meal] : null;
+        $priceMap = self::getPriceMap();
+        $activePrice = ($meal !== 'all' && isset($priceMap[$type][$meal])) ? $priceMap[$type][$meal] : null;
+
+        $inventoryItems = InventoryItem::orderBy('name')->get();
 
         return view('admin.menus.index', [
             'type'         => $type,
@@ -87,7 +93,8 @@ class MenuController extends Controller
             'currentMenus' => $currentMenus,
             'counts'       => $counts,
             'totalCount'   => $totalCount,
-            'priceMap'     => self::PRICE,
+            'priceMap'     => $priceMap,
+            'inventoryItems' => $inventoryItems,
         ]);
     }
 
@@ -107,7 +114,10 @@ class MenuController extends Controller
             'price'       => Schema::hasColumn('menus', 'price'),
         ];
 
-        $activePrice = ($has['price'] && isset(self::PRICE[$type][$meal])) ? self::PRICE[$type][$meal] : null;
+        $priceMap = self::getPriceMap();
+        $activePrice = ($has['price'] && isset($priceMap[$type][$meal])) ? $priceMap[$type][$meal] : null;
+
+        $inventoryItems = InventoryItem::orderBy('name')->get();
 
         // Reuse index view to keep UX consistent
         return view('admin.menus.index', [
@@ -117,11 +127,12 @@ class MenuController extends Controller
             'meals'       => self::MEALS,
             'activePrice' => $activePrice,
             'has'         => $has,
-            'priceMap'    => self::PRICE,
+            'priceMap'    => $priceMap,
             'menusByDay'  => ['all' => collect()],
             'currentMenus'=> collect(),
             'counts'      => collect(),
             'totalCount'  => 0,
+            'inventoryItems' => $inventoryItems,
         ]);
     }
 
@@ -141,13 +152,18 @@ class MenuController extends Controller
         $rules['items'] = 'array';
         $rules['items.*.name'] = 'required|string|max:255';
         $rules['items.*.type'] = 'required|in:food,drink,dessert';
+        $rules['items.*.recipes'] = 'array';
+        $rules['items.*.recipes.*.inventory_item_id'] = 'required|exists:inventory_items,id';
+        $rules['items.*.recipes.*.quantity_needed'] = 'required|numeric|min:0.01';
+        $rules['items.*.recipes.*.unit'] = 'required|string|max:50';
 
         $data = $request->validate($rules);
 
         if ($hasPrice && $hasType && $hasMeal) {
             $type = $data['type'] ?? 'standard';
             $meal = $data['meal_time'] ?? 'breakfast';
-            $data['price'] = self::PRICE[$type][$meal] ?? 0;
+            $priceMap = self::getPriceMap();
+            $data['price'] = $priceMap[$type][$meal] ?? 0;
         }
 
         $payload = [];
@@ -158,8 +174,17 @@ class MenuController extends Controller
         $menu = Menu::create($payload);
 
         if ($request->has('items') && is_array($request->items)) {
-            foreach ($request->items as $item) {
-                $menu->items()->create($item);
+            foreach ($request->items as $itemData) {
+                $menuItem = $menu->items()->create([
+                    'name' => $itemData['name'],
+                    'type' => $itemData['type'],
+                ]);
+                // Create recipes for this menu item
+                if (isset($itemData['recipes']) && is_array($itemData['recipes'])) {
+                    foreach ($itemData['recipes'] as $recipeData) {
+                        $menuItem->recipes()->create($recipeData);
+                    }
+                }
             }
         }
 
@@ -183,13 +208,18 @@ class MenuController extends Controller
         $rules['items'] = 'array';
         $rules['items.*.name'] = 'required|string|max:255';
         $rules['items.*.type'] = 'required|in:food,drink,dessert';
+        $rules['items.*.recipes'] = 'array';
+        $rules['items.*.recipes.*.inventory_item_id'] = 'required|exists:inventory_items,id';
+        $rules['items.*.recipes.*.quantity_needed'] = 'required|numeric|min:0.01';
+        $rules['items.*.recipes.*.unit'] = 'required|string|max:50';
 
         $data = $request->validate($rules);
 
         if ($hasPrice && $hasType && $hasMeal) {
             $type = $data['type'] ?? 'standard';
             $meal = $data['meal_time'] ?? 'breakfast';
-            $data['price'] = self::PRICE[$type][$meal] ?? 0;
+            $priceMap = self::getPriceMap();
+            $data['price'] = $priceMap[$type][$meal] ?? 0;
         }
 
         $payload = [];
@@ -201,8 +231,17 @@ class MenuController extends Controller
 
         $menu->items()->delete();
         if ($request->has('items') && is_array($request->items)) {
-            foreach ($request->items as $item) {
-                $menu->items()->create($item);
+            foreach ($request->items as $itemData) {
+                $menuItem = $menu->items()->create([
+                    'name' => $itemData['name'],
+                    'type' => $itemData['type'],
+                ]);
+                // Create recipes for this menu item
+                if (isset($itemData['recipes']) && is_array($itemData['recipes'])) {
+                    foreach ($itemData['recipes'] as $recipeData) {
+                        $menuItem->recipes()->create($recipeData);
+                    }
+                }
             }
         }
 
@@ -228,6 +267,48 @@ class MenuController extends Controller
         ]);
 
         return back()->with('success', 'Menu item added.');
+    }
+
+    public function prices(Request $request): View
+    {
+        $priceMap = self::getPriceMap();
+        $type = $request->query('type', 'standard');
+        $meal = $request->query('meal', 'breakfast');
+
+        // Sanitize type and meal
+        if (!array_key_exists($type, self::TYPES)) {
+            $type = 'standard';
+        }
+        if (!array_key_exists($meal, self::MEALS)) {
+            $meal = 'breakfast';
+        }
+
+        return view('admin.menus.prices', [
+            'priceMap' => $priceMap,
+            'types' => self::TYPES,
+            'meals' => self::MEALS,
+            'selectedType' => $type,
+            'selectedMeal' => $meal,
+        ]);
+    }
+
+    public function updatePrices(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'prices' => 'required|array',
+            'prices.*.*' => 'required|numeric|min:0',
+        ]);
+
+        foreach ($request->prices as $type => $meals) {
+            foreach ($meals as $meal => $price) {
+                MenuPrice::updateOrCreate(
+                    ['type' => $type, 'meal_time' => $meal],
+                    ['price' => $price]
+                );
+            }
+        }
+
+        return back()->with('success', 'Menu prices updated successfully.');
     }
 
     public function customerIndex(): View
