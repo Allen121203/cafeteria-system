@@ -32,7 +32,7 @@ class InventoryItemController extends Controller
 
     public function create(): View
     {
-        return view('admin.inventory.create');
+        return view('admin.inventory.index');
     }
 
     public function store(Request $request): RedirectResponse
@@ -52,7 +52,7 @@ class InventoryItemController extends Controller
 
     public function edit(InventoryItem $inventory): View
     {
-        return view('admin.inventory.edit', compact('inventory'));
+        return view('admin.inventory.index', compact('inventory'));
     }
 
     public function update(Request $request, InventoryItem $inventory): RedirectResponse

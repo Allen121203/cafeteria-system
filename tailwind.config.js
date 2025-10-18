@@ -10,6 +10,15 @@ export default {
     './storage/framework/views/*.php',
     './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
   ],
-  theme: { extend: {} },
+  theme: {
+    extend: {
+      colors: {
+        'ret-dark': '#1f2937', // Dark gray for text
+        'ret-green': '#10b981', // Emerald green
+        'ret-green-light': '#34d399', // Light emerald green
+        'ret-green-dark': '#059669', // Dark emerald green
+      }
+    }
+  },
   plugins: [],
 }

@@ -1,17 +1,11 @@
-- [x] Update index.blade.php x-data to include showCreateModal, showEditModal, and editingItem
-- [x] Change the "Add Item" button to open showCreateModal
-- [x] Change the "Edit" link to a button that sets editingItem and opens showEditModal
-- [x] Inline the create modal in index.blade.php
-- [x] Add the edit modal in index.blade.php, with form pre-filled using editingItem
-- [x] Delete resources/views/admin/inventory/create.blade.php
-- [x] If resources/views/admin/inventory/edit.blade.php exists, delete it (does not exist)
-- [x] Create MenuPrice model
-- [x] Create migration for menu_prices table
-- [x] Add getPriceMap method to MenuPrice model
-- [x] Update MenuController to use getPriceMap instead of PRICE constant
-- [x] Add prices and updatePrices methods to MenuController
-- [x] Add routes for prices management
-- [x] Add "Manage Prices" button to menus index view
-- [x] Create prices.blade.php view
-- [x] Run migrations
-- [x] Update sidebar.blade.php to include admin.recipes.index in menus dropdown conditions
+# Calendar Reservation Date Fix
+
+## Tasks
+- [x] Update CalendarController.php to use event_date instead of date
+- [x] Update calendar.blade.php to use event_date instead of date
+- [x] Clear Laravel caches (route:clear, view:clear)
+- [ ] Test calendar display with correct event dates
+
+## Notes
+- Ensure event_date is used for filtering and displaying reservation dates in calendar
+- event_date should show the actual event date (e.g., 2025-10-25) not creation date

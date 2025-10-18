@@ -1,14 +1,14 @@
 <x-guest-layout>
-    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-slate-100">
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-800 to-gray-900">
         <div class="bg-white rounded-xl shadow-xl flex overflow-hidden w-full max-w-5xl">
             <!-- Left side (Logo) -->
-            <div class="hidden md:flex w-1/2 items-center justify-center bg-gradient-to-br from-blue-100 to-slate-200 p-8">
+            <div class="hidden md:flex w-1/2 items-center justify-center bg-gradient-to-br from-green-100 to-green-200 p-8">
                 <img src="{{ asset('images/caf-logo.png') }}" alt="RET Cafeteria"
                      class="max-h-64 object-contain">
             </div>
 
             <!-- Right side (Login Form) -->
-            <div class="w-full md:w-1/2 p-8 md:p-12">
+            <div class="w-full md:w-1/2 p-8 md:p-12 h-[500px] overflow-y-auto">
                 <div class="text-center mb-8">
                     <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h2>
                     <p class="text-gray-600">Sign in to your account</p>

@@ -25,7 +25,7 @@ public function index(Request $request): View
 
     // ✅ Only reservations in the selected month for calendar view
     $monthlyApproved = $allApproved->filter(function ($res) use ($startDate, $endDate) {
-        return \Carbon\Carbon::parse($res->date)->between($startDate, $endDate);
+        return \Carbon\Carbon::parse($res->event_date)->between($startDate, $endDate);
     });
 
     return view('admin.calendar', [

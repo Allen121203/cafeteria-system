@@ -26,6 +26,29 @@ body {
 
 @section('content')
 
+    <!-- Success Modal -->
+    @if(session('registered'))
+        <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 max-w-md mx-4 text-center">
+                <div class="mb-4">
+                    <svg class="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Registration Successful!</h2>
+                <p class="text-gray-600 mb-6">{{ session('registered') }}</p>
+                <button onclick="closeModal()" class="bg-clsu-green hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold">
+                    Continue
+                </button>
+            </div>
+        </div>
+        <script>
+            function closeModal() {
+                document.getElementById('successModal').style.display = 'none';
+            }
+        </script>
+    @endif
+
     <section id="home" class="relative py-20 bg-white text-black">
         <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col-reverse lg:flex-row gap-10 items-center">
             <div class="flex-2 text-center">

@@ -35,7 +35,7 @@
                     @forelse($monthlyApproved as $event)
                         <div class="bg-white rounded-lg p-3 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
                             <div class="font-medium text-gray-900">{{ $event->user->name }}</div>
-                            <div class="text-sm text-gray-600">{{ \Carbon\Carbon::parse($event->date)->format('M d, Y') }}</div>
+                            <div class="text-sm text-gray-600">{{ \Carbon\Carbon::parse($event->event_date)->format('M d, Y') }}</div>
                             <div class="text-sm text-green-600 font-medium">{{ $event->guests }} guests</div>
                         </div>
                     @empty
@@ -82,7 +82,7 @@
                     @for($d = 1; $d <= $daysInMonth; $d++)
                         @php
                             $currentDate = \Carbon\Carbon::parse($month . '-' . str_pad($d, 2, '0', STR_PAD_LEFT));
-                            $eventsForDay = $monthlyApproved->filter(fn($res) => \Carbon\Carbon::parse($res->date)->isSameDay($currentDate));
+                            $eventsForDay = $monthlyApproved->filter(fn($res) => \Carbon\Carbon::parse($res->event_date)->isSameDay($currentDate));
                             $hasEvents = $eventsForDay->count() > 0;
                         @endphp
                         <div class="border-r border-b p-3 relative min-h-[80px] hover:bg-gray-50 transition-colors duration-200 {{ $hasEvents ? 'bg-green-50' : '' }}">

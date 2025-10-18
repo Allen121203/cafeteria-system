@@ -50,6 +50,9 @@ public function store(Request $request): RedirectResponse
 
     Auth::login($user);
 
+    // Flash success message for pop-up
+    session()->flash('registered', 'Account created successfully! Welcome to CLSU RET Cafeteria.');
+
     return redirect()->route('customer.home');
 }
 

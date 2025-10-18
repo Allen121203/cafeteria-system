@@ -44,14 +44,26 @@
         </nav>
 
         <div class="flex items-center space-x-4 text-sm text-gray-600 font-poppins">
-            <span>Hi, Name</span>
-            <div class="relative">
-                <img src="https://placehold.co/24x24/CCCCCC/333333?text=N" alt="Notifications" class="w-6 h-6" />
-            </div>
-            <div class="w-8 h-8 bg-gray-600 rounded-full text-white flex items-center justify-center font-medium">
-                <!-- Ensure your images path is correct, use /images/clsu-logo.png if needed -->
-                <img src="images/clsu-logo.png" alt="User Profile" class="w-6 h-6 rounded-full" />
-            </div>
+            @guest
+                <a href="{{ route('login') }}" class="bg-clsu-green hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold">Login</a>
+            @endguest
+            @auth
+                <span>Hi, {{ Auth::user()->name }}</span>
+                <div class="relative">
+                    <img src="https://placehold.co/24x24/CCCCCC/333333?text=N" alt="Notifications" class="w-6 h-6" />
+                </div>
+                <div class="w-8 h-8 bg-gray-600 rounded-full text-white flex items-center justify-center font-medium">
+                    <!-- Ensure your images path is correct, use /images/clsu-logo.png if needed -->
+                    <img src="images/clsu-logo.png" alt="User Profile" class="w-6 h-6 rounded-full" />
+                </div>
+
+                @if(Auth::user()->role == 'customer')
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold">Logout</button>
+                    </form>
+                @endif
+            @endauth
         </div>
     </div>
 </header>
