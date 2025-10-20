@@ -188,6 +188,7 @@ class MenuController extends Controller
             }
         }
 
+        
         return redirect()->route('admin.menus.index', ['type' => $payload['type'] ?? 'standard', 'meal' => $payload['meal_time'] ?? 'breakfast'])
             ->with('success', 'Menu created. Add at least 5 foods to complete the bundle.');
     }
