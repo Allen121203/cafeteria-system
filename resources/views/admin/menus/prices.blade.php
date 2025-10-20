@@ -2,27 +2,20 @@
 @section('page-title','Manage Menu Prices')
 
 @section('content')
-<div class="space-y-6">
+<div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
   {{-- Header --}}
-  <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-    <div class="flex items-center gap-4 flex-wrap w-full">
-      <a href="{{ route('admin.menus.index') }}" class="flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-        </svg>
-      </a>
-
-      <div class="flex items-center">
-        <h1 class="text-2xl font-bold text-gray-900">Manage Menu Prices</h1>
-      </div>
-    </div>
+  <div class="flex items-center mb-6">
+    <svg class="w-8 h-8 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+    </svg>
+    <h1 class="text-2xl font-bold text-gray-900">Manage Menu Prices</h1>
+  </div>
 
   {{-- Price Form --}}
-  <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-    <form method="POST" action="{{ route('admin.menus.prices.update') }}" class="space-y-6">
+  <form method="POST" action="{{ route('admin.menus.prices.update') }}" class="space-y-6">
       @csrf
 
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto bg-white rounded-xl shadow-lg border border-gray-200">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>

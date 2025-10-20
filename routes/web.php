@@ -7,7 +7,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\{
-    MenuController, RecipeController, ReservationController, CalendarController, InventoryItemController
+    MenuController, RecipeController, ReservationController, CalendarController, InventoryItemController, ReportsController
 };
 use App\Models\Menu;
 
@@ -78,6 +78,12 @@ Route::middleware(['auth', 'role:admin'])
         Route::get  ('/reservations/{reservation}',         [ReservationController::class,'show'])->name('reservations.show');
         Route::patch('/reservations/{reservation}/approve', [ReservationController::class,'approve'])->name('reservations.approve');
         Route::patch('/reservations/{reservation}/decline', [ReservationController::class,'decline'])->name('reservations.decline');
+
+        // Reports
+        Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+        Route::post('/reports/generate', [ReportsController::class, 'generate'])->name('reports.generate');
+        Route::post('/reports/export/pdf', [ReportsController::class, 'exportPdf'])->name('reports.export.pdf');
+        Route::post('/reports/export/excel', [ReportsController::class, 'exportExcel'])->name('reports.export.excel');
     });
 
 

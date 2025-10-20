@@ -68,7 +68,6 @@
         <div id="breakfast-content" class="text-center">
 
             <h2 class="text-4xl font-extrabold text-red-600 mb-2">Breakfast</h2>
-            <p class="text-gray-600 text-lg mb-8 italic">Minimum of 10 pax</p>
 
             <div class="flex flex-col lg:flex-row border-t border-gray-300">
 
@@ -124,7 +123,6 @@
         <div id="am-snacks-content" class="text-center">
 
             <h2 class="text-4xl font-extrabold text-red-600 mb-2">A.M. Snacks</h2>
-            <p class="text-gray-600 text-lg mb-8 italic">Minimum of 10 pax</p>
 
             <div class="flex flex-col lg:flex-row border-t border-gray-300">
 
@@ -179,7 +177,6 @@
         <!-- 3. LUNCH CONTENT (New) -->
         <div id="lunch-content" class="text-center">
             <h2 class="text-4xl font-extrabold text-red-600 mb-2">Lunch</h2>
-            <p class="text-gray-600 text-lg mb-8 italic">Minimum of 10 pax</p>
 
             <div class="flex flex-col lg:flex-row border-t border-gray-300">
                 
@@ -236,7 +233,6 @@
         <!-- 4. P.M. SNACKS CONTENT -->
         <div id="pm-snacks-content" class="text-center">
              <h2 class="text-4xl font-extrabold text-red-600 mb-2">P.M. Snacks</h2>
-             <p class="text-gray-600 text-lg mb-8 italic">Minimum of 10 pax</p>
              
              <div class="flex flex-col lg:flex-row border-t border-gray-300">
                 
@@ -293,7 +289,6 @@
         <!-- 5. DINNER CONTENT -->
         <div id="dinner-content" class="text-center">
              <h2 class="text-4xl font-extrabold text-red-600 mb-2">Dinner</h2>
-             <p class="text-gray-600 text-lg mb-8 italic">Minimum of 10 pax</p>
 
              <div class="flex flex-col lg:flex-row border-t border-gray-300">
                 

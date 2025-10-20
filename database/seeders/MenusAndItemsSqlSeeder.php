@@ -12,12 +12,17 @@ class MenusAndItemsSqlSeeder extends Seeder
         DB::unprepared(<<<'SQL'
 START TRANSACTION;
 
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE menus;
+TRUNCATE menu_items;
+SET FOREIGN_KEY_CHECKS = 1;
+
 /* =========================
    1) BREAKFAST
    ========================= */
 -- Standard ₱150/head
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Breakfast • Standard • Menu 1', 'standard', 'Minimum of 10 pax • ₱150/head', 'breakfast', 150.00, NOW(), NOW());
+VALUES ('Standard Menu 1', 'standard', '', 'breakfast', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Longanisa w/ Slice Tomato','food',NOW(),NOW()),
@@ -27,7 +32,7 @@ INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Breakfast • Standard • Menu 2', 'standard', 'Minimum of 10 pax • ₱150/head', 'breakfast', 150.00, NOW(), NOW());
+VALUES ('Standard Menu 2', 'standard', '', 'breakfast', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Pork Embutido','food',NOW(),NOW()),
@@ -37,7 +42,7 @@ INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Breakfast • Standard • Menu 3', 'standard', 'Minimum of 10 pax • ₱150/head', 'breakfast', 150.00, NOW(), NOW());
+VALUES ('Standard Menu 3', 'standard', '', 'breakfast', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Luncheon Meat','food',NOW(),NOW()),
@@ -47,7 +52,7 @@ INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Breakfast • Standard • Menu 4', 'standard', 'Minimum of 10 pax • ₱150/head', 'breakfast', 150.00, NOW(), NOW());
+VALUES ('Standard Menu 4', 'standard', '', 'breakfast', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Pork Tapa w/ Tomato','food',NOW(),NOW()),
@@ -58,7 +63,7 @@ INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 
 -- Special ₱170/head
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Breakfast • Special • Menu 1', 'special', 'Minimum of 10 pax • ₱170/head', 'breakfast', 170.00, NOW(), NOW());
+VALUES ('Special Menu 1', 'special', '', 'breakfast', 170.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Fruit in Season','dessert',NOW(),NOW()),
@@ -70,7 +75,7 @@ INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Breakfast • Special • Menu 2', 'special', 'Minimum of 10 pax • ₱170/head', 'breakfast', 170.00, NOW(), NOW());
+VALUES ('Special Menu 2', 'special', '', 'breakfast', 170.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Fruit in Season','dessert',NOW(),NOW()),
@@ -82,7 +87,7 @@ INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Breakfast • Special • Menu 3', 'special', 'Minimum of 10 pax • ₱170/head', 'breakfast', 170.00, NOW(), NOW());
+VALUES ('Special Menu 3', 'special', '', 'breakfast', 170.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Fruit in Season','dessert',NOW(),NOW()),
@@ -94,7 +99,7 @@ INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Breakfast • Special • Menu 4', 'special', 'Minimum of 10 pax • ₱170/head', 'breakfast', 170.00, NOW(), NOW());
+VALUES ('Special Menu 4', 'special', '', 'breakfast', 170.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
 (@m,'Nilagang Saba','dessert',NOW(),NOW()),
@@ -110,7 +115,7 @@ INSERT INTO menu_items (menu_id, name, type, created_at, updated_at) VALUES
    ========================= */
 -- Standard ₱100/head (Day 1..4)
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('A.M. Snacks • Standard • Day 1', 'standard', 'Minimum of 10 pax • ₱100/head', 'am_snacks', 100.00, NOW(), NOW());
+VALUES ('A.M. Snacks • Standard • Day 1', 'standard', '', 'am_snacks', 100.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Ham & Cheese Sandwich','food',NOW(),NOW()),
@@ -119,7 +124,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Distilled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('A.M. Snacks • Standard • Day 2', 'standard', 'Minimum of 10 pax • ₱100/head', 'am_snacks', 100.00, NOW(), NOW());
+VALUES ('A.M. Snacks • Standard • Day 2', 'standard', '', 'am_snacks', 100.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Pimiento Sandwich','food',NOW(),NOW()),
@@ -128,7 +133,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Distilled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('A.M. Snacks • Standard • Day 3', 'standard', 'Minimum of 10 pax • ₱100/head', 'am_snacks', 100.00, NOW(), NOW());
+VALUES ('A.M. Snacks • Standard • Day 3', 'standard', '', 'am_snacks', 100.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Chicken Sandwich','food',NOW(),NOW()),
@@ -137,7 +142,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Distilled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('A.M. Snacks • Standard • Day 4', 'standard', 'Minimum of 10 pax • ₱100/head', 'am_snacks', 100.00, NOW(), NOW());
+VALUES ('A.M. Snacks • Standard • Day 4', 'standard', '', 'am_snacks', 100.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Cheese Burger','food',NOW(),NOW()),
@@ -147,7 +152,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 
 -- Special ₱150/head (Day 1..4)
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('A.M. Snacks • Special • Day 1', 'special', 'Minimum of 10 pax • ₱150/head', 'am_snacks', 150.00, NOW(), NOW());
+VALUES ('A.M. Snacks • Special • Day 1', 'special', '', 'am_snacks', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Lomi','food',NOW(),NOW()),
@@ -157,7 +162,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Distilled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('A.M. Snacks • Special • Day 2', 'special', 'Minimum of 10 pax • ₱150/head', 'am_snacks', 150.00, NOW(), NOW());
+VALUES ('A.M. Snacks • Special • Day 2', 'special', '', 'am_snacks', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bihon Guisado','food',NOW(),NOW()),
@@ -167,7 +172,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Distilled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('A.M. Snacks • Special • Day 3', 'special', 'Minimum of 10 pax • ₱150/head', 'am_snacks', 150.00, NOW(), NOW());
+VALUES ('A.M. Snacks • Special • Day 3', 'special', '', 'am_snacks', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Spaghetti w/ Meat Balls','food',NOW(),NOW()),
@@ -176,7 +181,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Distilled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('A.M. Snacks • Special • Day 4', 'special', 'Minimum of 10 pax • ₱150/head', 'am_snacks', 150.00, NOW(), NOW());
+VALUES ('A.M. Snacks • Special • Day 4', 'special', '', 'am_snacks', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Carbonara w/ Chicken Fillet','food',NOW(),NOW()),
@@ -189,7 +194,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
    ========================= */
 -- Standard ₱300/head (Day 1..4)
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Lunch • Standard • Day 1', 'standard', 'Minimum of 10 pax • ₱300/head', 'lunch', 300.00, NOW(), NOW());
+VALUES ('Lunch • Standard • Day 1', 'standard', '', 'lunch', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Chickenn Soup','food',NOW(),NOW()),
@@ -201,7 +206,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Lunch • Standard • Day 2', 'standard', 'Minimum of 10 pax • ₱300/head', 'lunch', 300.00, NOW(), NOW());
+VALUES ('Lunch • Standard • Day 2', 'standard', '', 'lunch', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Crab & Corn Soup','food',NOW(),NOW()),
@@ -213,7 +218,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Lunch • Standard • Day 3', 'standard', 'Minimum of 10 pax • ₱300/head', 'lunch', 300.00, NOW(), NOW());
+VALUES ('Lunch • Standard • Day 3', 'standard', '', 'lunch', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Onion Soup','food',NOW(),NOW()),
@@ -225,7 +230,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Lunch • Standard • Day 4', 'standard', 'Minimum of 10 pax • ₱300/head', 'lunch', 300.00, NOW(), NOW());
+VALUES ('Lunch • Standard • Day 4', 'standard', '', 'lunch', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Corn Soup','food',NOW(),NOW()),
@@ -238,7 +243,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 
 -- Special ₱350/head (Day 1..4)
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Lunch • Special • Day 1', 'special', 'Minimum of 10 pax • ₱350/head', 'lunch', 350.00, NOW(), NOW());
+VALUES ('Lunch • Special • Day 1', 'special', '', 'lunch', 350.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Egg Drop Soup','food',NOW(),NOW()),
@@ -250,7 +255,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Lunch • Special • Day 2', 'special', 'Minimum of 10 pax • ₱350/head', 'lunch', 350.00, NOW(), NOW());
+VALUES ('Lunch • Special • Day 2', 'special', '', 'lunch', 350.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Crab & Corn Soup','food',NOW(),NOW()),
@@ -262,7 +267,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Lunch • Special • Day 3', 'special', 'Minimum of 10 pax • ₱350/head', 'lunch', 350.00, NOW(), NOW());
+VALUES ('Lunch • Special • Day 3', 'special', '', 'lunch', 350.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Sinigang na Hipon','food',NOW(),NOW()),
@@ -273,7 +278,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Lunch • Special • Day 4', 'special', 'Minimum of 10 pax • ₱350/head', 'lunch', 350.00, NOW(), NOW());
+VALUES ('Lunch • Special • Day 4', 'special', '', 'lunch', 350.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bolabola Fish w/ Misua','food',NOW(),NOW()),
@@ -289,7 +294,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
    ========================= */
 -- Standard ₱100/head (Day 1..4)
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('P.M. Snacks • Standard • Day 1', 'standard', 'Minimum of 10 pax • ₱100/head', 'pm_snacks', 100.00, NOW(), NOW());
+VALUES ('P.M. Snacks • Standard • Day 1', 'standard', '', 'pm_snacks', 100.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,"Cheese Burger Sandwich",'food',NOW(),NOW()),
@@ -298,7 +303,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('P.M. Snacks • Standard • Day 2', 'standard', 'Minimum of 10 pax • ₱100/head', 'pm_snacks', 100.00, NOW(), NOW());
+VALUES ('P.M. Snacks • Standard • Day 2', 'standard', '', 'pm_snacks', 100.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Chicken Sandwich','food',NOW(),NOW()),
@@ -307,7 +312,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('P.M. Snacks • Standard • Day 3', 'standard', 'Minimum of 10 pax • ₱100/head', 'pm_snacks', 100.00, NOW(), NOW());
+VALUES ('P.M. Snacks • Standard • Day 3', 'standard', '', 'pm_snacks', 100.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Tuna Sandwich','food',NOW(),NOW()),
@@ -316,7 +321,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('P.M. Snacks • Standard • Day 4', 'standard', 'Minimum of 10 pax • ₱100/head', 'pm_snacks', 100.00, NOW(), NOW());
+VALUES ('P.M. Snacks • Standard • Day 4', 'standard', '', 'pm_snacks', 100.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Cheese Pimiento Sandwich','food',NOW(),NOW()),
@@ -326,7 +331,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 
 -- Special ₱150/head (Day 1..4)
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('P.M. Snacks • Special • Day 1', 'special', 'Minimum of 10 pax • ₱150/head', 'pm_snacks', 150.00, NOW(), NOW());
+VALUES ('P.M. Snacks • Special • Day 1', 'special', '', 'pm_snacks', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Carbonara','food',NOW(),NOW()),
@@ -336,7 +341,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Distilled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('P.M. Snacks • Special • Day 2', 'special', 'Minimum of 10 pax • ₱150/head', 'pm_snacks', 150.00, NOW(), NOW());
+VALUES ('P.M. Snacks • Special • Day 2', 'special', '', 'pm_snacks', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Sotanghon Guisado','food',NOW(),NOW()),
@@ -346,7 +351,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Distilled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('P.M. Snacks • Special • Day 3', 'special', 'Minimum of 10 pax • ₱150/head', 'pm_snacks', 150.00, NOW(), NOW());
+VALUES ('P.M. Snacks • Special • Day 3', 'special', '', 'pm_snacks', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bihon Guisado','food',NOW(),NOW()),
@@ -356,7 +361,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Distilled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('P.M. Snacks • Special • Day 4', 'special', 'Minimum of 10 pax • ₱150/head', 'pm_snacks', 150.00, NOW(), NOW());
+VALUES ('P.M. Snacks • Special • Day 4', 'special', '', 'pm_snacks', 150.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Spaghetti','food',NOW(),NOW()),
@@ -370,7 +375,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
    ========================= */
 -- Standard ₱300/head (Day 1..4)
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Dinner • Standard • Day 1', 'standard', 'Minimum of 10 pax • ₱300/head', 'dinner', 300.00, NOW(), NOW());
+VALUES ('Dinner • Standard • Day 1', 'standard', '', 'dinner', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Egg Drop Soup','food',NOW(),NOW()),
@@ -382,7 +387,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Dinner • Standard • Day 2', 'standard', 'Minimum of 10 pax • ₱300/head', 'dinner', 300.00, NOW(), NOW());
+VALUES ('Dinner • Standard • Day 2', 'standard', '', 'dinner', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bolabola w/ Misua','food',NOW(),NOW()),
@@ -394,7 +399,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Dinner • Standard • Day 3', 'standard', 'Minimum of 10 pax • ₱300/head', 'dinner', 300.00, NOW(), NOW());
+VALUES ('Dinner • Standard • Day 3', 'standard', '', 'dinner', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Batchoy w/ Meat','food',NOW(),NOW()),
@@ -405,7 +410,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Dinner • Standard • Day 4', 'standard', 'Minimum of 10 pax • ₱300/head', 'dinner', 300.00, NOW(), NOW());
+VALUES ('Dinner • Standard • Day 4', 'standard', '', 'dinner', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Chicken Tinola','food',NOW(),NOW()),
@@ -417,7 +422,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 
 -- Special ₱300/head (Day 1..4)
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Dinner • Special • Day 1', 'special', 'Minimum of 10 pax • ₱300/head', 'dinner', 300.00, NOW(), NOW());
+VALUES ('Dinner • Special • Day 1', 'special', '', 'dinner', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Chicken Swam','food',NOW(),NOW()),
@@ -429,7 +434,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Dinner • Special • Day 2', 'special', 'Minimum of 10 pax • ₱300/head', 'dinner', 300.00, NOW(), NOW());
+VALUES ('Dinner • Special • Day 2', 'special', '', 'dinner', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Sinampalukang Manok','food',NOW(),NOW()),
@@ -440,7 +445,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Dinner • Special • Day 3', 'special', 'Minimum of 10 pax • ₱300/head', 'dinner', 300.00, NOW(), NOW());
+VALUES ('Dinner • Special • Day 3', 'special', '', 'dinner', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Batchoy Soup','food',NOW(),NOW()),
@@ -452,7 +457,7 @@ INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Bottled Water','drink',NOW(),NOW());
 
 INSERT INTO menus (name, type, description, meal_time, price, created_at, updated_at)
-VALUES ('Dinner • Special • Day 4', 'special', 'Minimum of 10 pax • ₱300/head', 'dinner', 300.00, NOW(), NOW());
+VALUES ('Dinner • Special • Day 4', 'special', '', 'dinner', 300.00, NOW(), NOW());
 SET @m := LAST_INSERT_ID();
 INSERT INTO menu_items (id,menu_id,name,type,created_at,updated_at) VALUES
 (NULL,@m,'Tinolang Manok','food',NOW(),NOW()),

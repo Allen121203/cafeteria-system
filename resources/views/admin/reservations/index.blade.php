@@ -38,7 +38,7 @@
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bundles</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -71,7 +71,7 @@
 
                         <tr class="hover:bg-gray-50 transition-colors duration-200">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{{ route('admin.reservations.show', $r) }}" class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">#{{ $r->id }}</a>
+                                <a href="{{ route('admin.reservations.show', $r) }}" class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">{{ $r->id }}</a>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ optional($r->user)->name ?? '—' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -92,16 +92,10 @@
                                     {{ $label }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900">
-                                @forelse($r->items as $it)
-                                    <div class="mb-1">{{ $it->menu->name ?? '—' }} × {{ $it->quantity }}</div>
-                                @empty
-                                    <span class="text-gray-500">No bundles</span>
-                                @endforelse
-                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ optional($r->user)->department ?? '—' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $r->created_at->format('M d, Y H:i') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-y-2">
-                                <a href="{{ route('admin.reservations.show', $r) }}" class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex flex-row space-x-2">
+                                <a href="{{ route('admin.reservations.show', $r) }}" class="inline-flex items-center justify-center px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -109,18 +103,18 @@
                                     View
                                 </a>
                                 @if ($label === 'Pending')
-                                    <form action="{{ route('admin.reservations.approve', $r) }}" method="POST" class="inline-block ml-2">
+                                    <form action="{{ route('admin.reservations.approve', $r) }}" method="POST" class="inline-block">
                                         @csrf @method('PATCH')
-                                        <button type="submit" class="inline-flex items-center px-3 py-1 border border-transparent rounded-md text-sm text-white bg-green-600 hover:bg-green-700 transition-colors duration-200">
+                                        <button type="submit" class="inline-flex items-center justify-center px-3 py-1 border border-transparent rounded-md text-sm text-white bg-green-600 hover:bg-green-700 transition-colors duration-200">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
                                             Approve
                                         </button>
                                     </form>
-                                    <a href="{{ route('admin.reservations.show', $r) }}#decline" class="inline-flex items-center px-3 py-1 border border-transparent rounded-md text-sm text-white bg-red-600 hover:bg-red-700 transition-colors duration-200 ml-2">
+                                    <a href="{{ route('admin.reservations.show', $r) }}#decline" class="inline-flex items-center justify-center px-3 py-1 border border-transparent rounded-md text-sm text-white bg-red-600 hover:bg-red-700 transition-colors duration-200">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                                            <path stroke-linecap="butt" stroke-linejoin="miter" stroke-width="2" d="M18 6L6 18M6 6l12 12"></path>
                                         </svg>
                                         Decline
                                     </a>

@@ -12,7 +12,7 @@ use Illuminate\Http\RedirectResponse;
 
 class MenuController extends Controller
 {
-    private const TYPES = ['standard' => 'Standard Menu', 'special' => 'Special Menu'];
+    private const TYPES = ['standard' => 'Standard', 'special' => 'Special'];
     private const MEALS = [
         'breakfast'  => 'Breakfast',
         'am_snacks'  => 'AM Snacks',

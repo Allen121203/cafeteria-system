@@ -10,13 +10,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="//unpkg.com/alpinejs" defer></script>
 </head>
-<body class="font-sans antialiased"
+<body class="font-sans antialiased text-sm"
       x-data="{ openSidebar: false, confirmLogout: false }">
 
 <div class="min-h-screen flex">
 
     <!-- Sidebar -->
-    <aside class="bg-gradient-to-b from-gray-800 to-gray-900 text-white w-64 fixed inset-y-0 left-0 z-40 transform md:translate-x-0 transition-all duration-300 shadow-xl"
+    <aside class="bg-gradient-to-b from-gray-800 to-gray-900 text-white w-48 fixed inset-y-0 left-0 z-40 transform md:translate-x-0 transition-all duration-300 shadow-xl"
            :class="openSidebar ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
         <!-- Logo -->
@@ -52,7 +52,7 @@
                     Reservations
                 </a>
 
-                <a href=""
+                <a href="{{ route('admin.reports.index') }}"
                    class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -66,35 +66,20 @@
                     </svg>
                     Inventory
                 </a>
-                <div class="relative" x-data="{ openMenus: {{ (request()->routeIs('admin.menus.*') || request()->routeIs('admin.recipes.index')) ? 'true' : 'false' }}, isOnMenusPage: {{ (request()->routeIs('admin.menus.*') || request()->routeIs('admin.recipes.index')) ? 'true' : 'false' }} }">
-                    <button @click="if (!isOnMenusPage) openMenus = !openMenus"
-                            class="flex items-center justify-between w-full px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ (request()->routeIs('admin.menus.*') || request()->routeIs('admin.recipes.index')) ? 'bg-green-600 shadow-lg' : '' }}">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                            </svg>
-                            Menus
-                        </div>
-                        <svg class="w-4 h-4 transition-transform duration-200" :class="openMenus ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div x-show="openMenus"
-                         @click.away="if (!isOnMenusPage) openMenus = false"
-                         class="ml-8 mt-1 space-y-1"
-                         @if(!(request()->routeIs('admin.menus.*') || request()->routeIs('admin.recipes.index'))) x-cloak @endif>
-                        <a href="{{ route('admin.menus.index', ['type' => 'standard', 'meal' => 'breakfast']) }}"
-                           @click.stop
-                           class="block px-4 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.menus.index') ? 'bg-green-700' : '' }}">
-                            Manage Menus
-                        </a>
-                        <a href="{{ route('admin.menus.prices') }}"
-                           @click.stop
-                           class="block px-4 py-2 text-sm rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.menus.prices') ? 'bg-green-700' : '' }}">
-                            Manage Prices
-                        </a>
-                    </div>
-                </div>
+                <a href="{{ route('admin.menus.index', ['type' => 'standard', 'meal' => 'breakfast']) }}"
+                   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ (request()->routeIs('admin.menus.*') && !request()->routeIs('admin.menus.prices')) || request()->routeIs('admin.recipes.index') ? 'bg-green-600 shadow-lg' : '' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    Manage Menus
+                </a>
+                <a href="{{ route('admin.menus.prices') }}"
+                   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.menus.prices') ? 'bg-green-600 shadow-lg' : '' }}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                    Manage Prices
+                </a>
                 <a href="{{ route('admin.calendar') }}"
                    class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.calendar') ? 'bg-green-600 shadow-lg' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,9 +111,9 @@
     </aside>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col md:ml-64 bg-gray-100">
+    <div class="flex-1 flex flex-col md:ml-48 bg-gray-100">
         <!-- Topbar (fixed) -->
-        <div class="flex justify-between items-center bg-white shadow-lg px-6 py-4 fixed top-0 left-0 right-0 md:left-64 z-30 border-b border-gray-200">
+        <div class="flex justify-between items-center bg-white shadow-lg px-6 py-4 fixed top-0 left-0 right-0 md:left-48 z-30 border-b border-gray-200">
             <div class="flex items-center space-x-4">
                 <!-- Mobile burger -->
                 <button @click="openSidebar = !openSidebar"

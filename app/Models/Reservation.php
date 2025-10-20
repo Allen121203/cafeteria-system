@@ -21,6 +21,11 @@ class Reservation extends Model
         'guests'
     ];
 
+    protected $casts = [
+        'event_date' => 'date',
+        'event_time' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

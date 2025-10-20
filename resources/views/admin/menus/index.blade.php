@@ -106,16 +106,16 @@
                     : data_get($menusByDay ?? [], $meal, collect()));
     @endphp
 
-    <div class="mt-5 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div class="mt-5 grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
       @forelse($list as $menu)
         <div id="menu-card-{{ $menu->id }}"
-             class="border border-gray-200 rounded-xl shadow-sm p-4 h-full hover:shadow-md transition-shadow">
+             class="border border-gray-200 rounded-xl shadow-sm p-6 h-full hover:shadow-md transition-shadow">
           <div class="flex items-start justify-between">
-            <div>
+            <div class="flex-1">
               <div class="text-xs uppercase tracking-wide text-slate-500">
                 {{ strtoupper(str_replace('_',' ', $menu->meal_time)) }}
               </div>
-              <h2 class="text-lg font-semibold">{{ $menu->name ?? 'Menu #'.$menu->id }}</h2>
+              <h2 class="text-lg font-semibold text-gray-900">Menu {{ $menu->id }}</h2>
               {{-- <div class="text-slate-600 text-sm">
                 ₱{{ number_format($menu->price ?? ($menuPrices[$menu->type][$menu->meal_time] ?? 0), 2) }} / head
               </div> --}}
@@ -123,7 +123,7 @@
                 <p class="text-gray-600 text-sm mt-2">{{ $menu->description }}</p>
               @endif
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 ml-4">
               @php
                 $editItems = $menu->items->map(fn($i) => [
                   'name' => $i->name,
@@ -137,30 +137,29 @@
               @endphp
               <button type="button"
                       @click='openEdit({{ $menu->id }}, @json($menu->name), @json($menu->description), @json($menu->type), @json($menu->meal_time), @json($editItems))'
-                      class="text-blue-600 text-sm">
+                      class="text-blue-600 text-sm hover:text-blue-800 transition-colors">
                 Edit
               </button>
               <button type="button"
-                      @click='openDelete({{ $menu->id }}, @json($menu->name ?? ("Menu #".$menu->id)))'
-                      class="text-red-600 text-sm">
+                      @click='openDelete({{ $menu->id }}, @json("Menu ".$menu->id))'
+                      class="text-red-600 text-sm hover:text-red-800 transition-colors">
                 Delete
               </button>
             </div>
           </div>
 
-          <div class="mt-3">
-            <div class="text-xs text-slate-500 mb-1">Foods ({{ $menu->items->count() }})</div>
+          <div class="mt-4 border-t border-gray-100 pt-4">
             @if($menu->items->count())
-              <ul class="space-y-1">
+              <ul class="space-y-2">
                 @foreach($menu->items as $food)
-                  <li class="flex items-center justify-between text-sm">
-                    <span>{{ $food->name }} <span class="text-xs text-gray-500">({{ $food->type }})</span></span>
-                    <a href="{{ route('admin.recipes.index', $food) }}" class="text-green-700 text-xs underline">Recipe</a>
+                  <li class="flex items-center justify-between text-sm bg-gray-50 p-2 rounded-md">
+                    <span class="font-medium">{{ $food->name }} <span class="text-xs text-gray-500">({{ $food->type }})</span></span>
+                    <a href="{{ route('admin.recipes.index', $food) }}" class="text-green-700 text-xs underline hover:text-green-800">Recipe</a>
                   </li>
                 @endforeach
               </ul>
             @else
-              <div class="text-sm text-slate-500">No items yet.</div>
+              <div class="text-sm text-slate-500 italic">No items yet.</div>
             @endif
           </div>
         </div>
@@ -232,7 +231,7 @@
             <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
             </svg>
-            Menu Items (Foods)
+            Menu Items
           </h3>
           <div class="space-y-3">
             <template x-for="(item, index) in form.items" :key="index">
@@ -373,7 +372,7 @@
             <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
             </svg>
-            Menu Items (Foods)
+            Menu Items
           </h3>
           <div class="space-y-3">
             <template x-for="(item, index) in editForm.items" :key="index">
