@@ -3,7 +3,7 @@
 @section('page-title', 'Reports')
 
 @section('content')
-<div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+<div class="container mx-auto bg-white rounded-xl shadow-lg border border-gray-200 p-6">
     <div class="flex items-center justify-between mb-6">
         <div class="flex items-center">
             <svg class="w-8 h-8 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

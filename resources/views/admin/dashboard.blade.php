@@ -2,7 +2,7 @@
 @section('page-title', 'Admin')
 
 @section('content')
-<div class="space-y-6">
+<div class="container mx-auto space-y-6">
     <!-- Greeting -->
     <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl shadow-lg">
         <div class="flex items-center">

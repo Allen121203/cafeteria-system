@@ -2,7 +2,7 @@
 @section('page-title', 'Calendars')
 
 @section('content')
-<div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+<div class="container mx-auto bg-white rounded-xl shadow-lg border border-gray-200 p-6">
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">

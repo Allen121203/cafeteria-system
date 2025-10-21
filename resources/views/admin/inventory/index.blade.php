@@ -4,7 +4,7 @@
 @section('content')
 <di x-data="{ showCreateModal: false, showEditModal: false, editingItem: null, updateRoute: '{{ route('admin.inventory.update', ':id') }}' }">
     <!-- Match Reservations container: rounded-xl + shadow-lg + border + p-6 -->
-    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+    <div class="container mx-auto bg-white rounded-xl shadow-lg border border-gray-200 p-6">
         <!-- Header (kept your icons/button) -->
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center">

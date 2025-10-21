@@ -2,7 +2,7 @@
 @section('page-title','Manage Menu Prices')
 
 @section('content')
-<div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+<div class="container mx-auto bg-white rounded-xl shadow-lg border border-gray-200 p-6">
   {{-- Header --}}
   <div class="flex items-center mb-6">
     <svg class="w-8 h-8 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,7 +15,7 @@
   <form method="POST" action="{{ route('admin.menus.prices.update') }}" class="space-y-6">
       @csrf
 
-      <div class="overflow-x-auto bg-white rounded-xl shadow-lg border border-gray-200">
+      <div class="bg-white rounded-xl shadow-lg border border-gray-200">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>

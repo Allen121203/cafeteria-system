@@ -198,13 +198,14 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 10%;">Res. ID</th>
-                        <th style="width: 25%;">Event Name</th>
-                        <th style="width: 15%;">Event Date</th>
-                        <th style="width: 20%;">Customer</th>
-                        <th style="width: 10%;">Persons</th>
-                        <th style="width: 10%;">Status</th>
-                        <th style="width: 15%;">Created</th>
+                        <th style="width: 8%;">Res. ID</th>
+                        <th style="width: 20%;">Event Name</th>
+                        <th style="width: 12%;">Event Date</th>
+                        <th style="width: 15%;">Customer</th>
+                        <th style="width: 10%;">Department</th>
+                        <th style="width: 8%;">Persons</th>
+                        <th style="width: 8%;">Status</th>
+                        <th style="width: 12%;">Created</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -214,6 +215,7 @@
                         <td>{{ $reservation['event_name'] }}</td>
                         <td>{{ $reservation['event_date'] }}</td>
                         <td>{{ $reservation['customer_name'] }}</td>
+                        <td>{{ $reservation['department'] }}</td>
                         <td style="text-align: center;">{{ $reservation['number_of_persons'] }}</td>
                         <td>{{ $reservation['status'] }}</td>
                         <td>{{ $reservation['created_at'] }}</td>

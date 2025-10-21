@@ -2,7 +2,7 @@
 @section('page-title','Recipe: '.$menuItem->name)
 
 @section('content')
-<div class="bg-white p-6 rounded shadow">
+<div class="container mx-auto bg-white p-6 rounded shadow">
   <h1 class="text-2xl font-bold mb-2">Recipe for: {{ $menuItem->name }}</h1>
   <p class="text-gray-500">Bundle: {{ $menuItem->menu->name }}</p>
 
