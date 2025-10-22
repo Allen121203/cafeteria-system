@@ -6,7 +6,12 @@
 <style>[x-cloak]{display:none!important}</style>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<div x-data="reservationShow({accepted:@js(session('accepted',false)),declined:@js(session('declined',false))})"
+<div x-data="reservationShow({
+        accepted:@js(session('accepted',false)),
+        declined:@js(session('declined',false)),
+        inventoryWarning:@js(session('inventory_warning',false)),
+        insufficientItems:@js(session('insufficient_items',[]))
+     })"
      class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 w-full">
 
   <div class="flex items-center justify-between mb-6">
@@ -146,9 +151,10 @@
                 <h2 class="text-lg font-semibold text-gray-900">Reservation Actions</h2>
             </div>
 
-            <form method="POST" action="{{ route('admin.reservations.approve', $r) }}" class="mb-4">
+            <form method="POST" action="{{ route('admin.reservations.approve', $r) }}" class="mb-4" id="approveForm">
                 @csrf @method('PATCH')
-                <button class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-medium shadow-lg flex items-center justify-center">
+                <input type="hidden" name="force_approve" id="forceApproveInput" value="0">
+                <button type="button" @click="handleApprove()" class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-medium shadow-lg flex items-center justify-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
@@ -196,6 +202,79 @@
     </div>
   </div>
 
+  {{-- Inventory Warning modal --}}
+  <div x-cloak x-show="inventoryWarningOpen" x-transition
+       class="fixed inset-0 z-50 flex items-center justify-center">
+    <div @click="inventoryWarningOpen=false" class="absolute inset-0 bg-black/40"></div>
+    <div class="relative bg-white rounded-xl shadow-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors duration-200" @click="inventoryWarningOpen=false">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      
+      <div class="flex items-center mb-4">
+        <svg class="w-12 h-12 text-yellow-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <h3 class="text-xl font-bold text-gray-900">Insufficient Inventory</h3>
+      </div>
+      
+      <p class="text-sm text-gray-600 mb-4">The following ingredients do not have enough quantity to fulfill this reservation:</p>
+
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-yellow-200">
+              <th class="text-left py-2 font-semibold text-gray-700">Ingredient</th>
+              <th class="text-right py-2 font-semibold text-gray-700">Required</th>
+              <th class="text-right py-2 font-semibold text-gray-700">Available</th>
+              <th class="text-right py-2 font-semibold text-gray-700">Shortage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template x-for="item in insufficientItems" :key="item.name">
+              <tr class="border-b border-yellow-100 last:border-0">
+                <td class="py-2 text-gray-900" x-text="item.name"></td>
+                <td class="py-2 text-right text-gray-700">
+                  <span x-text="item.required.toFixed(2)"></span>
+                  <span class="text-xs text-gray-500 ml-1" x-text="item.unit"></span>
+                </td>
+                <td class="py-2 text-right text-gray-700">
+                  <span x-text="item.available.toFixed(2)"></span>
+                  <span class="text-xs text-gray-500 ml-1" x-text="item.unit"></span>
+                </td>
+                <td class="py-2 text-right text-red-600 font-semibold">
+                  <span x-text="item.shortage.toFixed(2)"></span>
+                  <span class="text-xs ml-1" x-text="item.unit"></span>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div class="flex items-start">
+          <svg class="w-5 h-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <div class="text-sm text-blue-800">
+            <p class="font-semibold mb-1">What happens if you proceed?</p>
+            <p>If you approve this reservation, the inventory will be deducted as much as possible. Items with insufficient stock will be reduced to zero.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4">
+        <button type="button" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 font-medium" @click="inventoryWarningOpen=false">Cancel</button>
+        <button type="button" @click="proceedWithApproval()" class="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200 font-medium shadow-lg">
+          Proceed Anyway
+        </button>
+      </div>
+    </div>
+  </div>
+
   {{-- Decline modal --}}
   <div x-cloak x-show="declineOpen" x-transition
        class="fixed inset-0 z-50 flex items-center justify-center">
@@ -231,9 +310,39 @@
     Alpine.data('reservationShow', (opts) => ({
       acceptedOpen: false,
       declineOpen: false,
-      openDecline(){ this.declineOpen = true; },
+      inventoryWarningOpen: false,
+      insufficientItems: [],
+      
+      openDecline(){ 
+        this.declineOpen = true; 
+      },
+      
+      handleApprove() {
+        // Check if we already have warning data from session (redirect back scenario)
+        if (opts.inventoryWarning && opts.insufficientItems && opts.insufficientItems.length > 0) {
+          this.insufficientItems = opts.insufficientItems;
+          this.inventoryWarningOpen = true;
+          return;
+        }
+        
+        // Otherwise submit the form normally (backend will check and redirect if needed)
+        document.getElementById('approveForm').submit();
+      },
+      
+      proceedWithApproval() {
+        // Set force approve flag and submit
+        document.getElementById('forceApproveInput').value = '1';
+        document.getElementById('approveForm').submit();
+      },
+      
       init(){
-        if (opts.accepted) this.acceptedOpen = true;
+        if (opts.accepted) {
+          this.acceptedOpen = true;
+        }
+        if (opts.inventoryWarning && opts.insufficientItems && opts.insufficientItems.length > 0) {
+          this.insufficientItems = opts.insufficientItems;
+          this.inventoryWarningOpen = true;
+        }
       }
     }));
   });

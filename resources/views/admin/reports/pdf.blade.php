@@ -125,7 +125,7 @@
             </div>
         </div>
 
-        @if(empty($salesData))
+        @if($salesData->isEmpty())
             <div class="no-data">
                 <p>No sales data found for the selected period.</p>
             </div>
@@ -190,7 +190,7 @@
         </div>
 
     @elseif($reportType === 'reservation')
-        @if(empty($reservationData))
+        @if($reservationData->isEmpty())
             <div class="no-data">
                 <p>No reservation data found for the selected period.</p>
             </div>
@@ -230,7 +230,7 @@
         </div>
 
     @elseif($reportType === 'inventory')
-        @if(empty($inventoryData))
+        @if($inventoryData->isEmpty())
             <div class="no-data">
                 <p>No inventory usage data found for the selected period.</p>
             </div>
@@ -263,7 +263,7 @@
         </div>
 
     @elseif($reportType === 'crm')
-        @if(empty($crmData))
+        @if($crmData->isEmpty())
             <div class="no-data">
                 <p>No customer data found for the selected period.</p>
             </div>

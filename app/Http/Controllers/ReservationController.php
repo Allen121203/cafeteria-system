@@ -34,14 +34,74 @@ class ReservationController extends Controller
         return view('admin.reservations.show', ['r' => $reservation]);
     }
 
+    /**
+     * Check inventory availability for a reservation
+     */
+    public function checkInventory(Reservation $reservation)
+    {
+        $reservation->load(['items.menu.items.recipes.inventoryItem']);
+        
+        $insufficientItems = [];
+        $guests = $reservation->guests ?? $reservation->attendees ?? $reservation->number_of_persons ?? 1;
+
+        foreach ($reservation->items as $resItem) {
+            $menu = $resItem->menu;
+            $bundleQty = $resItem->quantity ?? 1;
+            if (!$menu) continue;
+
+            foreach ($menu->items as $food) {
+                foreach ($food->recipes as $recipe) {
+                    $ingredient = $recipe->inventoryItem;
+                    if (!$ingredient) continue;
+                    
+                    $required = (float)($recipe->quantity_needed ?? 0) * $bundleQty * $guests;
+                    if ($required <= 0) continue;
+                    
+                    $available = (float)($ingredient->qty ?? 0);
+                    
+                    if ($available < $required) {
+                        $insufficientItems[] = [
+                            'name' => $ingredient->name,
+                            'required' => $required,
+                            'available' => $available,
+                            'shortage' => $required - $available,
+                            'unit' => $ingredient->unit ?? 'units',
+                        ];
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'sufficient' => empty($insufficientItems),
+            'insufficient_items' => $insufficientItems,
+        ]);
+    }
+
     public function approve(Request $request, Reservation $reservation)
     {
+        // Check if this is a forced approval (override)
+        $forceApprove = $request->input('force_approve', false);
+
+        // If not forced, check inventory availability
+        if (!$forceApprove) {
+            $reservation->load(['items.menu.items.recipes.inventoryItem']);
+            $insufficientItems = $this->getInsufficientItems($reservation);
+            
+            if (!empty($insufficientItems)) {
+                return redirect()
+                    ->route('admin.reservations.show', $reservation)
+                    ->with('inventory_warning', true)
+                    ->with('insufficient_items', $insufficientItems);
+            }
+        }
+
         DB::transaction(function () use ($reservation) {
             $reservation->status = 'approved';
             $reservation->save();
 
             // Deduct inventory based on recipes (guard every relation)
-            $guests = $reservation->guests ?? $reservation->attendees ?? 1;
+            $guests = $reservation->guests ?? $reservation->attendees ?? $reservation->number_of_persons ?? 1;
 
             foreach ($reservation->items as $resItem) {
                 $menu = $resItem->menu;
@@ -67,6 +127,53 @@ class ReservationController extends Controller
             ->route('admin.reservations.show', $reservation)
             ->with('accepted', true)
             ->with('success', 'Reservation approved and inventory updated.');
+    }
+
+    /**
+     * Get list of insufficient inventory items for a reservation
+     */
+    protected function getInsufficientItems(Reservation $reservation)
+    {
+        $insufficientItems = [];
+        $guests = $reservation->guests ?? $reservation->attendees ?? $reservation->number_of_persons ?? 1;
+
+        foreach ($reservation->items as $resItem) {
+            $menu = $resItem->menu;
+            $bundleQty = $resItem->quantity ?? 1;
+            if (!$menu) continue;
+
+            foreach ($menu->items as $food) {
+                foreach ($food->recipes as $recipe) {
+                    $ingredient = $recipe->inventoryItem;
+                    if (!$ingredient) continue;
+                    
+                    $required = (float)($recipe->quantity_needed ?? 0) * $bundleQty * $guests;
+                    if ($required <= 0) continue;
+                    
+                    $available = (float)($ingredient->qty ?? 0);
+                    
+                    if ($available < $required) {
+                        $key = $ingredient->id;
+                        if (!isset($insufficientItems[$key])) {
+                            $insufficientItems[$key] = [
+                                'name' => $ingredient->name,
+                                'required' => 0,
+                                'available' => $available,
+                                'unit' => $ingredient->unit ?? 'units',
+                            ];
+                        }
+                        $insufficientItems[$key]['required'] += $required;
+                    }
+                }
+            }
+        }
+
+        // Calculate shortage for each item
+        foreach ($insufficientItems as $key => $item) {
+            $insufficientItems[$key]['shortage'] = $item['required'] - $item['available'];
+        }
+
+        return array_values($insufficientItems);
     }
 
     public function decline(Request $request, Reservation $reservation)

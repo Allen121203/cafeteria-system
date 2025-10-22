@@ -25,7 +25,9 @@ class CrmReportExport implements FromCollection, WithHeadings, WithMapping, Shou
     {
         $customers = User::where('role', 'customer')
             ->with(['reservations' => function ($query) {
-                $query->whereBetween('event_date', [$this->startDate, $this->endDate]);
+                $query->whereNotNull('event_date')
+                    ->whereBetween('event_date', [$this->startDate, $this->endDate])
+                    ->with(['items.menu']);
             }])
             ->get();
 
@@ -34,14 +36,18 @@ class CrmReportExport implements FromCollection, WithHeadings, WithMapping, Shou
             $approvedReservations = $customer->reservations->where('status', 'approved')->count();
             $totalSpent = $customer->reservations->where('status', 'approved')->sum(function ($reservation) {
                 return $reservation->items->sum(function ($item) {
+                    // Check if menu exists
+                    if (!$item->menu) {
+                        return 0;
+                    }
                     $price = MenuPrice::getPriceMap()[$item->menu->type][$item->menu->meal_time] ?? 0;
-                    return $price * $item->quantity;
+                    return $price * ($item->quantity ?? 0);
                 });
             });
 
             return [
-                'name' => $customer->name,
-                'email' => $customer->email,
+                'name' => $customer->name ?? 'N/A',
+                'email' => $customer->email ?? 'N/A',
                 'total_reservations' => $totalReservations,
                 'approved_reservations' => $approvedReservations,
                 'total_spent' => $totalSpent,

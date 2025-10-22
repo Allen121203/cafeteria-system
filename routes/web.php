@@ -76,6 +76,7 @@ Route::middleware(['auth', 'role:admin'])
         // Reservations (names align with your Blade: admin.reservations, admin.reservations.show, etc.)
         Route::get  ('/reservations',                       [ReservationController::class,'index'])->name('reservations');
         Route::get  ('/reservations/{reservation}',         [ReservationController::class,'show'])->name('reservations.show');
+        Route::post ('/reservations/{reservation}/check-inventory', [ReservationController::class,'checkInventory'])->name('reservations.check-inventory');
         Route::patch('/reservations/{reservation}/approve', [ReservationController::class,'approve'])->name('reservations.approve');
         Route::patch('/reservations/{reservation}/decline', [ReservationController::class,'decline'])->name('reservations.decline');
 

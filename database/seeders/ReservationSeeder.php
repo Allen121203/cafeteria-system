@@ -27,15 +27,15 @@ class ReservationSeeder extends Seeder
 
         foreach ($customers as $index => $customer) {
             Reservation::create([
-            'user_id' => 2,
-            'event_name' => 'Sample Event', // Added missing required field
-            'date' => '2025-09-15',
-            'time' => '12:00:00',
-            'guests' => 10,
-            'status' => 'approved',
-            'created_at' => '2025-10-22 18:12:47',
-            'updated_at' => '2025-10-22 18:12:47'
-        ]);
+                'user_id' => $customer->id,
+                'event_name' => 'Sample Event ' . ($index + 1),
+                'event_date' => '2025-09-15',
+                'event_time' => '12:00:00',
+                'number_of_persons' => 10,
+                'status' => 'approved',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
         }
     }
 }

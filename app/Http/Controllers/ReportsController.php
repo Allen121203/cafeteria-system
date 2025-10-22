@@ -49,6 +49,7 @@ class ReportsController extends Controller
     private function generateReservationReport($startDate, $endDate)
     {
         $reservations = Reservation::with(['user'])
+            ->whereNotNull('event_date')
             ->whereBetween('event_date', [$startDate, $endDate])
             ->orderBy('event_date')
             ->get();
@@ -56,13 +57,13 @@ class ReportsController extends Controller
         $reservationData = $reservations->map(function ($reservation) {
             return [
                 'id' => $reservation->id,
-                'event_name' => $reservation->event_name,
-                'event_date' => $reservation->event_date->format('Y-m-d'),
-                'customer_name' => $reservation->user->name,
-                'department' => $reservation->user->department,
-                'number_of_persons' => $reservation->number_of_persons,
-                'status' => ucfirst($reservation->status),
-                'created_at' => $reservation->created_at->format('Y-m-d H:i'),
+                'event_name' => $reservation->event_name ?? 'N/A',
+                'event_date' => $reservation->event_date ? $reservation->event_date->format('Y-m-d') : 'N/A',
+                'customer_name' => $reservation->user ? $reservation->user->name : 'N/A',
+                'department' => $reservation->user ? $reservation->user->department : 'N/A',
+                'number_of_persons' => $reservation->number_of_persons ?? 0,
+                'status' => ucfirst($reservation->status ?? 'pending'),
+                'created_at' => $reservation->created_at ? $reservation->created_at->format('Y-m-d H:i') : 'N/A',
             ];
         });
 
@@ -78,6 +79,7 @@ class ReportsController extends Controller
         // Get approved reservations within date range
         $reservations = Reservation::with(['items.menu', 'user'])
             ->where('status', 'approved')
+            ->whereNotNull('event_date')
             ->whereBetween('event_date', [$startDate, $endDate])
             ->get();
 
@@ -91,15 +93,20 @@ class ReportsController extends Controller
             $items = [];
 
             foreach ($reservation->items as $item) {
+                // Check if menu exists
+                if (!$item->menu) {
+                    continue;
+                }
+
                 $price = MenuPrice::getPriceMap()[$item->menu->type][$item->menu->meal_time] ?? 0;
                 $itemTotal = $price * $item->quantity;
                 $reservationTotal += $itemTotal;
 
                 $items[] = [
-                    'menu_name' => $item->menu->name,
-                    'type' => ucfirst($item->menu->type),
-                    'meal_time' => ucfirst(str_replace('_', ' ', $item->menu->meal_time)),
-                    'quantity' => $item->quantity,
+                    'menu_name' => $item->menu->name ?? 'N/A',
+                    'type' => ucfirst($item->menu->type ?? 'standard'),
+                    'meal_time' => ucfirst(str_replace('_', ' ', $item->menu->meal_time ?? 'lunch')),
+                    'quantity' => $item->quantity ?? 0,
                     'unit_price' => $price,
                     'total' => $itemTotal,
                 ];
@@ -107,10 +114,10 @@ class ReportsController extends Controller
 
             $salesData[] = [
                 'reservation_id' => $reservation->id,
-                'event_name' => $reservation->event_name,
-                'event_date' => $reservation->event_date->format('Y-m-d'),
-                'customer_name' => $reservation->user->name,
-                'number_of_persons' => $reservation->number_of_persons,
+                'event_name' => $reservation->event_name ?? 'N/A',
+                'event_date' => $reservation->event_date ? $reservation->event_date->format('Y-m-d') : 'N/A',
+                'customer_name' => $reservation->user ? $reservation->user->name : 'N/A',
+                'number_of_persons' => $reservation->number_of_persons ?? 0,
                 'items' => $items,
                 'reservation_total' => $reservationTotal,
             ];
@@ -134,6 +141,7 @@ class ReportsController extends Controller
         // Get approved reservations within date range
         $reservations = Reservation::with(['items.menu.items.recipes.inventoryItem'])
             ->where('status', 'approved')
+            ->whereNotNull('event_date')
             ->whereBetween('event_date', [$startDate, $endDate])
             ->get();
 
@@ -142,15 +150,27 @@ class ReportsController extends Controller
         foreach ($reservations as $reservation) {
             foreach ($reservation->items as $reservationItem) {
                 $menu = $reservationItem->menu;
+                
+                // Check if menu exists
+                if (!$menu) {
+                    continue;
+                }
+
                 foreach ($menu->items as $menuItem) {
                     foreach ($menuItem->recipes as $recipe) {
                         $inventoryItem = $recipe->inventoryItem;
-                        $usedQuantity = $recipe->quantity * $reservationItem->quantity;
+                        
+                        // Check if inventory item exists
+                        if (!$inventoryItem) {
+                            continue;
+                        }
+
+                        $usedQuantity = ($recipe->quantity_needed ?? 0) * ($reservationItem->quantity ?? 0);
 
                         if (!isset($inventoryUsage[$inventoryItem->id])) {
                             $inventoryUsage[$inventoryItem->id] = [
-                                'name' => $inventoryItem->name,
-                                'unit' => $inventoryItem->unit,
+                                'name' => $inventoryItem->name ?? 'N/A',
+                                'unit' => $inventoryItem->unit ?? 'N/A',
                                 'total_used' => 0,
                                 'reservations_count' => 0,
                             ];
@@ -176,7 +196,9 @@ class ReportsController extends Controller
     {
         $customers = \App\Models\User::where('role', 'customer')
             ->with(['reservations' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('event_date', [$startDate, $endDate]);
+                $query->whereNotNull('event_date')
+                    ->whereBetween('event_date', [$startDate, $endDate])
+                    ->with(['items.menu']);
             }])
             ->get();
 
@@ -185,14 +207,18 @@ class ReportsController extends Controller
             $approvedReservations = $customer->reservations->where('status', 'approved')->count();
             $totalSpent = $customer->reservations->where('status', 'approved')->sum(function ($reservation) {
                 return $reservation->items->sum(function ($item) {
+                    // Check if menu exists
+                    if (!$item->menu) {
+                        return 0;
+                    }
                     $price = MenuPrice::getPriceMap()[$item->menu->type][$item->menu->meal_time] ?? 0;
-                    return $price * $item->quantity;
+                    return $price * ($item->quantity ?? 0);
                 });
             });
 
             return [
-                'name' => $customer->name,
-                'email' => $customer->email,
+                'name' => $customer->name ?? 'N/A',
+                'email' => $customer->email ?? 'N/A',
                 'total_reservations' => $totalReservations,
                 'approved_reservations' => $approvedReservations,
                 'total_spent' => $totalSpent,
@@ -227,6 +253,7 @@ class ReportsController extends Controller
         switch ($reportType) {
             case 'reservation':
                 $reservations = Reservation::with(['user'])
+                    ->whereNotNull('event_date')
                     ->whereBetween('event_date', [$startDate, $endDate])
                     ->orderBy('event_date')
                     ->get();
@@ -234,13 +261,13 @@ class ReportsController extends Controller
                 $reservationData = $reservations->map(function ($reservation) {
                     return [
                         'id' => $reservation->id,
-                        'event_name' => $reservation->event_name,
-                        'event_date' => $reservation->event_date->format('Y-m-d'),
-                        'customer_name' => $reservation->user->name,
-                        'department' => $reservation->user->department,
-                        'number_of_persons' => $reservation->number_of_persons,
-                        'status' => ucfirst($reservation->status),
-                        'created_at' => $reservation->created_at->format('Y-m-d H:i'),
+                        'event_name' => $reservation->event_name ?? 'N/A',
+                        'event_date' => $reservation->event_date ? $reservation->event_date->format('Y-m-d') : 'N/A',
+                        'customer_name' => $reservation->user ? $reservation->user->name : 'N/A',
+                        'department' => $reservation->user ? $reservation->user->department : 'N/A',
+                        'number_of_persons' => $reservation->number_of_persons ?? 0,
+                        'status' => ucfirst($reservation->status ?? 'pending'),
+                        'created_at' => $reservation->created_at ? $reservation->created_at->format('Y-m-d H:i') : 'N/A',
                     ];
                 });
 
@@ -252,6 +279,7 @@ class ReportsController extends Controller
                 // Get approved reservations within date range
                 $reservations = Reservation::with(['items.menu', 'user'])
                     ->where('status', 'approved')
+                    ->whereNotNull('event_date')
                     ->whereBetween('event_date', [$startDate, $endDate])
                     ->get();
 
@@ -265,15 +293,20 @@ class ReportsController extends Controller
                     $items = [];
 
                     foreach ($reservation->items as $item) {
+                        // Check if menu exists
+                        if (!$item->menu) {
+                            continue;
+                        }
+
                         $price = MenuPrice::getPriceMap()[$item->menu->type][$item->menu->meal_time] ?? 0;
                         $itemTotal = $price * $item->quantity;
                         $reservationTotal += $itemTotal;
 
                         $items[] = [
-                            'menu_name' => $item->menu->name,
-                            'type' => ucfirst($item->menu->type),
-                            'meal_time' => ucfirst(str_replace('_', ' ', $item->menu->meal_time)),
-                            'quantity' => $item->quantity,
+                            'menu_name' => $item->menu->name ?? 'N/A',
+                            'type' => ucfirst($item->menu->type ?? 'standard'),
+                            'meal_time' => ucfirst(str_replace('_', ' ', $item->menu->meal_time ?? 'lunch')),
+                            'quantity' => $item->quantity ?? 0,
                             'unit_price' => $price,
                             'total' => $itemTotal,
                         ];
@@ -281,10 +314,10 @@ class ReportsController extends Controller
 
                     $salesData[] = [
                         'reservation_id' => $reservation->id,
-                        'event_name' => $reservation->event_name,
-                        'event_date' => $reservation->event_date->format('Y-m-d'),
-                        'customer_name' => $reservation->user->name,
-                        'number_of_persons' => $reservation->number_of_persons,
+                        'event_name' => $reservation->event_name ?? 'N/A',
+                        'event_date' => $reservation->event_date ? $reservation->event_date->format('Y-m-d') : 'N/A',
+                        'customer_name' => $reservation->user ? $reservation->user->name : 'N/A',
+                        'number_of_persons' => $reservation->number_of_persons ?? 0,
                         'items' => $items,
                         'reservation_total' => $reservationTotal,
                     ];
@@ -304,6 +337,7 @@ class ReportsController extends Controller
                 // Get approved reservations within date range
                 $reservations = Reservation::with(['items.menu.items.recipes.inventoryItem'])
                     ->where('status', 'approved')
+                    ->whereNotNull('event_date')
                     ->whereBetween('event_date', [$startDate, $endDate])
                     ->get();
 
@@ -312,15 +346,27 @@ class ReportsController extends Controller
                 foreach ($reservations as $reservation) {
                     foreach ($reservation->items as $reservationItem) {
                         $menu = $reservationItem->menu;
+                        
+                        // Check if menu exists
+                        if (!$menu) {
+                            continue;
+                        }
+
                         foreach ($menu->items as $menuItem) {
                             foreach ($menuItem->recipes as $recipe) {
                                 $inventoryItem = $recipe->inventoryItem;
-                                $usedQuantity = $recipe->quantity * $reservationItem->quantity;
+                                
+                                // Check if inventory item exists
+                                if (!$inventoryItem) {
+                                    continue;
+                                }
+
+                                $usedQuantity = ($recipe->quantity_needed ?? 0) * ($reservationItem->quantity ?? 0);
 
                                 if (!isset($inventoryUsage[$inventoryItem->id])) {
                                     $inventoryUsage[$inventoryItem->id] = [
-                                        'name' => $inventoryItem->name,
-                                        'unit' => $inventoryItem->unit,
+                                        'name' => $inventoryItem->name ?? 'N/A',
+                                        'unit' => $inventoryItem->unit ?? 'N/A',
                                         'total_used' => 0,
                                         'reservations_count' => 0,
                                     ];
@@ -342,7 +388,9 @@ class ReportsController extends Controller
             case 'crm':
                 $customers = \App\Models\User::where('role', 'customer')
                     ->with(['reservations' => function ($query) use ($startDate, $endDate) {
-                        $query->whereBetween('event_date', [$startDate, $endDate]);
+                        $query->whereNotNull('event_date')
+                            ->whereBetween('event_date', [$startDate, $endDate])
+                            ->with(['items.menu']);
                     }])
                     ->get();
 
@@ -351,14 +399,18 @@ class ReportsController extends Controller
                     $approvedReservations = $customer->reservations->where('status', 'approved')->count();
                     $totalSpent = $customer->reservations->where('status', 'approved')->sum(function ($reservation) {
                         return $reservation->items->sum(function ($item) {
+                            // Check if menu exists
+                            if (!$item->menu) {
+                                return 0;
+                            }
                             $price = MenuPrice::getPriceMap()[$item->menu->type][$item->menu->meal_time] ?? 0;
-                            return $price * $item->quantity;
+                            return $price * ($item->quantity ?? 0);
                         });
                     });
 
                     return [
-                        'name' => $customer->name,
-                        'email' => $customer->email,
+                        'name' => $customer->name ?? 'N/A',
+                        'email' => $customer->email ?? 'N/A',
                         'total_reservations' => $totalReservations,
                         'approved_reservations' => $approvedReservations,
                         'total_spent' => $totalSpent,

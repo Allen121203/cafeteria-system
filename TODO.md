@@ -1,13 +1,37 @@
-# TODO: Implement Automatic Recipe Detection and Copying
+# Reports System Refactor TODO
 
-## Completed Tasks
-- [x] Add `copyRecipesFrom` method to `MenuItem` model
-- [x] Update `MenuController` store method to auto-detect and copy recipes
-- [x] Update `MenuController` update method to auto-detect and copy recipes
-- [x] Add `MenuItem` import to `MenuController`
+## Phase 1: Create ReportsService
+- [ ] Create app/Services/ReportsService.php
+- [ ] Move all data processing logic from controller to service
+- [ ] Implement consistent date filtering using whereBetween()
+- [ ] Add proper error handling and validation
 
-## Next Steps
-- [ ] Test the functionality by creating menus with duplicate item names
-- [ ] Verify recipes are copied correctly without duplicates
-- [ ] Update frontend if needed to show existing recipes during creation
-- [x] Run migrations if necessary (unit column added to recipes table)
+## Phase 2: Refactor ReportsController
+- [ ] Update ReportsController to use ReportsService
+- [ ] Remove duplicate code between generate() and exportPdf()
+- [ ] Simplify controller methods
+- [ ] Add proper dependency injection
+
+## Phase 3: Fix Export Classes
+- [ ] Fix SalesReportExport map() method to export all item rows
+- [ ] Update all export classes to use ReportsService
+- [ ] Ensure consistent data structure across exports
+- [ ] Test Excel export functionality
+
+## Phase 4: Simplify Views
+- [ ] Refactor show.blade.php to reduce conditional complexity
+- [ ] Update pdf.blade.php for better maintainability
+- [ ] Create reusable components for report tables
+- [ ] Improve error handling in views
+
+## Phase 5: Testing & Validation
+- [ ] Test all report types (reservation, sales, inventory, crm)
+- [ ] Verify PDF and Excel exports work correctly
+- [ ] Test date filtering consistency
+- [ ] Validate data accuracy across all reports
+
+## Phase 6: Code Cleanup
+- [ ] Remove any unused code
+- [ ] Add proper PHPDoc comments
+- [ ] Ensure consistent code style
+- [ ] Update any related documentation

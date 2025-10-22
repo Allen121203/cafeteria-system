@@ -24,6 +24,7 @@ class InventoryReportExport implements FromCollection, WithHeadings, WithMapping
     {
         $reservations = Reservation::with(['items.menu.items.recipes.inventoryItem'])
             ->where('status', 'approved')
+            ->whereNotNull('event_date')
             ->whereBetween('event_date', [$this->startDate, $this->endDate])
             ->get();
 
@@ -32,15 +33,27 @@ class InventoryReportExport implements FromCollection, WithHeadings, WithMapping
         foreach ($reservations as $reservation) {
             foreach ($reservation->items as $reservationItem) {
                 $menu = $reservationItem->menu;
+                
+                // Check if menu exists
+                if (!$menu) {
+                    continue;
+                }
+
                 foreach ($menu->items as $menuItem) {
                     foreach ($menuItem->recipes as $recipe) {
                         $inventoryItem = $recipe->inventoryItem;
-                        $usedQuantity = $recipe->quantity * $reservationItem->quantity;
+                        
+                        // Check if inventory item exists
+                        if (!$inventoryItem) {
+                            continue;
+                        }
+
+                        $usedQuantity = ($recipe->quantity_needed ?? 0) * ($reservationItem->quantity ?? 0);
 
                         if (!isset($inventoryUsage[$inventoryItem->id])) {
                             $inventoryUsage[$inventoryItem->id] = [
-                                'name' => $inventoryItem->name,
-                                'unit' => $inventoryItem->unit,
+                                'name' => $inventoryItem->name ?? 'N/A',
+                                'unit' => $inventoryItem->unit ?? 'N/A',
                                 'total_used' => 0,
                                 'reservations_count' => 0,
                             ];

@@ -23,6 +23,7 @@ class ReservationReportExport implements FromCollection, WithHeadings, WithMappi
     public function collection()
     {
         return Reservation::with(['user'])
+            ->whereNotNull('event_date')
             ->whereBetween('event_date', [$this->startDate, $this->endDate])
             ->orderBy('event_date')
             ->get();
@@ -46,13 +47,13 @@ class ReservationReportExport implements FromCollection, WithHeadings, WithMappi
     {
         return [
             $reservation->id,
-            $reservation->event_name,
-            $reservation->event_date->format('Y-m-d'),
-            $reservation->user->name,
-            $reservation->user->department,
-            $reservation->number_of_persons,
-            ucfirst($reservation->status),
-            $reservation->created_at->format('Y-m-d H:i'),
+            $reservation->event_name ?? 'N/A',
+            $reservation->event_date ? $reservation->event_date->format('Y-m-d') : 'N/A',
+            $reservation->user ? $reservation->user->name : 'N/A',
+            $reservation->user ? $reservation->user->department : 'N/A',
+            $reservation->number_of_persons ?? 0,
+            ucfirst($reservation->status ?? 'pending'),
+            $reservation->created_at ? $reservation->created_at->format('Y-m-d H:i') : 'N/A',
         ];
     }
 }
