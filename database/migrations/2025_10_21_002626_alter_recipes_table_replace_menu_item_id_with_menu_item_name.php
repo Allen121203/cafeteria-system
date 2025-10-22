@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('recipes', function (Blueprint $table) {
-            // Drop foreign key and column
-            $table->dropForeign(['menu_item_id']);
+            // Drop column (no foreign key to drop as per table structure)
             $table->dropColumn('menu_item_id');
 
             // Add new column

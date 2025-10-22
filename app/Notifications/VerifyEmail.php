@@ -7,9 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class VerifyEmail extends Notification implements ShouldQueue
+class VerifyEmail extends Notification
 {
-    use Queueable;
 
     /**
      * Get the notification's delivery channels.
@@ -47,12 +46,12 @@ class VerifyEmail extends Notification implements ShouldQueue
      */
     protected function verificationUrl($notifiable)
     {
-        return url(
-            sprintf(
-                '/email/verify/%s/%s',
-                $notifiable->getKey(),
-                sha1($notifiable->getEmailForVerification())
-            )
+        return \Illuminate\Support\Facades\URL::signedRoute(
+            'verification.link',
+            [
+                'id' => $notifiable->getKey(),
+                'hash' => sha1($notifiable->getEmailForVerification()),
+            ]
         );
     }
 }

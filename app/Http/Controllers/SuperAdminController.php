@@ -29,10 +29,11 @@ class SuperAdminController extends Controller
         ]);
 
         $user = User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role'     => 'admin', // always admin when created by superadmin
+            'name'              => $data['name'],
+            'email'             => $data['email'],
+            'password'          => Hash::make($data['password']),
+            'role'              => 'admin', // always admin when created by superadmin
+            'email_verified_at' => now(), // no verification needed for admins
         ]);
 
         AuditTrail::create([

@@ -27,34 +27,45 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-public function store(Request $request): RedirectResponse
-{
-    $data = $request->validate([
-        'name' => ['required', 'string', 'max:255'],
-        'address' => ['nullable', 'string', 'max:255'],
-        'contact_no' => ['nullable', 'string', 'max:20'],
-        'department' => ['nullable', 'string', 'max:255'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-        'password' => ['required', 'confirmed', Rules\Password::defaults()],
-    ]);
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'contact_no' => ['nullable', 'string', 'max:20'],
+            'department' => ['nullable', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
 
-    $user = User::create([
-        'name'       => $data['name'],
-        'email'      => $data['email'],
-        'password'   => Hash::make($data['password']),
-        'address'    => $data['address'] ?? null,
-        'contact_no' => $data['contact_no'] ?? null,
-        'department' => $data['department'] ?? null,
-        'role'       => 'customer', // default
-    ]);
+        $user = User::create([
+            'name'       => $data['name'],
+            'email'      => $data['email'],
+            'password'   => Hash::make($data['password']),
+            'address'    => $data['address'] ?? null,
+            'contact_no' => $data['contact_no'] ?? null,
+            'department' => $data['department'] ?? null,
+            'role'       => 'customer', // default
+        ]);
 
-    Auth::login($user);
+        // Store user ID in session for manual verification
+        session()->put('verification_user_id', $user->id);
 
-    // Flash success message for pop-up
-    session()->flash('registered', 'Account created successfully! Welcome to CLSU RET Cafeteria.');
+        // Send email verification notification
+        $user->sendEmailVerificationNotification();
 
-    return redirect()->route('customer.home');
-}
+        // Return JSON response for AJAX request
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Account created successfully! Please check your email to verify your account.',
+                'redirect' => route('verification.notice')
+            ]);
+        }
 
+        // Flash success message for verification notice
+        session()->flash('registered', 'Account created successfully! Please check your email to verify your account.');
 
+        return redirect()->route('verification.notice');
+    }
 }

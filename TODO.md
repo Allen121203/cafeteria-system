@@ -1,19 +1,9 @@
-# TODO: Make Admin View Content Width Fixed and Responsive
+# TODO List for Email Verification Bypass for Admins
 
-## Overview
-Replace `max-w-7xl` with `container` in admin view content wrappers to achieve fixed widths at responsive breakpoints (sm:640px, md:768px, lg:1024px, xl:1280px, 2xl:1536px) while maintaining responsiveness across devices.
+## Completed Tasks
+- [x] Verified that `LoginRequest.php` already skips verification for admins and superadmins
 
-## Files to Edit
-- [x] resources/views/admin/dashboard.blade.php
-- [x] resources/views/admin/reservations/index.blade.php
-- [x] resources/views/admin/reports/show.blade.php
-- [x] resources/views/admin/reports/index.blade.php
-- [x] resources/views/admin/recipes/index.blade.php
-- [x] resources/views/admin/menus/prices.blade.php
-- [x] resources/views/admin/inventory/index.blade.php
-- [x] resources/views/admin/calendar.blade.php
-
-## Steps
-1. Update each file's content wrapper from `max-w-7xl mx-auto` to `container mx-auto`.
-2. Verify changes are applied correctly.
-3. Test responsiveness on different screen sizes.
+## Remaining Tasks
+- [ ] Test the changes to ensure admins created by superadmin can log in without email verification
+- [ ] Ensure customers still require email verification
+- [ ] Confirm that existing admins and superadmins can log in without verification

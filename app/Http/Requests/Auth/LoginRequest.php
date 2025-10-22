@@ -49,6 +49,17 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Check if email is verified, but skip for admins and superadmins
+        $user = Auth::user();
+        if (! $user->hasVerifiedEmail() && ! in_array($user->role, ['admin', 'superadmin'])) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'You must verify your email address before logging in.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

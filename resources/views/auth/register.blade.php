@@ -14,7 +14,7 @@
                     <p class="text-gray-600">Join our cafeteria community</p>
                 </div>
 
-                <form method="POST" action="{{ route('register') }}">
+                <form method="POST" action="{{ route('register') }}" id="registerForm">
                     @csrf
 
                     <!-- Name -->
@@ -122,11 +122,35 @@
 
                     <!-- Register Button -->
                     <div>
-                        <x-primary-button class="w-full justify-center">
+                        <x-primary-button class="w-full justify-center" id="registerBtn">
                             {{ __('Register') }}
                         </x-primary-button>
                     </div>
                 </form>
+
+                <!-- Verification Modal -->
+                <div id="verificationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+                    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                        <div class="mt-3 text-center">
+                            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                                <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">Account Created Successfully!</h3>
+                            <div class="mt-2 px-7 py-3">
+                                <p class="text-sm text-gray-500">
+                                    Please check your email for verification. You must verify your email address before you can log in.
+                                </p>
+                            </div>
+                            <div class="items-center px-4 py-3">
+                                <button id="proceedToVerification" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                    Proceed to Email Verification
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <script>
                     // Toggle for password
@@ -153,6 +177,60 @@
                             confirmPasswordInput.type = 'password';
                             eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>';
                         }
+                    });
+
+                    // Handle form submission with modal
+                    document.getElementById('registerForm').addEventListener('submit', function(e) {
+                        e.preventDefault(); // Prevent default form submission
+
+                        const formData = new FormData(this);
+                        const registerBtn = document.getElementById('registerBtn');
+                        const originalText = registerBtn.innerHTML;
+
+                        // Disable button and show loading
+                        registerBtn.disabled = true;
+                        registerBtn.innerHTML = 'Creating Account...';
+
+                        fetch(this.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Show verification modal
+                                document.getElementById('verificationModal').classList.remove('hidden');
+                            } else {
+                                // Handle validation errors
+                                if (data.errors) {
+                                    let errorMessage = 'Please fix the following errors:\n';
+                                    for (let field in data.errors) {
+                                        errorMessage += `- ${data.errors[field][0]}\n`;
+                                    }
+                                    alert(errorMessage);
+                                } else {
+                                    alert(data.message || 'Registration failed. Please try again.');
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        })
+                        .finally(() => {
+                            // Re-enable button
+                            registerBtn.disabled = false;
+                            registerBtn.innerHTML = originalText;
+                        });
+                    });
+
+                    // Handle modal proceed button
+                    document.getElementById('proceedToVerification').addEventListener('click', function() {
+                        window.location.href = '{{ route("verification.notice") }}';
                     });
                 </script>
             </div>
