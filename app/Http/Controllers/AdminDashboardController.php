@@ -2,16 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-
-use App\Models\User;
 use App\Models\Reservation;
 use App\Models\ReservationItem;
 use App\Models\InventoryItem;
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 use Carbon\Carbon;
+use Illuminate\View\View;
 
 class AdminDashboardController extends Controller
 {
@@ -39,30 +34,5 @@ class AdminDashboardController extends Controller
             'outOfStocks',
             'expiringSoon'
         ));
-    }
-
-    public function store(Request $request): RedirectResponse
-    {
-        $data = $request->validate([
-            'email' => 'required|email|unique:users',
-            'name' => 'required',
-            'password' => 'required|min:6|confirmed',
-        ]);
-
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
-
-        $user->assignRole('admin');
-
-        return redirect()->back()->with('success', 'Admin created successfully');
-    }
-
-    public function approve(Request $request)
-    {
-        // TODO: approval logic
-        return back()->with('success', 'Reservation approved.');
     }
 }

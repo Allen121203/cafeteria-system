@@ -128,11 +128,17 @@
                 <!-- Personal Email -->
                 <div class="space-y-2">
                     <label for="email" class="block text-sm font-medium text-gray-700">Personal Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 @error('email') border-red-500 @enderror" required>
-                    @error('email')
-                        <p class="text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+                    @if($user->hasRole('admin'))
+                        <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" disabled readonly>
+                        <p class="text-sm text-gray-600 mt-1">Contact superadmin to change email address</p>
+                    @else
+                        <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 @error('email') border-red-500 @enderror" required>
+                        @error('email')
+                            <p class="text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    @endif
                 </div>
 
                 <div class="flex justify-end space-x-3">

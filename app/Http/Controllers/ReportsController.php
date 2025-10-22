@@ -8,6 +8,9 @@ use App\Models\MenuPrice;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SalesReportExport;
+use App\Exports\InventoryReportExport;
+use App\Exports\ReservationReportExport;
+use App\Exports\CrmReportExport;
 use Carbon\Carbon;
 
 class ReportsController extends Controller

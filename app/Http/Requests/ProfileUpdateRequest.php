@@ -15,16 +15,24 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => [
+        ];
+
+        // Only require email validation if the user is not an admin
+        if (!$user || !$user->hasRole('admin')) {
+            $rules['email'] = [
                 'required',
                 'string',
                 'lowercase',
                 'email',
                 'max:255',
                 Rule::unique(User::class)->ignore(\Illuminate\Support\Facades\Auth::id() ?? null),
-            ],
-        ];
+            ];
+        }
+
+        return $rules;
     }
 }

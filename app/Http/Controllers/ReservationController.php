@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/ReservationController.php
 
 namespace App\Http\Controllers;
 
@@ -7,7 +6,6 @@ use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Schema;
 use App\Notifications\ReservationStatusChanged;
 use Illuminate\Support\Facades\Auth;
 
@@ -76,9 +74,7 @@ class ReservationController extends Controller
         $data = $request->validate(['reason' => 'required|string|max:1000']);
 
         $reservation->status = 'declined';
-        if (Schema::hasColumn('reservations','decline_reason')) {
-            $reservation->decline_reason = $data['reason'];
-        }
+        $reservation->decline_reason = $data['reason'];
         $reservation->save();
 
         $this->notifyCustomer($reservation, 'declined', $data['reason']);

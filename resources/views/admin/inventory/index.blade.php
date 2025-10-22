@@ -6,7 +6,7 @@
     <!-- Match Reservations container: rounded-xl + shadow-lg + border + p-6 -->
     <div class="container mx-auto bg-white rounded-xl shadow-lg border border-gray-200 p-6">
         <!-- Header (kept your icons/button) -->
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between mb-6 space-y-4 sm:space-y-0">
             <div class="flex items-center">
                 <svg class="w-8 h-8 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
@@ -24,10 +24,10 @@
 
         <!-- Category Filter Dropdown -->
         <div class="mb-6">
-            <form method="GET" action="{{ route('admin.inventory.index') }}" class="flex items-center space-x-4">
+            <form method="GET" action="{{ route('admin.inventory.index') }}" class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                 <label for="category" class="text-sm font-medium text-gray-700">Filter by Category:</label>
                 <select name="category" id="category" onchange="this.form.submit()"
-                        class="block w-48 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                        class="block w-full sm:w-48 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
                     <option value="">All Categories</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat }}" {{ $category == $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -48,19 +48,19 @@
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <a href="?sort=name" class="hover:text-gray-700 transition-colors duration-200">Item Name</a>
                         </th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <a href="?sort=qty" class="hover:text-gray-700 transition-colors duration-200">Quantity</a>
                         </th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <a href="?sort=expiry_date" class="hover:text-gray-700 transition-colors duration-200">Expiry Date</a>
                         </th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Last Updated</th>
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
 
@@ -68,11 +68,11 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($items as $item)
                         <tr class="hover:bg-gray-50 transition-colors duration-200">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                 {{ $item->name }}
                             </td>
 
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 <span class="px-2 py-1 rounded-full text-xs font-semibold
                                     @if($item->qty <= 5) bg-red-100 text-red-800
                                     @elseif($item->qty <= 10) bg-amber-100 text-amber-800
@@ -81,16 +81,16 @@
                                 </span>
                             </td>
 
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->unit }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->expiry_date ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->category }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->updated_at->diffForHumans() }}</td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->unit }}</td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->expiry_date ?? 'N/A' }}</td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item->category }}</td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">{{ $item->updated_at->diffForHumans() }}</td>
 
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex space-x-2">
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
                                     <button @click="editingItem = JSON.parse($el.dataset.item); showEditModal = true"
                                        data-item='@json($item)'
-                                       class="text-blue-600 hover:text-blue-900 transition-colors duration-200 flex items-center">
+                                       class="text-blue-600 hover:text-blue-900 transition-colors duration-200 flex items-center px-2 py-1 rounded text-xs sm:text-sm">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
@@ -99,7 +99,7 @@
 
                                     <form action="{{ route('admin.inventory.destroy', $item) }}" method="POST" class="inline">
                                         @csrf @method('DELETE')
-                                        <button class="text-red-600 hover:text-red-900 transition-colors duration-200 flex items-center"
+                                        <button class="text-red-600 hover:text-red-900 transition-colors duration-200 flex items-center px-2 py-1 rounded text-xs sm:text-sm"
                                                 onclick="return confirm('Are you sure you want to delete this item?')">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -112,7 +112,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                            <td colspan="6" class="px-4 sm:px-6 py-12 text-center text-gray-500">
                                 <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                 </svg>
@@ -129,8 +129,8 @@
     
 
     <!-- Create Modal -->
-    <div x-show="showCreateModal" @click="showCreateModal = false" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" x-cloak style="display: none;">
-        <div @click.stop class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+    <div x-show="showCreateModal" @click="showCreateModal = false" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" x-cloak style="display: none;">
+        <div @click.stop class="bg-white rounded-lg shadow-lg w-full max-w-lg p-4 sm:p-6 relative">
             <button @click="showCreateModal = false"
                     class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
                 &times;
@@ -196,8 +196,8 @@
     </div>
 
     <!-- Edit Modal -->
-    <div x-show="showEditModal" @click="showEditModal = false; editingItem = null" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" x-cloak style="display: none;">
-        <div @click.stop class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+    <div x-show="showEditModal" @click="showEditModal = false; editingItem = null" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" x-cloak style="display: none;">
+        <div @click.stop class="bg-white rounded-lg shadow-lg w-full max-w-lg p-4 sm:p-6 relative">
             <button @click="showEditModal = false; editingItem = null"
                     class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">
                 &times;
