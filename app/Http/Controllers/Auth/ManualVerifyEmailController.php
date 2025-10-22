@@ -45,10 +45,16 @@ class ManualVerifyEmailController extends Controller
     {
         // Get the user from the signed URL parameters
         $userId = $request->query('id');
+        $hash = $request->query('hash');
         $user = User::find($userId);
 
         if (!$user) {
             return redirect()->route('login')->withErrors(['message' => 'User not found.']);
+        }
+
+        // Validate the hash to ensure the link is valid
+        if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
+            return redirect()->route('login')->withErrors(['message' => 'Invalid verification link.']);
         }
 
         if ($user->hasVerifiedEmail()) {

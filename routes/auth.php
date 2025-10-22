@@ -49,10 +49,6 @@ Route::middleware('auth')->group(function () {
     Route::post('verify-email/manual', \App\Http\Controllers\Auth\ManualVerifyEmailController::class)
         ->name('verification.manual.post');
 
-    Route::get('verify-email/link', [\App\Http\Controllers\Auth\ManualVerifyEmailController::class, 'verifyViaLink'])
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.link');
-
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
         ->name('password.confirm');
 
@@ -63,4 +59,9 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });
+
+// Email verification link route - must be outside auth middleware
+Route::get('verify-email/link', [\App\Http\Controllers\Auth\ManualVerifyEmailController::class, 'verifyViaLink'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.link');
 
