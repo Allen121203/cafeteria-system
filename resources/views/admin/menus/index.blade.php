@@ -239,7 +239,7 @@
                 <div class="flex gap-3 items-end">
                   <input type="text" :name="'items[' + index + '][name]'" x-model="item.name" placeholder="Food name" class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200" required>
                   <select :name="'items[' + index + '][type]'" x-model="item.type" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
-                    <option value="meal">Food/Main Dish</option>
+                    <option value="food">Food/Main Dish</option>
                     <option value="drink">Drink</option>
                     <option value="dessert">Dessert</option>
                   </select>
@@ -380,7 +380,7 @@
                 <div class="flex gap-3 items-end">
                   <input type="text" :name="'items[' + index + '][name]'" x-model="item.name" placeholder="Food name" class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" required>
                   <select :name="'items[' + index + '][type]'" x-model="item.type" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                    <option value="meal">Food/Main Dish</option>
+                    <option value="food">Food/Main Dish</option>
                     <option value="drink">Drink</option>
                     <option value="dessert">Dessert</option>
                   </select>

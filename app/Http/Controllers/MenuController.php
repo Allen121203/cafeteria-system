@@ -149,7 +149,7 @@ class MenuController extends Controller
         if ($hasMeal) $rules['meal_time'] = 'required|in:breakfast,am_snacks,lunch,pm_snacks,dinner';
         if ($hasName) $rules['name']      = 'nullable|string|max:255';
         if ($hasDesc) $rules['description']= 'nullable|string';
-        $rules['items'] = 'array';
+        $rules['items'] = 'required|array|min:1';
         $rules['items.*.name'] = 'required|string|max:255';
         $rules['items.*.type'] = 'required|in:food,drink,dessert';
         $rules['items.*.recipes'] = 'array';
