@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use App\Models\MenuItem;
 use App\Models\MenuPrice;
 use App\Models\InventoryItem;
 use Illuminate\Http\Request;
@@ -185,10 +186,21 @@ class MenuController extends Controller
                         $menuItem->recipes()->create($recipeData);
                     }
                 }
+
+                // Auto-detect and copy recipes from existing menu items with the same name
+                if (!$menuItem->recipes()->exists()) {
+                    $existingItem = MenuItem::where('name', $itemData['name'])
+                        ->where('menu_id', '!=', $menu->id)
+                        ->with('recipes')
+                        ->first();
+                    if ($existingItem && $existingItem->recipes->isNotEmpty()) {
+                        $menuItem->copyRecipesFrom($existingItem);
+                    }
+                }
             }
         }
 
-        
+
         return redirect()->route('admin.menus.index', ['type' => $payload['type'] ?? 'standard', 'meal' => $payload['meal_time'] ?? 'breakfast'])
             ->with('success', 'Menu created. Add at least 5 foods to complete the bundle.');
     }
@@ -241,6 +253,17 @@ class MenuController extends Controller
                 if (isset($itemData['recipes']) && is_array($itemData['recipes'])) {
                     foreach ($itemData['recipes'] as $recipeData) {
                         $menuItem->recipes()->create($recipeData);
+                    }
+                }
+
+                // Auto-detect and copy recipes from existing menu items with the same name
+                if (!$menuItem->recipes()->exists()) {
+                    $existingItem = MenuItem::where('name', $itemData['name'])
+                        ->where('menu_id', '!=', $menu->id)
+                        ->with('recipes')
+                        ->first();
+                    if ($existingItem && $existingItem->recipes->isNotEmpty()) {
+                        $menuItem->copyRecipesFrom($existingItem);
                     }
                 }
             }

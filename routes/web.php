@@ -29,7 +29,7 @@ Route::get('/dashboard', function () {
     if (!$user) return redirect()->route('login');
 
     return match ($user->role) {
-        'superadmin' => redirect()->route('superadmin.users'),
+        'superadmin' => redirect()->route('admin.dashboard'), // Superadmin goes to admin dashboard
         'admin'      => redirect()->route('admin.dashboard'),
         default      => redirect()->route('customer.home'),
     };

@@ -36,7 +36,7 @@
                 </a>
             @endif
 
-            @if(Auth::user()->role === 'admin')
+            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
                 <a href="{{ route('admin.dashboard') }}"
                    class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-green-600 shadow-lg' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

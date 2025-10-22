@@ -16,5 +16,23 @@ class MenuItem extends Model
     {
         return $this->hasMany(Recipe::class);
     }
+
+    /**
+     * Copy recipes from another menu item if this item has no recipes yet.
+     */
+    public function copyRecipesFrom(MenuItem $sourceItem)
+    {
+        if ($this->recipes()->exists()) {
+            return; // Already has recipes, don't copy
+        }
+
+        foreach ($sourceItem->recipes as $sourceRecipe) {
+            $this->recipes()->create([
+                'inventory_item_id' => $sourceRecipe->inventory_item_id,
+                'quantity_needed' => $sourceRecipe->quantity_needed,
+                'unit' => $sourceRecipe->unit,
+            ]);
+        }
+    }
 }
 

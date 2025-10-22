@@ -12,7 +12,7 @@ class AdminDashboardController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','role:admin']);
+        $this->middleware(['auth','role:admin']); // This will now allow superadmin too due to middleware change
     }
 
     public function index(): View

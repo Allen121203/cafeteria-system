@@ -10,7 +10,14 @@ class RoleMiddleware
 {
     public function handle($request, Closure $next, $role)
     {
-        if (!Auth::check() || Auth::user()->role !== $role) {
+        if (!Auth::check()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $userRole = Auth::user()->role;
+
+        // Allow superadmin to access admin routes
+        if ($userRole !== $role && !($userRole === 'superadmin' && $role === 'admin')) {
             abort(403, 'Unauthorized');
         }
 
