@@ -2,7 +2,7 @@
 @section('page-title', 'Admin')
 
 @section('content')
-<div class="container mx-auto space-y-6">
+<div class="w-full min-h-screen overflow-hidden space-y-6 mx-auto max-w-full md:max-w-none md:ml-0 md:mr-0" style="max-width: calc(100vw - 12rem);">
     <!-- Greeting -->
     <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl shadow-lg">
         <div class="flex items-center">
@@ -116,9 +116,9 @@
                 <h3 class="text-lg font-semibold">Items Expiring Soon</h3>
             </div>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-50">
+        <div class="overflow-auto max-h-96">
+            <table class="w-full min-w-max">
+                <thead class="bg-gray-50 sticky top-0">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>

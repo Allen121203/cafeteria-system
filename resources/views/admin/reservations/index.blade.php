@@ -2,7 +2,7 @@
 @section('page-title', 'Reservations')
 
 @section('content')
-<div class="container mx-auto bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+<div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mx-auto max-w-full md:max-w-none md:ml-0 md:mr-0" style="max-width: calc(100vw - 12rem);">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-center justify-between mb-6 space-y-4 sm:space-y-0">
         <div class="flex items-center">
@@ -32,9 +32,9 @@
     </div>
 
     <!-- Table wrapper -->
-    <div class="overflow-x-auto bg-white rounded-xl shadow-lg border border-gray-200">
-        <table class="w-full">
-            <thead class="bg-gray-50">
+    <div class="overflow-auto max-h-96">
+        <table class="w-full min-w-max">
+            <thead class="bg-gray-50 sticky top-0">
                 <tr>
                     <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                     <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>

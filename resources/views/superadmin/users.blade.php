@@ -4,7 +4,7 @@
 @section('page-title', 'Manage Users')
 
 @section('content')
-<div class="bg-white p-6 rounded shadow">
+<div class="bg-white p-6 rounded shadow mx-auto max-w-full md:max-w-none md:ml-0 md:mr-0" style="max-width: calc(100vw - 12rem);">
     @if(session('success'))
         <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
     @endif
@@ -20,16 +20,17 @@
         </button>
     </div>
 
-    <table class="w-full mt-6 border-collapse border">
-        <thead>
-            <tr class="bg-gray-200">
-                <th class="border px-4 py-2 text-left">Name</th>
-                <th class="border px-4 py-2 text-left">Email</th>
-                <th class="border px-4 py-2 text-left">Role</th>
-                <th class="border px-4 py-2 text-center">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="overflow-auto max-h-96 mt-6">
+        <table class="w-full min-w-max border-collapse border">
+            <thead class="bg-gray-200 sticky top-0">
+                <tr>
+                    <th class="border px-4 py-2 text-left">Name</th>
+                    <th class="border px-4 py-2 text-left">Email</th>
+                    <th class="border px-4 py-2 text-left">Role</th>
+                    <th class="border px-4 py-2 text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
             @forelse($users as $user)
                 <tr>
                     <td class="border px-4 py-2">{{ $user->name }}</td>
@@ -63,11 +64,12 @@
                         </form>
                     </td>
                 </tr>
-            @empty
-                <tr><td colspan="4" class="text-gray-500 px-4 py-6">No users found.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+                @empty
+                    <tr><td colspan="4" class="text-gray-500 px-4 py-6">No users found.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {{-- Modal: Add Admin --}}

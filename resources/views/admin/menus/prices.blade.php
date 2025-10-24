@@ -2,7 +2,7 @@
 @section('page-title','Manage Menu Prices')
 
 @section('content')
-<div class="container mx-auto bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+<div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mx-auto max-w-full md:max-w-none md:ml-0 md:mr-0" style="max-width: calc(100vw - 12rem);">
   {{-- Header --}}
   <div class="flex items-center mb-6">
     <svg class="w-8 h-8 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,9 +15,9 @@
   <form method="POST" action="{{ route('admin.menus.prices.update') }}" class="space-y-6">
       @csrf
 
-      <div class="bg-white rounded-xl shadow-lg border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+  <div class="overflow-auto max-h-96">
+    <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50 sticky top-0">
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meal Time</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Standard Price</th>

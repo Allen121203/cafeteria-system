@@ -3,8 +3,8 @@
 @section('page-title', isset($reportType) ? ucfirst($reportType) . ' Report Results' : 'Report Results')
 
 @section('content')
-<div class="container mx-auto">
-    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+<div class="w-full min-h-screen overflow-hidden">
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mx-auto max-w-full md:max-w-none md:ml-0 md:mr-0" style="max-width: calc(100vw - 12rem);">
         <!-- Header with Back Arrow -->
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center">
@@ -137,7 +137,7 @@
                 </h2>
             </div>
 
-            <div class="overflow-x-auto bg-white rounded-xl shadow-lg border border-gray-200">
+            <div class="overflow-auto bg-white rounded-xl shadow-lg border border-gray-200 max-h-96">
                 @if(isset($reportType) && $reportType == 'reservation')
                     @if($reservationData->isEmpty())
                         <div class="p-8 text-center text-gray-500">
@@ -148,41 +148,43 @@
                             <p class="text-sm">Try selecting a different date range.</p>
                         </div>
                     @else
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Name</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Date</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Persons</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($reservationData as $reservation)
-                                <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ $reservation['id'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reservation['event_name'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reservation['event_date'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reservation['customer_name'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reservation['department'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reservation['number_of_persons'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                            @if($reservation['status'] == 'approved') bg-green-100 text-green-800
-                                            @elseif($reservation['status'] == 'pending') bg-yellow-100 text-yellow-800
-                                            @else bg-red-100 text-red-800 @endif">
-                                            {{ $reservation['status'] }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reservation['created_at'] }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        <div class="overflow-auto">
+                            <table class="w-full min-w-max">
+                                <thead class="bg-gray-50 sticky top-0">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Name</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Date</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Persons</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($reservationData as $reservation)
+                                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ $reservation['id'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reservation['event_name'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reservation['event_date'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reservation['customer_name'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reservation['department'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reservation['number_of_persons'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                @if($reservation['status'] == 'approved') bg-green-100 text-green-800
+                                                @elseif($reservation['status'] == 'pending') bg-yellow-100 text-yellow-800
+                                                @else bg-red-100 text-red-800 @endif">
+                                                {{ $reservation['status'] }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reservation['created_at'] }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     @endif
                 @elseif(isset($reportType) && $reportType == 'inventory')
                     @if($inventoryData->isEmpty())
@@ -194,26 +196,28 @@
                             <p class="text-sm">Try selecting a different date range.</p>
                         </div>
                     @else
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inventory Item</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Used</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reservations Count</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($inventoryData as $item)
-                                <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $item['name'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item['unit'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($item['total_used'], 2) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item['reservations_count'] }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        <div class="overflow-auto">
+                            <table class="w-full min-w-max">
+                                <thead class="bg-gray-50 sticky top-0">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inventory Item</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Used</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reservations Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($inventoryData as $item)
+                                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $item['name'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item['unit'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ number_format($item['total_used'], 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $item['reservations_count'] }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     @endif
                 @elseif(isset($reportType) && $reportType == 'crm')
                     @if($crmData->isEmpty())
@@ -225,30 +229,32 @@
                             <p class="text-sm">Try selecting a different date range.</p>
                         </div>
                     @else
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Reservations</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approved</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Spent</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Reservation</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($crmData as $customer)
-                                <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $customer['name'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $customer['email'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $customer['total_reservations'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $customer['approved_reservations'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₱{{ number_format($customer['total_spent'], 2) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $customer['last_reservation'] }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        <div class="overflow-auto">
+                            <table class="w-full min-w-max">
+                                <thead class="bg-gray-50 sticky top-0">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Reservations</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approved</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Spent</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Reservation</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($crmData as $customer)
+                                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $customer['name'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $customer['email'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $customer['total_reservations'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $customer['approved_reservations'] }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₱{{ number_format($customer['total_spent'], 2) }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $customer['last_reservation'] }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     @endif
                 @else
                     @if($salesData->isEmpty())
@@ -260,46 +266,48 @@
                             <p class="text-sm">Try selecting a different date range.</p>
                         </div>
                     @else
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reservation</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Details</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Menu Items</th>
-                                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($salesData as $reservation)
-                                <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">#{{ $reservation['reservation_id'] }}</div>
-                                        <div class="text-sm text-gray-500">{{ $reservation['customer_name'] }}</div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $reservation['event_name'] }}</div>
-                                        <div class="text-sm text-gray-500">{{ $reservation['event_date'] }}</div>
-                                        <div class="text-sm text-gray-500">{{ $reservation['number_of_persons'] }} persons</div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="space-y-2">
-                                            @foreach($reservation['items'] as $item)
-                                            <div class="text-sm">
-                                                <span class="font-medium">{{ $item['menu_name'] }}</span>
-                                                <span class="text-gray-500">({{ $item['type'] }} - {{ $item['meal_time'] }})</span>
-                                                <br>
-                                                <span class="text-gray-600">Qty: {{ $item['quantity'] }} × ₱{{ number_format($item['unit_price'], 2) }} = ₱{{ number_format($item['total'], 2) }}</span>
+                        <div class="overflow-auto">
+                            <table class="w-full min-w-max">
+                                <thead class="bg-gray-50 sticky top-0">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reservation</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Details</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Menu Items</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($salesData as $reservation)
+                                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">#{{ $reservation['reservation_id'] }}</div>
+                                            <div class="text-sm text-gray-500">{{ $reservation['customer_name'] }}</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm font-medium text-gray-900">{{ $reservation['event_name'] }}</div>
+                                            <div class="text-sm text-gray-500">{{ $reservation['event_date'] }}</div>
+                                            <div class="text-sm text-gray-500">{{ $reservation['number_of_persons'] }} persons</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="space-y-2">
+                                                @foreach($reservation['items'] as $item)
+                                                <div class="text-sm">
+                                                    <span class="font-medium">{{ $item['menu_name'] }}</span>
+                                                    <span class="text-gray-500">({{ $item['type'] }} - {{ $item['meal_time'] }})</span>
+                                                    <br>
+                                                    <span class="text-gray-600">Qty: {{ $item['quantity'] }} × ₱{{ number_format($item['unit_price'], 2) }} = ₱{{ number_format($item['total'], 2) }}</span>
+                                                </div>
+                                                @endforeach
                                             </div>
-                                            @endforeach
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        ₱{{ number_format($reservation['reservation_total'], 2) }}
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            ₱{{ number_format($reservation['reservation_total'], 2) }}
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     @endif
                 @endif
             </div>

@@ -1,37 +1,19 @@
-# Reports System Refactor TODO
+# TODO: Make Tables Responsive and Scrollable
 
-## Phase 1: Create ReportsService
-- [ ] Create app/Services/ReportsService.php
-- [ ] Move all data processing logic from controller to service
-- [ ] Implement consistent date filtering using whereBetween()
-- [ ] Add proper error handling and validation
+## Files to Update:
+- [ ] resources/views/admin/reports/show.blade.php (multiple tables)
+- [ ] resources/views/admin/reservations/index.blade.php
+- [ ] resources/views/admin/inventory/index.blade.php
+- [ ] resources/views/admin/dashboard.blade.php (expiring items table)
+- [ ] resources/views/admin/recipes/index.blade.php
+- [ ] resources/views/admin/menus/prices.blade.php
+- [ ] resources/views/superadmin/users.blade.php
+- [ ] resources/views/superadmin/audit.blade.php
+- [ ] resources/views/customer/reservation_details.blade.php
 
-## Phase 2: Refactor ReportsController
-- [ ] Update ReportsController to use ReportsService
-- [ ] Remove duplicate code between generate() and exportPdf()
-- [ ] Simplify controller methods
-- [ ] Add proper dependency injection
-
-## Phase 3: Fix Export Classes
-- [ ] Fix SalesReportExport map() method to export all item rows
-- [ ] Update all export classes to use ReportsService
-- [ ] Ensure consistent data structure across exports
-- [ ] Test Excel export functionality
-
-## Phase 4: Simplify Views
-- [ ] Refactor show.blade.php to reduce conditional complexity
-- [ ] Update pdf.blade.php for better maintainability
-- [ ] Create reusable components for report tables
-- [ ] Improve error handling in views
-
-## Phase 5: Testing & Validation
-- [ ] Test all report types (reservation, sales, inventory, crm)
-- [ ] Verify PDF and Excel exports work correctly
-- [ ] Test date filtering consistency
-- [ ] Validate data accuracy across all reports
-
-## Phase 6: Code Cleanup
-- [ ] Remove any unused code
-- [ ] Add proper PHPDoc comments
-- [ ] Ensure consistent code style
-- [ ] Update any related documentation
+## Changes Needed:
+- Wrap tables in responsive container with overflow-x-auto and overflow-y-auto
+- Add responsive height classes (e.g., max-h-96 on mobile, larger on desktop)
+- Ensure table has min-w-full for proper scrolling
+- Adjust padding for mobile devices if necessary
+- Test responsiveness across different screen sizes

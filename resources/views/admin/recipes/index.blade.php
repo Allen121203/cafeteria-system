@@ -2,7 +2,7 @@
 @section('page-title','Recipe: '.$menuItem->name)
 
 @section('content')
-<div class="container mx-auto bg-white p-6 rounded shadow">
+<div class="bg-white p-6 rounded shadow mx-auto max-w-full md:max-w-none md:ml-0 md:mr-0" style="max-width: calc(100vw - 12rem);">
   <h1 class="text-2xl font-bold mb-2">Recipe for: {{ $menuItem->name }}</h1>
   <p class="text-gray-500">Bundle: {{ $menuItem->menu->name }}</p>
 
@@ -18,11 +18,12 @@
     <button class="bg-green-600 text-white px-4 py-2 rounded">Add/Update</button>
   </form>
 
-  <table class="w-full mt-5 border-collapse border">
-    <thead class="bg-gray-100">
-      <tr><th class="p-2 text-left">Ingredient</th><th>Qty per serving</th><th>Action</th></tr>
-    </thead>
-    <tbody>
+  <div class="flex-1 overflow-auto mt-5">
+    <table class="w-full min-w-max border-collapse border">
+      <thead class="bg-gray-100 sticky top-0">
+        <tr><th class="p-2 text-left">Ingredient</th><th>Qty per serving</th><th>Action</th></tr>
+      </thead>
+      <tbody>
       @forelse($menuItem->recipes as $r)
         <tr class="border-t">
           <td class="p-2">{{ $r->inventoryItem->name }}</td>
@@ -34,10 +35,11 @@
             </form>
           </td>
         </tr>
-      @empty
-        <tr><td colspan="3" class="text-center text-gray-500">No ingredients yet.</td></tr>
-      @endforelse
-    </tbody>
-  </table>
+        @empty
+          <tr><td colspan="3" class="text-center text-gray-500">No ingredients yet.</td></tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
 </div>
 @endsection
