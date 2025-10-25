@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\InventoryItem;
+use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -56,6 +58,15 @@ class InventoryItemController extends Controller
             'description' => 'added an inventory item',
         ]);
 
+        // Create notification for admins/superadmin about inventory item addition
+        $this->createAdminNotification('inventory_item_added', 'inventory', 'A new inventory item has been added by ' . Auth::user()->name, [
+            'item_name' => $item->name,
+            'category' => $item->category,
+            'quantity' => $item->qty,
+            'unit' => $item->unit,
+            'updated_by' => Auth::user()->name,
+        ]);
+
         return redirect()->route('admin.inventory.index')->with('success', 'Item added successfully.');
     }
 
@@ -84,6 +95,16 @@ class InventoryItemController extends Controller
             'description' => 'updated an inventory item',
         ]);
 
+        // Create notification for admins/superadmin about inventory item update
+        $this->createAdminNotification('inventory_item_updated', 'inventory', 'An inventory item has been updated by ' . Auth::user()->name, [
+            'item_name' => $inventory->name,
+            'category' => $inventory->category,
+            'old_quantity' => $oldQty,
+            'new_quantity' => $inventory->qty,
+            'unit' => $inventory->unit,
+            'updated_by' => Auth::user()->name,
+        ]);
+
         return redirect()->route('admin.inventory.index')->with('success', 'Item updated successfully.');
     }
 
@@ -99,6 +120,24 @@ class InventoryItemController extends Controller
             'description' => 'deleted an inventory item',
         ]);
 
+        // Create notification for admins/superadmin about inventory item deletion
+        $this->createAdminNotification('inventory_item_deleted', 'inventory', 'An inventory item has been deleted by ' . Auth::user()->name, [
+            'item_name' => $itemName,
+            'updated_by' => Auth::user()->name,
+        ]);
+
         return back()->with('success', 'Item deleted.');
+    }
+
+    /** Create notification for admins/superadmin */
+    protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
+    {
+        Notification::create([
+            'user_id' => Auth::id(), // Store the actor's ID
+            'action' => $action,
+            'module' => $module,
+            'description' => $description,
+            'metadata' => $metadata,
+        ]);
     }
 }

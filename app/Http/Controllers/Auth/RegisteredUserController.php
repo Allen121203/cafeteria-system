@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Notification as NotificationModel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,22 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
+    /** Create notification for admins/superadmin */
+    protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
+    {
+        // Get all admin and superadmin users
+        $adminUsers = User::whereIn('role', ['admin', 'superadmin'])->get();
+
+        foreach ($adminUsers as $admin) {
+            NotificationModel::create([
+                'user_id' => $admin->id,
+                'action' => $action,
+                'module' => $module,
+                'description' => $description,
+                'metadata' => $metadata,
+            ]);
+        }
+    }
     /**
      * Display the registration view.
      */
@@ -53,6 +70,13 @@ class RegisteredUserController extends Controller
 
         // Send email verification notification
         $user->sendEmailVerificationNotification();
+
+        // Create notification for admins/superadmin about new user registration
+        $this->createAdminNotification('user_registered', 'users', "New customer {$user->name} has registered", [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_email' => $user->email,
+        ]);
 
         // Return JSON response for AJAX request
         if ($request->expectsJson()) {

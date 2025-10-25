@@ -212,6 +212,15 @@ class MenuController extends Controller
         }
 
 
+        // Create notification for admins/superadmin about menu creation
+        $this->createAdminNotification('menu_created', 'menus', 'A new menu has been created by ' . Auth::user()->name, [
+            'menu_id' => $menu->id,
+            'menu_name' => $menu->name ?? 'Unnamed',
+            'type' => $menu->type,
+            'meal_time' => $menu->meal_time,
+            'updated_by' => Auth::user()->name,
+        ]);
+
         return redirect()->route('admin.menus.index', ['type' => $payload['type'] ?? 'standard', 'meal' => $payload['meal_time'] ?? 'breakfast'])
             ->with('success', 'Menu created. Add at least 5 foods to complete the bundle.');
     }
@@ -287,6 +296,15 @@ class MenuController extends Controller
             }
         }
 
+        // Create notification for admins/superadmin about menu update
+        $this->createAdminNotification('menu_updated', 'menus', 'A menu has been updated by ' . Auth::user()->name, [
+            'menu_id' => $menu->id,
+            'menu_name' => $menu->name ?? 'Unnamed',
+            'type' => $menu->type,
+            'meal_time' => $menu->meal_time,
+            'updated_by' => Auth::user()->name,
+        ]);
+
         return back()->with('success', 'Menu updated.');
     }
 
@@ -300,6 +318,12 @@ class MenuController extends Controller
             'action'      => 'Deleted Menu',
             'module'      => 'menus',
             'description' => 'deleted a menu',
+        ]);
+
+        // Create notification for admins/superadmin about menu deletion
+        $this->createAdminNotification('menu_deleted', 'menus', 'A menu has been deleted by ' . Auth::user()->name, [
+            'menu_name' => $menuName,
+            'updated_by' => Auth::user()->name,
         ]);
 
         return redirect()->route('admin.menus.index')->with('success', 'Menu deleted.');
@@ -369,8 +393,9 @@ class MenuController extends Controller
         ]);
 
         // Create notification for admins/superadmin about price changes
-        $this->createAdminNotification('menu_prices_modified', 'menus', 'Menu prices have been updated', [
+        $this->createAdminNotification('menu_prices_modified', 'menus', 'Menu prices have been updated by ' . Auth::user()->name, [
             'updated_prices' => $updatedPrices,
+            'updated_by' => Auth::user()->name,
         ]);
 
         return back()->with('success', 'Menu prices updated successfully.');
@@ -387,20 +412,16 @@ class MenuController extends Controller
         return view('customer.menu', compact('menus'));
     }
 
-    /** Create notification for admins/superadmin */
+    /** Create notification for admins/superadmin only */
     protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
     {
-        // Get all admin and superadmin users
-        $adminUsers = User::whereIn('role', ['admin', 'superadmin'])->get();
-
-        foreach ($adminUsers as $admin) {
-            Notification::create([
-                'user_id' => $admin->id,
-                'action' => $action,
-                'module' => $module,
-                'description' => $description,
-                'metadata' => $metadata,
-            ]);
-        }
+        Notification::create([
+            'user_id' => Auth::id(), // Store the actor's ID
+            'type' => 'info',
+            'action' => $action,
+            'module' => $module,
+            'description' => $description,
+            'metadata' => $metadata,
+        ]);
     }
 }

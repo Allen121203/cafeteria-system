@@ -134,4 +134,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservation/details', function () {
         return view('customer.reservation_details');
     })->name('reservation_details');
+
+    // 5. Route for cancelling a reservation
+    Route::patch('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservation.cancel');
 });

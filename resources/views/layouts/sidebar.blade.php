@@ -122,20 +122,22 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
-                <h1 class="text-xl font-bold text-gray-800">
-                    @yield('page-title', 'Dashboard')
-                </h1>
             </div>
 
             <div class="flex items-center space-x-4">
-                <!-- Search -->
+                <!-- Enhanced Search -->
                 <div class="relative">
-                    <input type="text" placeholder="Search..."
-                           class="border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
-                           onkeyup="filterTable(this.value)">
+                    <input type="text" id="searchInput" placeholder="Search tables, data, or content..."
+                           class="border border-gray-300 rounded-lg px-4 py-2 pl-10 pr-10 w-80 focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
+                           oninput="filterTable(this.value)">
                     <svg class="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
+                    <button id="clearSearch" class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 transition-colors duration-200" style="display: none;">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Notifications -->
@@ -210,7 +212,27 @@ function filterTable(query) {
         let text = row.innerText.toLowerCase();
         row.style.display = text.includes(query) ? "" : "none";
     });
+
+    // Show/hide clear button based on input value
+    const clearButton = document.getElementById('clearSearch');
+    if (query.length > 0) {
+        clearButton.style.display = 'block';
+    } else {
+        clearButton.style.display = 'none';
+    }
 }
+
+// Clear search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const clearButton = document.getElementById('clearSearch');
+
+    clearButton.addEventListener('click', function() {
+        searchInput.value = '';
+        filterTable('');
+        searchInput.focus();
+    });
+});
 
 // Load notifications when page loads
 document.addEventListener('DOMContentLoaded', function() {
@@ -237,20 +259,24 @@ function loadNotifications() {
             if (!data || data.length === 0) {
                 list.innerHTML = '<li class="px-4 py-3 hover:bg-gray-50 text-gray-600">No new notifications</li>';
             } else {
-                list.innerHTML = data.map(notification => `
+                list.innerHTML = data.map(notification => {
+                    const metadata = notification.metadata || {};
+                    const actionUser = metadata.updated_by || metadata.generated_by || metadata.created_by || metadata.deleted_by || metadata.added_by || metadata.removed_by || (notification.user ? notification.user.name : 'Unknown User');
+                    return `
                             <li class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
                                 <div class="flex items-start space-x-3">
                                     <div class="flex-shrink-0">
                                         <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900">${notification.user ? notification.user.name : 'Unknown User'}</p>
+                                        <p class="text-sm font-medium text-gray-900">${actionUser}</p>
                                         <p class="text-sm text-gray-600">${notification.description || 'Unknown Action'}</p>
                                         <p class="text-xs text-gray-400">${notification.created_at ? new Date(notification.created_at).toLocaleString() : 'Unknown Time'}</p>
                                     </div>
                                 </div>
                             </li>
-                `).join('');
+                    `;
+                }).join('');
             }
         })
         .catch(error => {

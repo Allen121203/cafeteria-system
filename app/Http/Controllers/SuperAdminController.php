@@ -8,6 +8,7 @@ use App\Models\AuditTrail;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -105,7 +106,10 @@ class SuperAdminController extends Controller
 
         if ($user->role === 'superadmin') {
             // Superadmin sees all notifications
-            $notifications = Notification::with('user')->latest()->take(20)->get();
+            $notifications = Notification::with('user')
+                ->latest()
+                ->take(20)
+                ->get();
         } elseif ($user->role === 'admin') {
             // Admin sees only customer actions (where the actor is not admin/superadmin)
             $notifications = Notification::whereNotIn('user_id', [1,7])

@@ -49,6 +49,7 @@ class ReportsController extends Controller
             'report_type' => $reportType,
             'start_date' => $startDate->format('Y-m-d'),
             'end_date' => $endDate->format('Y-m-d'),
+            'generated_by' => Auth::user()->name,
         ]);
 
         switch ($reportType) {
@@ -496,17 +497,13 @@ class ReportsController extends Controller
     /** Create notification for admins/superadmin */
     protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
     {
-        // Get all admin and superadmin users
-        $adminUsers = User::whereIn('role', ['admin', 'superadmin'])->get();
-
-        foreach ($adminUsers as $admin) {
-            Notification::create([
-                'user_id' => $admin->id,
-                'action' => $action,
-                'module' => $module,
-                'description' => $description,
-                'metadata' => $metadata,
-            ]);
-        }
+        Notification::create([
+            'user_id' => Auth::id(), // Store the actor's ID
+            'type' => 'info',
+            'action' => $action,
+            'module' => $module,
+            'description' => $description,
+            'metadata' => $metadata,
+        ]);
     }
 }

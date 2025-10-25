@@ -130,6 +130,7 @@ class ReservationController extends Controller
         $this->createAdminNotification('reservation_approved', 'reservations', "Reservation #{$reservation->id} has been approved", [
             'reservation_id' => $reservation->id,
             'customer_name' => optional($reservation->user)->name ?? 'Unknown',
+            'updated_by' => Auth::user()->name,
         ]);
 
         return redirect()
@@ -200,6 +201,7 @@ class ReservationController extends Controller
             'reservation_id' => $reservation->id,
             'customer_name' => optional($reservation->user)->name ?? 'Unknown',
             'reason' => $data['reason'],
+            'updated_by' => Auth::user()->name,
         ]);
 
         return redirect()
@@ -322,8 +324,43 @@ class ReservationController extends Controller
             'reservation_id' => $reservation->id,
             'customer_name' => optional($reservation->user)->name ?? 'Unknown',
             'total_persons' => $totalPersons,
+            'generated_by' => Auth::user()->name,
         ]);
 
         return redirect()->route('reservation_details')->with('success', 'Reservation placed successfully!');
+    }
+
+    public function cancel(Request $request, Reservation $reservation)
+    {
+        // Ensure only the owner can cancel their reservation
+        if ($reservation->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'You are not authorized to cancel this reservation.');
+        }
+
+        // Only allow cancellation of pending reservations
+        if ($reservation->status !== 'pending') {
+            return redirect()->back()->with('error', 'Only pending reservations can be cancelled.');
+        }
+
+        $reservation->status = 'cancelled';
+        $reservation->save();
+
+        // Create audit trail
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Cancelled Order',
+            'module'      => 'reservations',
+            'description' => 'cancelled reservation #' . $reservation->id,
+        ]);
+
+        // Create notification for admins/superadmin about cancelled order
+        $this->createAdminNotification('order_cancelled', 'reservations', "Reservation #{$reservation->id} has been cancelled by customer", [
+            'reservation_id' => $reservation->id,
+            'customer_name' => optional($reservation->user)->name ?? 'Unknown',
+            'total_persons' => $reservation->number_of_persons,
+            'updated_by' => Auth::user()->name,
+        ]);
+
+        return redirect()->back()->with('success', 'Reservation cancelled successfully.');
     }
 }

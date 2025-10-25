@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\MenuItem;
 use App\Models\Recipe;
 use App\Models\InventoryItem;
+use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -41,6 +43,15 @@ class RecipeController extends Controller
             'description' => 'added/updated a recipe ingredient',
         ]);
 
+        // Create notification for admins/superadmin about recipe ingredient addition/update
+        $this->createAdminNotification('recipe_ingredient_added_updated', 'recipes', 'A recipe ingredient has been added/updated by ' . Auth::user()->name, [
+            'menu_item_name' => $menuItem->name,
+            'inventory_item_name' => $inventoryItem->name,
+            'quantity_needed' => $data['quantity_needed'],
+            'unit' => $inventoryItem->unit,
+            'updated_by' => Auth::user()->name,
+        ]);
+
         return back()->with('success','Ingredient added/updated.');
     }
 
@@ -60,6 +71,26 @@ class RecipeController extends Controller
             'description' => 'removed a recipe ingredient',
         ]);
 
+        // Create notification for admins/superadmin about recipe ingredient removal
+        $this->createAdminNotification('recipe_ingredient_removed', 'recipes', 'A recipe ingredient has been removed by ' . Auth::user()->name, [
+            'menu_item_name' => $menuItemName,
+            'inventory_item_name' => $ingredientName,
+            'updated_by' => Auth::user()->name,
+        ]);
+
         return back()->with('success','Ingredient removed.');
+    }
+
+    /** Create notification for admins/superadmin */
+    protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
+    {
+        Notification::create([
+            'user_id' => Auth::id(), // Store the actor's ID
+            'type' => 'info',
+            'action' => $action,
+            'module' => $module,
+            'description' => $description,
+            'metadata' => $metadata,
+        ]);
     }
 }
