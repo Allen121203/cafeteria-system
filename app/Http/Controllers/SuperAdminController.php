@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\AuditTrail;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
@@ -40,7 +41,7 @@ class SuperAdminController extends Controller
             'user_id'     => Auth::id(),
             'action'      => 'Created Admin',
             'module'      => 'users',
-            'description' => "Created admin {$user->email}",
+            'description' => 'created an admin',
         ]);
 
         return redirect()->route('superadmin.users')->with('success', 'Admin created successfully.');
@@ -63,7 +64,7 @@ class SuperAdminController extends Controller
             'user_id'     => Auth::id(),
             'action'      => 'Updated Admin',
             'module'      => 'users',
-            'description' => "Updated admin {$user->email}",
+            'description' => 'updated an admin',
         ]);
 
         return redirect()->route('superadmin.users')->with('success', 'Admin updated successfully.');
@@ -80,7 +81,7 @@ class SuperAdminController extends Controller
             'user_id'     => Auth::id(),
             'action'      => 'Deleted User',
             'module'      => 'users',
-            'description' => "Deleted {$role} {$email}",
+            'description' => 'deleted a user',
         ]);
 
         return back()->with('success', 'User deleted successfully.');
@@ -90,5 +91,33 @@ class SuperAdminController extends Controller
     {
         $audits = AuditTrail::where('user_id', $user->id)->latest()->get();
         return view('superadmin.audit', compact('user','audits'));
+    }
+
+    public function recentAudits()
+    {
+        $audits = AuditTrail::with('user')->latest()->take(50)->get();
+        return response()->json($audits);
+    }
+
+    public function recentNotifications()
+    {
+        $user = Auth::user();
+
+        if ($user->role === 'superadmin') {
+            // Superadmin sees all notifications
+            $notifications = Notification::with('user')->latest()->take(20)->get();
+        } elseif ($user->role === 'admin') {
+            // Admin sees only customer actions (where the actor is not admin/superadmin)
+            $notifications = Notification::whereNotIn('user_id', [1,7])
+                ->with('user')
+                ->latest()
+                ->take(20)
+                ->get();
+        } else {
+            // For other roles, return empty
+            $notifications = collect();
+        }
+
+        return response()->json($notifications);
     }
 }

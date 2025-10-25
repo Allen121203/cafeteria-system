@@ -12,6 +12,8 @@
                     <thead class="bg-gray-200 sticky top-0">
                         <tr>
                             <th class="border px-4 py-2">Action</th>
+                            <th class="border px-4 py-2">Module</th>
+                            <th class="border px-4 py-2">Description</th>
                             <th class="border px-4 py-2">Date</th>
                         </tr>
                     </thead>
@@ -19,11 +21,13 @@
                 @forelse($audits as $log)
                     <tr>
                         <td class="border px-4 py-2">{{ $log->action }}</td>
+                        <td class="border px-4 py-2">{{ $log->module }}</td>
+                        <td class="border px-4 py-2">{{ $log->description }}</td>
                         <td class="border px-4 py-2">{{ $log->created_at->format('M d, Y h:i A') }}</td>
                     </tr>
                         @empty
                             <tr>
-                                <td colspan="2" class="text-center py-4">No audit records found.</td>
+                                <td colspan="4" class="text-center py-4">No audit records found.</td>
                             </tr>
                         @endforelse
                     </tbody>

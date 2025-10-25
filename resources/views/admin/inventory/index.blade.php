@@ -205,18 +205,18 @@
 
             <h2 class="text-xl font-bold mb-4">Edit Inventory Item</h2>
 
-            <form x-bind:action="updateRoute.replace(':id', editingItem.id)" method="POST" class="space-y-4">
+            <form x-bind:action="editingItem ? updateRoute.replace(':id', editingItem.id) : ''" method="POST" class="space-y-4">
                 @csrf @method('PUT')
 
                 <div>
                     <label for="edit_name" class="block text-sm font-medium">Item Name</label>
-                    <input type="text" name="name" id="edit_name" required x-bind:value="editingItem.name"
+                    <input type="text" name="name" id="edit_name" required x-bind:value="editingItem ? editingItem.name : ''"
                         class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
                 </div>
 
                 <div>
                     <label for="edit_category" class="block text-sm font-medium">Category</label>
-                    <select name="category" id="edit_category" required x-bind:value="editingItem.category"
+                    <select name="category" id="edit_category" required x-bind:value="editingItem ? editingItem.category : ''"
                         class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
                         <option value="">-- Select Category --</option>
                         <option value="Perishable">Perishable</option>
@@ -229,13 +229,13 @@
 
                 <div>
                     <label for="edit_qty" class="block text-sm font-medium">Quantity</label>
-                    <input type="number" name="qty" id="edit_qty" min="1" required x-bind:value="editingItem.qty"
+                    <input type="number" name="qty" id="edit_qty" min="1" required x-bind:value="editingItem ? editingItem.qty : ''"
                         class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
                 </div>
 
                 <div>
                     <label for="edit_unit" class="block text-sm font-medium">Unit</label>
-                    <select name="unit" id="edit_unit" required x-bind:value="editingItem.unit"
+                    <select name="unit" id="edit_unit" required x-bind:value="editingItem ? editingItem.unit : ''"
                         class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
                         <option value="">-- Select Unit --</option>
                         <option value="Pieces">Pieces</option>
@@ -247,7 +247,7 @@
 
                 <div>
                     <label for="edit_expiry_date" class="block text-sm font-medium">Expiry Date</label>
-                    <input type="date" name="expiry_date" id="edit_expiry_date" x-bind:value="editingItem.expiry_date"
+                    <input type="date" name="expiry_date" id="edit_expiry_date" x-bind:value="editingItem ? editingItem.expiry_date : ''"
                         class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
                     <small class="text-gray-500">Leave blank if not applicable.</small>
                 </div>

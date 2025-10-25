@@ -151,8 +151,8 @@
                          class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-50"
                          x-cloak>
                         <div class="p-4 border-b border-gray-200 font-semibold text-gray-800">Notifications</div>
-                        <ul class="max-h-60 overflow-y-auto">
-                            <li class="px-4 py-3 hover:bg-gray-50 text-gray-600">No new notifications</li>
+                        <ul class="max-h-60 overflow-y-auto" id="notifications-list">
+                            <li class="px-4 py-3 hover:bg-gray-50 text-gray-600">Loading notifications...</li>
                         </ul>
                     </div>
                 </div>
@@ -201,7 +201,7 @@
     </div>
 </div>
 
-<!-- JS for search filter -->
+<!-- JS for search filter and notifications -->
 <script>
 function filterTable(query) {
     let rows = document.querySelectorAll("table tbody tr");
@@ -211,6 +211,50 @@ function filterTable(query) {
         row.style.display = text.includes(query) ? "" : "none";
     });
 }
+
+// Load notifications when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadNotifications();
+});
+
+function loadNotifications() {
+    fetch('/admin/recent-notifications')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const list = document.getElementById('notifications-list');
+            if (!data || data.length === 0) {
+                list.innerHTML = '<li class="px-4 py-3 hover:bg-gray-50 text-gray-600">No new notifications</li>';
+            } else {
+                list.innerHTML = data.map(notification => `
+                            <li class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900">${notification.user ? notification.user.name : 'Unknown User'}</p>
+                                        <p class="text-sm text-gray-600">${notification.description || 'Unknown Action'}</p>
+                                        <p class="text-xs text-gray-400">${notification.created_at ? new Date(notification.created_at).toLocaleString() : 'Unknown Time'}</p>
+                                    </div>
+                                </div>
+                            </li>
+                `).join('');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notifications:', error);
+            const list = document.getElementById('notifications-list');
+            list.innerHTML = '<li class="px-4 py-3 hover:bg-gray-50 text-gray-600">Error loading notifications</li>';
+        });
+}
+
+// Refresh notifications every 30 seconds
+setInterval(loadNotifications, 30000);
 </script>
 </body>
 </html>

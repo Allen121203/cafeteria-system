@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\MenuPrice;
+use App\Models\User;
+use App\Models\Notification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SalesReportExport;
@@ -12,6 +14,8 @@ use App\Exports\InventoryReportExport;
 use App\Exports\ReservationReportExport;
 use App\Exports\CrmReportExport;
 use Carbon\Carbon;
+use App\Models\AuditTrail;
+use Illuminate\Support\Facades\Auth;
 
 class ReportsController extends Controller
 {
@@ -31,6 +35,21 @@ class ReportsController extends Controller
         $reportType = $request->report_type;
         $startDate = Carbon::parse($request->start_date)->startOfDay();
         $endDate = Carbon::parse($request->end_date)->endOfDay();
+
+        // Log report generation
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Generated Report',
+            'module'      => 'reports',
+            'description' => 'generated a report',
+        ]);
+
+        // Create notification for admins/superadmin about report generation
+        $this->createAdminNotification('report_generated', 'reports', ucfirst($reportType) . ' report has been generated', [
+            'report_type' => $reportType,
+            'start_date' => $startDate->format('Y-m-d'),
+            'end_date' => $endDate->format('Y-m-d'),
+        ]);
 
         switch ($reportType) {
             case 'reservation':
@@ -425,6 +444,14 @@ class ReportsController extends Controller
                 break;
         }
 
+        // Log PDF export
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Exported Report PDF',
+            'module'      => 'reports',
+            'description' => 'exported a report PDF',
+        ]);
+
         $pdf = Pdf::loadView('admin.reports.pdf', $viewData);
 
         return $pdf->download($filename);
@@ -444,6 +471,14 @@ class ReportsController extends Controller
 
         $filename = $reportType . '_report_' . $startDate->format('Y-m-d') . '_to_' . $endDate->format('Y-m-d') . '.xlsx';
 
+        // Log Excel export
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Exported Report Excel',
+            'module'      => 'reports',
+            'description' => 'exported a report Excel',
+        ]);
+
         switch ($reportType) {
             case 'reservation':
                 return Excel::download(new \App\Exports\ReservationReportExport($startDate, $endDate), $filename);
@@ -455,6 +490,23 @@ class ReportsController extends Controller
                 return Excel::download(new \App\Exports\CrmReportExport($startDate, $endDate), $filename);
             default:
                 abort(400, 'Invalid report type');
+        }
+    }
+
+    /** Create notification for admins/superadmin */
+    protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
+    {
+        // Get all admin and superadmin users
+        $adminUsers = User::whereIn('role', ['admin', 'superadmin'])->get();
+
+        foreach ($adminUsers as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'action' => $action,
+                'module' => $module,
+                'description' => $description,
+                'metadata' => $metadata,
+            ]);
         }
     }
 }

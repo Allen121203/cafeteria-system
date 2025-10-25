@@ -8,6 +8,8 @@ use App\Models\InventoryItem;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Models\AuditTrail;
+use Illuminate\Support\Facades\Auth;
 
 class RecipeController extends Controller
 {
@@ -32,13 +34,32 @@ class RecipeController extends Controller
             ['quantity_needed'   => $data['quantity_needed'], 'unit' => $inventoryItem->unit]
         );
 
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Added/Updated Recipe Ingredient',
+            'module'      => 'recipes',
+            'description' => 'added/updated a recipe ingredient',
+        ]);
+
         return back()->with('success','Ingredient added/updated.');
     }
 
     public function destroy(MenuItem $menuItem, Recipe $recipe): RedirectResponse
     {
         abort_unless($recipe->menu_item_id === $menuItem->id, 404);
+
+        $ingredientName = $recipe->inventoryItem->name ?? 'Unknown';
+        $menuItemName = $menuItem->name;
+
         $recipe->delete();
+
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Removed Recipe Ingredient',
+            'module'      => 'recipes',
+            'description' => 'removed a recipe ingredient',
+        ]);
+
         return back()->with('success','Ingredient removed.');
     }
 }

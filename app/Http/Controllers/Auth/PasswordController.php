@@ -32,7 +32,7 @@ class PasswordController extends Controller
                 'user_id' => $user->id,
                 'action' => 'Updated password',
                 'module' => 'users',
-                'description' => "User {$user->email} updated their password.",
+                'description' => 'updated password',
             ]);
         }
 

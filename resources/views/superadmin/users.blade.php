@@ -14,10 +14,16 @@
 
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold">User Management</h1>
-        <button onclick="document.getElementById('addAdminModal').classList.remove('hidden')"
-                class="bg-green-600 text-white px-4 py-2 rounded">
-            + Add Admin
-        </button>
+        <div class="flex space-x-2">
+            <button onclick="openRecentActivitiesModal()"
+                    class="bg-blue-600 text-white px-4 py-2 rounded">
+                View Recent Activities
+            </button>
+            <button onclick="document.getElementById('addAdminModal').classList.remove('hidden')"
+                    class="bg-green-600 text-white px-4 py-2 rounded">
+                + Add Admin
+            </button>
+        </div>
     </div>
 
     <div class="overflow-auto max-h-96 mt-6">
@@ -113,12 +119,129 @@
     </div>
 </div>
 
+{{-- Modal: Recent Activities --}}
+<div id="recentActivitiesModal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded shadow w-full max-w-4xl max-h-[80vh] overflow-auto">
+        <h2 class="text-xl font-bold mb-4">Recent Activities</h2>
+
+        <div id="activitiesTableContainer">
+            <p class="text-gray-500">Loading...</p>
+        </div>
+
+        <div class="flex justify-end space-x-2 mt-4">
+            <button type="button" onclick="document.getElementById('recentActivitiesModal').classList.add('hidden')"
+                    class="bg-gray-400 px-4 py-2 rounded">Close</button>
+        </div>
+    </div>
+</div>
+
 <script>
 function openEditModal(id, name, email) {
     document.getElementById('editUserModal').classList.remove('hidden');
     document.getElementById('editName').value = name;
     document.getElementById('editEmail').value = email;
     document.getElementById('editUserForm').action = `/cafeteria-system/public/superadmin/users/${id}`;
+}
+
+let allAudits = [];
+let currentSortBy = 'created_at';
+let currentSortDirection = 'desc';
+
+async function openRecentActivitiesModal() {
+    document.getElementById('recentActivitiesModal').classList.remove('hidden');
+    await loadActivities();
+}
+
+async function loadActivities() {
+    const container = document.getElementById('activitiesTableContainer');
+    container.innerHTML = '<p class="text-gray-500">Loading...</p>';
+
+    try {
+        const response = await fetch('/cafeteria-system/public/superadmin/recent-audits');
+        allAudits = await response.json();
+
+        if (allAudits.length === 0) {
+            container.innerHTML = '<p class="text-gray-500">No recent activities found.</p>';
+            return;
+        }
+
+        renderTable();
+    } catch (error) {
+        container.innerHTML = '<p class="text-red-500">Error loading activities.</p>';
+        console.error('Error fetching audits:', error);
+    }
+}
+
+function renderTable() {
+    // Sort the audits client-side
+    const sortedAudits = [...allAudits].sort((a, b) => {
+        let aVal, bVal;
+
+        if (currentSortBy === 'created_at') {
+            aVal = new Date(a.created_at);
+            bVal = new Date(b.created_at);
+        } else {
+            aVal = a[currentSortBy].toLowerCase();
+            bVal = b[currentSortBy].toLowerCase();
+        }
+
+        if (currentSortDirection === 'asc') {
+            return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+        } else {
+            return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
+        }
+    });
+
+    let html = `
+        <div class="overflow-auto max-h-96">
+            <table class="w-full min-w-max border-collapse border">
+                <thead class="bg-gray-200 sticky top-0">
+                    <tr>
+                        <th class="border px-4 py-2 text-left">User</th>
+                        <th class="border px-4 py-2 text-left cursor-pointer hover:bg-gray-300" onclick="sortBy('action')">Action ${getSortIcon('action')}</th>
+                        <th class="border px-4 py-2 text-left cursor-pointer hover:bg-gray-300" onclick="sortBy('module')">Module ${getSortIcon('module')}</th>
+                        <th class="border px-4 py-2 text-left cursor-pointer hover:bg-gray-300" onclick="sortBy('description')">Description ${getSortIcon('description')}</th>
+                        <th class="border px-4 py-2 text-left cursor-pointer hover:bg-gray-300" onclick="sortBy('created_at')">Date ${getSortIcon('created_at')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    sortedAudits.forEach(audit => {
+        const date = new Date(audit.created_at).toLocaleString();
+        html += `
+            <tr>
+                <td class="border px-4 py-2">${audit.user ? audit.user.name : 'Unknown'}</td>
+                <td class="border px-4 py-2">${audit.action}</td>
+                <td class="border px-4 py-2">${audit.module}</td>
+                <td class="border px-4 py-2">${audit.description}</td>
+                <td class="border px-4 py-2">${date}</td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    document.getElementById('activitiesTableContainer').innerHTML = html;
+}
+
+function sortBy(column) {
+    if (currentSortBy === column) {
+        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSortBy = column;
+        currentSortDirection = 'asc'; // Default to ascending for new column
+    }
+    renderTable();
+}
+
+function getSortIcon(column) {
+    if (currentSortBy !== column) return '';
+    return currentSortDirection === 'asc' ? '▲' : '▼';
 }
 </script>
 @endsection

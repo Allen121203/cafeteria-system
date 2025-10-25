@@ -6,6 +6,8 @@ use App\Models\InventoryItem;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Models\AuditTrail;
+use Illuminate\Support\Facades\Auth;
 
 class InventoryItemController extends Controller
 {
@@ -45,7 +47,14 @@ class InventoryItemController extends Controller
             'category' => 'required|string|max:100'
         ]);
 
-        InventoryItem::create($data);
+        $item = InventoryItem::create($data);
+
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Added Inventory Item',
+            'module'      => 'inventory',
+            'description' => 'added an inventory item',
+        ]);
 
         return redirect()->route('admin.inventory.index')->with('success', 'Item added successfully.');
     }
@@ -65,14 +74,31 @@ class InventoryItemController extends Controller
             'category' => 'required|string|max:100'
         ]);
 
+        $oldQty = $inventory->qty;
         $inventory->update($data);
+
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Updated Inventory Item',
+            'module'      => 'inventory',
+            'description' => 'updated an inventory item',
+        ]);
 
         return redirect()->route('admin.inventory.index')->with('success', 'Item updated successfully.');
     }
 
     public function destroy(InventoryItem $inventory): RedirectResponse
     {
+        $itemName = $inventory->name;
         $inventory->delete();
+
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Deleted Inventory Item',
+            'module'      => 'inventory',
+            'description' => 'deleted an inventory item',
+        ]);
+
         return back()->with('success', 'Item deleted.');
     }
 }

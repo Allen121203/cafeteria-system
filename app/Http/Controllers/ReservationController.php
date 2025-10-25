@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservation;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 use App\Notifications\ReservationStatusChanged;
 use Illuminate\Support\Facades\Auth;
+use App\Models\AuditTrail;
+use App\Models\Notification as NotificationModel;
 
 class ReservationController extends Controller
 {
@@ -123,6 +126,12 @@ class ReservationController extends Controller
 
         $this->notifyCustomer($reservation, 'approved');
 
+        // Create notification for admins/superadmin
+        $this->createAdminNotification('reservation_approved', 'reservations', "Reservation #{$reservation->id} has been approved", [
+            'reservation_id' => $reservation->id,
+            'customer_name' => optional($reservation->user)->name ?? 'Unknown',
+        ]);
+
         return redirect()
             ->route('admin.reservations.show', $reservation)
             ->with('accepted', true)
@@ -186,6 +195,13 @@ class ReservationController extends Controller
 
         $this->notifyCustomer($reservation, 'declined', $data['reason']);
 
+        // Create notification for admins/superadmin
+        $this->createAdminNotification('reservation_declined', 'reservations', "Reservation #{$reservation->id} has been declined", [
+            'reservation_id' => $reservation->id,
+            'customer_name' => optional($reservation->user)->name ?? 'Unknown',
+            'reason' => $data['reason'],
+        ]);
+
         return redirect()
             ->route('admin.reservations.show', $reservation)
             ->with('declined', true)
@@ -201,7 +217,7 @@ class ReservationController extends Controller
         if ($reservation->relationLoaded('user') ? $reservation->user : $reservation->user()->exists()) {
             optional($reservation->user)->notify($notification);
         } elseif (!empty($reservation->email)) {
-            Notification::route('mail', $reservation->email)->notify($notification);
+            NotificationFacade::route('mail', $reservation->email)->notify($notification);
         }
 
         // SMS (Vonage) only if configured
@@ -212,8 +228,25 @@ class ReservationController extends Controller
                 ?? optional($reservation->user)->mobile
                 ?? null;
             if ($phone) {
-                Notification::route('vonage', $phone)->notify($notification);
+                NotificationFacade::route('vonage', $phone)->notify($notification);
             }
+        }
+    }
+
+    /** Create notification for admins/superadmin */
+    protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
+    {
+        // Get all admin and superadmin users
+        $adminUsers = User::whereIn('role', ['admin', 'superadmin'])->get();
+
+        foreach ($adminUsers as $admin) {
+            NotificationModel::create([
+                'user_id' => $admin->id,
+                'action' => $action,
+                'module' => $module,
+                'description' => $description,
+                'metadata' => $metadata,
+            ]);
         }
     }
 
@@ -276,6 +309,20 @@ class ReservationController extends Controller
                 ]);
             }
         }
+
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Placed Order',
+            'module'      => 'reservations',
+            'description' => 'placed an order',
+        ]);
+
+        // Create notification for admins/superadmin about new order
+        $this->createAdminNotification('order_placed', 'reservations', "New reservation #{$reservation->id} has been placed", [
+            'reservation_id' => $reservation->id,
+            'customer_name' => optional($reservation->user)->name ?? 'Unknown',
+            'total_persons' => $totalPersons,
+        ]);
 
         return redirect()->route('reservation_details')->with('success', 'Reservation placed successfully!');
     }

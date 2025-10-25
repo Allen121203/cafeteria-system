@@ -52,9 +52,18 @@ Route::middleware(['auth', 'role:superadmin'])
         Route::put   ('/users/{user}',     [SuperAdminController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}',     [SuperAdminController::class, 'destroy'])->name('users.destroy');
         Route::get   ('/users/{user}/audit',[SuperAdminController::class, 'audit'])->name('users.audit');
+        Route::get   ('/recent-audits',    [SuperAdminController::class, 'recentAudits'])->name('recent-audits');
     });
 
-// ---------- Admin ----------
+// ---------- Admin and Superadmin shared routes ----------
+Route::middleware(['auth'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/recent-notifications', [SuperAdminController::class, 'recentNotifications'])->name('recent-notifications');
+    });
+
+// ---------- Admin only routes ----------
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
@@ -111,8 +120,8 @@ Route::middleware(['auth'])->group(function () {
     // 1. Route for displaying the initial reservation form (GET)
     Route::get('/reservation_form', function () {
         // This renders the view that contains the missing route link
-        return view('customer.reservation_form'); 
-    })->name('reservation_form'); 
+        return view('customer.reservation_form');
+    })->name('reservation_form');
 
     // 2. Route for transitioning to the menu selection after basic reservation details are entered (GET/POST)
     // NOTE: This route is temporarily allowing GET for debugging, should ideally be POST.

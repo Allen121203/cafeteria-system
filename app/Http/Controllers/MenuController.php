@@ -6,10 +6,14 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\MenuPrice;
 use App\Models\InventoryItem;
+use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Models\AuditTrail;
+use Illuminate\Support\Facades\Auth;
 
 class MenuController extends Controller
 {
@@ -174,6 +178,13 @@ class MenuController extends Controller
 
         $menu = Menu::create($payload);
 
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Created Menu',
+            'module'      => 'menus',
+            'description' => 'created a menu',
+        ]);
+
         if ($request->has('items') && is_array($request->items)) {
             foreach ($request->items as $itemData) {
                 $menuItem = $menu->items()->create([
@@ -242,6 +253,13 @@ class MenuController extends Controller
 
         $menu->update($payload);
 
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Updated Menu',
+            'module'      => 'menus',
+            'description' => 'edited a menu',
+        ]);
+
         $menu->items()->delete();
         if ($request->has('items') && is_array($request->items)) {
             foreach ($request->items as $itemData) {
@@ -274,7 +292,16 @@ class MenuController extends Controller
 
     public function destroy(Menu $menu): RedirectResponse
     {
+        $menuName = $menu->name;
         $menu->delete();
+
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Deleted Menu',
+            'module'      => 'menus',
+            'description' => 'deleted a menu',
+        ]);
+
         return redirect()->route('admin.menus.index')->with('success', 'Menu deleted.');
     }
 
@@ -323,14 +350,28 @@ class MenuController extends Controller
             'prices.*.*' => 'required|numeric|min:0',
         ]);
 
+        $updatedPrices = [];
         foreach ($request->prices as $type => $meals) {
             foreach ($meals as $meal => $price) {
                 MenuPrice::updateOrCreate(
                     ['type' => $type, 'meal_time' => $meal],
                     ['price' => $price]
                 );
+                $updatedPrices[] = "{$type} {$meal}: ₱{$price}";
             }
         }
+
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Updated Menu Prices',
+            'module'      => 'menus',
+            'description' => 'updated menu prices',
+        ]);
+
+        // Create notification for admins/superadmin about price changes
+        $this->createAdminNotification('menu_prices_modified', 'menus', 'Menu prices have been updated', [
+            'updated_prices' => $updatedPrices,
+        ]);
 
         return back()->with('success', 'Menu prices updated successfully.');
     }
@@ -344,5 +385,22 @@ class MenuController extends Controller
         });
 
         return view('customer.menu', compact('menus'));
+    }
+
+    /** Create notification for admins/superadmin */
+    protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
+    {
+        // Get all admin and superadmin users
+        $adminUsers = User::whereIn('role', ['admin', 'superadmin'])->get();
+
+        foreach ($adminUsers as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'action' => $action,
+                'module' => $module,
+                'description' => $description,
+                'metadata' => $metadata,
+            ]);
+        }
     }
 }

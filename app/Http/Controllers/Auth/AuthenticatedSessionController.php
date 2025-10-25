@@ -40,7 +40,7 @@ class AuthenticatedSessionController extends Controller
             'user_id' => Auth::id(),
             'action'  => 'Logged in',
             'module'  => 'auth',
-            'description' => 'User logged in successfully',
+            'description' => 'logged in',
         ]);
 
         if (Auth::user()->role === 'superadmin') return redirect()->route('superadmin.users');
@@ -57,7 +57,7 @@ class AuthenticatedSessionController extends Controller
             'user_id' => Auth::id(),
             'action'  => 'Logged out',
             'module'  => 'auth',
-            'description' => 'User logged out successfully',
+            'description' => 'logged out',
         ]);
 
         Auth::guard('web')->logout();
