@@ -4,7 +4,7 @@
 @section('page-title', 'Manage Users')
 
 @section('content')
-<div class="bg-white p-6 rounded shadow mx-auto max-w-full md:max-w-none md:ml-0 md:mr-0" style="max-width: calc(100vw - 12rem);">
+<div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mx-auto max-w-full md:max-w-none md:ml-0 md:mr-0" style="max-width: calc(100vw - 12rem);">
     @if(session('success'))
         <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
     @endif
@@ -26,52 +26,75 @@
         </div>
     </div>
 
-    <div class="overflow-auto max-h-96 mt-6">
-        <table class="w-full min-w-max border-collapse border">
-            <thead class="bg-gray-200 sticky top-0">
+    <!-- Table wrapper -->
+    <div class="overflow-auto max-h-96">
+        <table class="w-full min-w-max">
+            <thead class="bg-gray-50 sticky top-0">
                 <tr>
-                    <th class="border px-4 py-2 text-left">Name</th>
-                    <th class="border px-4 py-2 text-left">Email</th>
-                    <th class="border px-4 py-2 text-left">Role</th>
-                    <th class="border px-4 py-2 text-center">Actions</th>
+                    <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                    <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="bg-white divide-y divide-gray-200">
             @forelse($users as $user)
-                <tr>
-                    <td class="border px-4 py-2">{{ $user->name }}</td>
-                    <td class="border px-4 py-2">{{ $user->email }}</td>
-                    <td class="border px-4 py-2">{{ ucfirst($user->role) }}</td>
-                    <td class="border px-4 py-2 text-center space-x-2">
-                        @if($user->role === 'admin')
-                            <button
-                                onclick="openEditModal({{ $user->id }}, '{{ e($user->name) }}', '{{ e($user->email) }}')"
-                                class="px-2 py-1 bg-blue-600 text-white rounded">
-                                Edit
-                            </button>
-                            <a href="{{ route('superadmin.users.audit', $user) }}"
-                               class="px-2 py-1 bg-yellow-500 text-white rounded">
-                                Audit
-                            </a>
-                        @else
-                            <a href="{{ route('superadmin.users.audit', $user) }}"
-                               class="px-2 py-1 bg-yellow-500 text-white rounded">
-                                Audit
-                            </a>
-                        @endif
+                <tr class="hover:bg-gray-50 transition-colors duration-200">
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $user->name }}</td>
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->email }}</td>
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ ucfirst($user->role) }}</td>
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
+                            @if($user->role === 'admin')
+                                <button
+                                    onclick="openEditModal({{ $user->id }}, '{{ e($user->name) }}', '{{ e($user->email) }}')"
+                                    class="text-blue-600 hover:text-blue-900 transition-colors duration-200 flex items-center px-2 py-1 rounded text-xs sm:text-sm">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    Edit
+                                </button>
+                                <a href="{{ route('superadmin.users.audit', $user) }}"
+                                   class="text-yellow-600 hover:text-yellow-900 transition-colors duration-200 flex items-center px-2 py-1 rounded text-xs sm:text-sm">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Audit
+                                </a>
+                            @else
+                                <a href="{{ route('superadmin.users.audit', $user) }}"
+                                   class="text-yellow-600 hover:text-yellow-900 transition-colors duration-200 flex items-center px-2 py-1 rounded text-xs sm:text-sm">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Audit
+                                </a>
+                            @endif
 
-                        <form method="POST" action="{{ route('superadmin.users.destroy', $user) }}" class="inline">
-                            @csrf @method('DELETE')
-                            <button type="submit"
-                                    onclick="return confirm('Delete this user?')"
-                                    class="px-2 py-1 bg-red-600 text-white rounded">
-                                Delete
-                            </button>
-                        </form>
+                            <form method="POST" action="{{ route('superadmin.users.destroy', $user) }}" class="inline">
+                                @csrf @method('DELETE')
+                                <button type="submit"
+                                        onclick="return confirm('Delete this user?')"
+                                        class="text-red-600 hover:text-red-900 transition-colors duration-200 flex items-center px-2 py-1 rounded text-xs sm:text-sm">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty
-                    <tr><td colspan="4" class="text-gray-500 px-4 py-6">No users found.</td></tr>
+                    <tr>
+                        <td colspan="4" class="px-4 sm:px-6 py-12 text-center text-gray-500">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            <p class="text-lg">No users found.</p>
+                            <p class="text-sm text-gray-400 mt-1">Start by adding your first user.</p>
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
@@ -124,8 +147,25 @@
     <div class="bg-white p-6 rounded shadow w-full max-w-4xl max-h-[80vh] overflow-auto">
         <h2 class="text-xl font-bold mb-4">Recent Activities</h2>
 
-        <div id="activitiesTableContainer">
-            <p class="text-gray-500">Loading...</p>
+        <div id="activitiesTableContainer" class="overflow-auto max-h-96">
+            <table class="w-full min-w-max">
+                <thead class="bg-gray-50 sticky top-0">
+                    <tr>
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-300" onclick="sortBy('action')">Action</th>
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-300" onclick="sortBy('module')">Module</th>
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-300" onclick="sortBy('description')">Description</th>
+                        <th class="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-300" onclick="sortBy('created_at')">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <td colspan="5" class="px-4 sm:px-6 py-12 text-center text-gray-500">
+                            <p class="text-gray-500">Loading...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <div class="flex justify-end space-x-2 mt-4">
@@ -192,41 +232,36 @@ function renderTable() {
         }
     });
 
-    let html = `
-        <div class="overflow-auto max-h-96">
-            <table class="w-full min-w-max border-collapse border">
-                <thead class="bg-gray-200 sticky top-0">
-                    <tr>
-                        <th class="border px-4 py-2 text-left">User</th>
-                        <th class="border px-4 py-2 text-left cursor-pointer hover:bg-gray-300" onclick="sortBy('action')">Action ${getSortIcon('action')}</th>
-                        <th class="border px-4 py-2 text-left cursor-pointer hover:bg-gray-300" onclick="sortBy('module')">Module ${getSortIcon('module')}</th>
-                        <th class="border px-4 py-2 text-left cursor-pointer hover:bg-gray-300" onclick="sortBy('description')">Description ${getSortIcon('description')}</th>
-                        <th class="border px-4 py-2 text-left cursor-pointer hover:bg-gray-300" onclick="sortBy('created_at')">Date ${getSortIcon('created_at')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
+    let tbodyHtml = '';
 
-    sortedAudits.forEach(audit => {
-        const date = new Date(audit.created_at).toLocaleString();
-        html += `
+    if (sortedAudits.length === 0) {
+        tbodyHtml = `
             <tr>
-                <td class="border px-4 py-2">${audit.user ? audit.user.name : 'Unknown'}</td>
-                <td class="border px-4 py-2">${audit.action}</td>
-                <td class="border px-4 py-2">${audit.module}</td>
-                <td class="border px-4 py-2">${audit.description}</td>
-                <td class="border px-4 py-2">${date}</td>
+                <td colspan="5" class="px-4 sm:px-6 py-12 text-center text-gray-500">
+                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p class="text-lg">No recent activities found.</p>
+                    <p class="text-sm text-gray-400 mt-1">Activities will appear here as users interact with the system.</p>
+                </td>
             </tr>
         `;
-    });
+    } else {
+        sortedAudits.forEach(audit => {
+            const date = new Date(audit.created_at).toLocaleString();
+            tbodyHtml += `
+                <tr class="hover:bg-gray-50 transition-colors duration-200">
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${audit.user ? audit.user.name : 'Unknown'}</td>
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">${audit.action}</td>
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">${audit.module}</td>
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">${audit.description}</td>
+                    <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">${date}</td>
+                </tr>
+            `;
+        });
+    }
 
-    html += `
-                </tbody>
-            </table>
-        </div>
-    `;
-
-    document.getElementById('activitiesTableContainer').innerHTML = html;
+    document.querySelector('#activitiesTableContainer tbody').innerHTML = tbodyHtml;
 }
 
 function sortBy(column) {

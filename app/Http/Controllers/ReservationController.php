@@ -238,18 +238,13 @@ class ReservationController extends Controller
     /** Create notification for admins/superadmin */
     protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
     {
-        // Get all admin and superadmin users
-        $adminUsers = User::whereIn('role', ['admin', 'superadmin'])->get();
-
-        foreach ($adminUsers as $admin) {
-            NotificationModel::create([
-                'user_id' => $admin->id,
-                'action' => $action,
-                'module' => $module,
-                'description' => $description,
-                'metadata' => $metadata,
-            ]);
-        }
+        NotificationModel::create([
+            'user_id' => Auth::id(),
+            'action' => $action,
+            'module' => $module,
+            'description' => $description,
+            'metadata' => $metadata,
+        ]);
     }
 
     public function create()

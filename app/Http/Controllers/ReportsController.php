@@ -498,8 +498,7 @@ class ReportsController extends Controller
     protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
     {
         Notification::create([
-            'user_id' => Auth::id(), // Store the actor's ID
-            'type' => 'info',
+            'user_id' => Auth::id(),
             'action' => $action,
             'module' => $module,
             'description' => $description,
