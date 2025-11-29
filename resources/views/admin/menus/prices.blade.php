@@ -2,73 +2,311 @@
 @section('page-title','Manage Menu Prices')
 
 @section('content')
-<div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mx-auto max-w-full md:max-w-none md:ml-0 md:mr-0" style="max-width: calc(100vw - 12rem);">
-  {{-- Header --}}
-  <div class="flex items-center mb-6">
-    <svg class="w-8 h-8 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-    </svg>
-    <h1 class="text-2xl font-bold text-gray-900">Manage Menu Prices</h1>
-  </div>
+<style>
+/* Modern Design Variables */
+:root {
+    --primary: #00462E;
+    --primary-light: #057C3C;
+    --accent: #FF6B35;
+    --neutral-50: #fafafa;
+    --neutral-100: #f5f5f5;
+    --neutral-200: #e5e5e5;
+    --neutral-300: #d4d4d4;
+    --neutral-400: #a3a3a3;
+    --neutral-500: #737373;
+    --neutral-600: #525252;
+    --neutral-700: #404040;
+    --neutral-800: #262626;
+    --neutral-900: #171717;
+}
 
-  {{-- Price Form --}}
-  <form method="POST" action="{{ route('admin.menus.prices.update') }}" class="space-y-6">
-      @csrf
+/* Modern Card Styles */
+.modern-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--neutral-100);
+    overflow: hidden;
+}
 
-  <div class="overflow-auto max-h-96">
-    <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50 sticky top-0">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meal Time</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Standard Price</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Special Price</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            @foreach($meals as $mealKey => $mealLabel)
-              <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $mealLabel }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">₱</span>
-                    <input type="number"
-                           name="prices[standard][{{ $mealKey }}]"
-                           value="{{ $priceMap['standard'][$mealKey] ?? 0 }}"
-                           step="0.01"
-                           min="0"
-                           class="pl-8 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                           required>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">₱</span>
-                    <input type="number"
-                           name="prices[special][{{ $mealKey }}]"
-                           value="{{ $priceMap['special'][$mealKey] ?? 0 }}"
-                           step="0.01"
-                           min="0"
-                           class="pl-8 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                           required>
-                  </div>
-                </td>
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
+/* Modern Table Styles */
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.875rem;
+}
 
-      <div class="flex justify-end gap-3 pt-4">
-        <a href="{{ route('admin.menus.index') }}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 font-medium">Cancel</a>
-        <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium shadow-lg flex items-center">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          Update Prices
-        </button>
-      </div>
+.modern-table th {
+    background: var(--neutral-50);
+    font-weight: 600;
+    color: var(--neutral-700);
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--neutral-200);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.modern-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--neutral-100);
+    transition: all 0.2s ease;
+}
+
+.modern-table tr:last-child td {
+    border-bottom: none;
+}
+
+.modern-table tr:hover td {
+    background: var(--neutral-50);
+}
+
+/* Button Styles */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 70, 46, 0.2);
+}
+
+.btn-secondary {
+    background: var(--neutral-100);
+    color: var(--neutral-700);
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-secondary:hover {
+    background: var(--neutral-200);
+}
+
+/* Input Styles */
+.price-input-container {
+    position: relative;
+}
+
+.price-input {
+    width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 2rem;
+    border: 1px solid var(--neutral-300);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.price-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 70, 46, 0.1);
+}
+
+.currency-symbol {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--neutral-600);
+    font-weight: 600;
+}
+
+/* Header Styles */
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-icon i {
+    color: white;
+    font-size: 1.25rem;
+}
+
+.header-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--neutral-900);
+    letter-spacing: -0.5px;
+}
+
+/* Meal Time Badge */
+.meal-time-badge {
+    padding: 0.5rem 0.75rem;
+    background: var(--neutral-50);
+    border: 1px solid var(--neutral-200);
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--neutral-800);
+    text-transform: capitalize;
+}
+
+/* Highlight Animation
+@keyframes highlightRow {
+    0% {
+        background-color: #c9fec7;
+        transform: scale(1);
+    }
+    50% {
+        background-color: #cbfec7;
+        transform: scale(1.02);
+    }
+    100% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+}
+
+.highlight-row {
+    animation: highlightRow 3s ease-in-out;
+}
+
+.highlight-input {
+    border-color: #0bf51f !important;
+    box-shadow: 0 0 0 3px rgba(11, 245, 50, 0.3) !important;
+    transition: all 0.3s ease;
+} */
+
+/* Menu Card Styling for Inventory Sections */
+.menu-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #00462E 0%, #057C3C 100%);
+}
+
+.menu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-color: #cbd5e0;
+}
+</style>
+
+<div class="modern-card menu-card p-6 mx-auto max-w-full md:max-w-none md:ml-0 md:mr-0" style="max-width: calc(100vw - 12rem);">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-icon">
+            <i class="fas fa-peso-sign"></i>
+        </div>
+        <h1 class="header-title">Manage Menu Prices</h1>
+    </div>
+
+    <!-- Price Form -->
+    <form method="POST" action="{{ route('admin.menus.prices.update') }}" class="space-y-6">
+        @csrf
+
+        <div>
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Meal Time</th>
+                        <th>Standard Price</th>
+                        <th>Special Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($meals as $mealKey => $mealLabel)
+                        <tr id="row-{{ $mealKey }}" class="price-row">
+                            <td>
+                                <span class="meal-time-badge">
+                                    {{ $mealLabel }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="price-input-container">
+                                    <span class="currency-symbol">₱</span>
+                                    <input type="number"
+                                           name="prices[standard][{{ $mealKey }}]"
+                                           value="{{ $priceMap['standard'][$mealKey] ?? 0 }}"
+                                           step="0.01"
+                                           min="0"
+                                           class="price-input standard-price"
+                                           data-meal="{{ $mealKey }}"
+                                           data-type="standard"
+                                           required>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-input-container">
+                                    <span class="currency-symbol">₱</span>
+                                    <input type="number"
+                                           name="prices[special][{{ $mealKey }}]"
+                                           value="{{ $priceMap['special'][$mealKey] ?? 0 }}"
+                                           step="0.01"
+                                           min="0"
+                                           class="price-input special-price"
+                                           data-meal="{{ $mealKey }}"
+                                           data-type="special"
+                                           required>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+            <a href="{{ route('admin.menus.index') }}" class="btn-secondary">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                Cancel
+            </a>
+            <button type="submit" class="btn-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Update Prices
+            </button>
+        </div>
     </form>
-  </div>
 </div>
 
 <script>
@@ -78,44 +316,59 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (selectedType && selectedMeal) {
         // Find the row for the selected meal
-        const rows = document.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-            const mealCell = row.querySelector('td:first-child');
-            if (mealCell && mealCell.textContent.trim().toLowerCase() === selectedMeal.replace('_', ' ')) {
-                // Scroll to the row
-                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const row = document.getElementById(`row-${selectedMeal}`);
+        if (row) {
+            // Highlight the row with animation
+            row.classList.add('highlight-row');
 
-                // Highlight the row temporarily
-                row.style.backgroundColor = '#fef3c7'; // light yellow
-                row.style.transition = 'background-color 0.5s ease';
-
-                // Remove highlight after 3 seconds
+            // Find and focus the specific input for the selected type
+            const targetInput = document.querySelector(`input[data-meal="${selectedMeal}"][data-type="${selectedType}"]`);
+            
+            if (targetInput) {
+                // Focus on the specific input after a short delay
                 setTimeout(() => {
-                    row.style.backgroundColor = '';
-                }, 3000);
+                    targetInput.focus();
+                    targetInput.select();
+                    targetInput.classList.add('highlight-input');
+                }, 500);
 
-                // Find and focus the specific input for the selected type
-                const inputName = `prices[${selectedType}][${selectedMeal}]`;
-                const targetInput = document.querySelector(`input[name="${inputName}"]`);
+                // Remove input highlight after 3 seconds
+                setTimeout(() => {
+                    targetInput.classList.remove('highlight-input');
+                }, 3500);
+            }
+        }
+    }
 
-                if (targetInput) {
-                    // Focus on the specific input
-                    setTimeout(() => {
-                        targetInput.focus();
-                        targetInput.select();
-                    }, 500); // Wait for scroll to complete
-
-                    // Highlight the specific input
-                    targetInput.style.borderColor = '#f59e0b'; // amber color
-                    targetInput.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.3)';
-                    setTimeout(() => {
-                        targetInput.style.borderColor = '';
-                        targetInput.style.boxShadow = '';
-                    }, 3000);
-                }
+    // Add real-time validation for price inputs
+    const priceInputs = document.querySelectorAll('.price-input');
+    priceInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            if (value < 0) {
+                this.value = 0;
+            }
+            if (value > 10000) {
+                this.value = 10000;
             }
         });
-    }
+
+        input.addEventListener('blur', function() {
+            if (this.value === '') {
+                this.value = 0;
+            }
+            // Format to 2 decimal places
+            this.value = parseFloat(this.value).toFixed(2);
+        });
+    });
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            document.querySelector('button[type="submit"]').click();
+        }
+    });
 });
 </script>
 @endsection

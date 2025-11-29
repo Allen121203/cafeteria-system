@@ -21,7 +21,11 @@ Route::get('/', function () {
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 
 // ---------- Breeze auth routes (login, register, logout, password, etc.) ----------
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
+
+// Google OAuth Routes
+Route::get('/auth/google', [App\Http\Controllers\Auth\GoogleController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [App\Http\Controllers\Auth\GoogleController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 // ---------- Dashboard redirect helper ----------
 Route::get('/dashboard', function () {
@@ -53,6 +57,7 @@ Route::middleware(['auth', 'role:superadmin'])
         Route::delete('/users/{user}',     [SuperAdminController::class, 'destroy'])->name('users.destroy');
         Route::get   ('/users/{user}/audit',[SuperAdminController::class, 'audit'])->name('users.audit');
         Route::get   ('/recent-audits',    [SuperAdminController::class, 'recentAudits'])->name('recent-audits');
+        Route::post  ('/clear-recent-audits', [SuperAdminController::class, 'clearRecentAudits'])->name('clear-recent-audits');
     });
 
 // ---------- Admin and Superadmin shared routes ----------

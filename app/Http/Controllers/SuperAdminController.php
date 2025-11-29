@@ -100,6 +100,20 @@ class SuperAdminController extends Controller
         return response()->json($audits);
     }
 
+    public function clearRecentAudits(Request $request): RedirectResponse
+    {
+        AuditTrail::truncate();
+
+        AuditTrail::create([
+            'user_id'     => Auth::id(),
+            'action'      => 'Cleared Audit Trails',
+            'module'      => 'audit',
+            'description' => 'cleared all recent activities',
+        ]);
+
+        return back()->with('success', 'All audit trails have been cleared.');
+    }
+
     public function recentNotifications()
     {
         $user = Auth::user();

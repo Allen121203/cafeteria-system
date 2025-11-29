@@ -7,162 +7,507 @@
 
     <title>{{ config('app.name', 'Smart Cafeteria') }}</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Fugaz+One&family=Damion&display=swap" rel="stylesheet">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="//unpkg.com/alpinejs" defer></script>
+    
+    <style>
+    @keyframes slide-in-left {
+        0% { transform: translateX(-100%); opacity: 0; }
+        100% { transform: translateX(0); opacity: 1; }
+    }
+    
+    .sidebar-gradient {
+        background: linear-gradient(270deg,#1F2937  60%, #131820 100%);
+    }
+    
+    .active-menu-item {
+        background-color: #f5f5f5;
+        color: #FB3E05; /* Changed to orange */
+        border-top-left-radius: 50px;
+        border-bottom-left-radius: 50px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        margin-right: 0px;
+        margin-left: 10px;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .active-menu-item::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        right: 0;
+        width: 20px;
+        height: 20px;
+        background: transparent;
+        border-bottom-right-radius: 20px;
+        box-shadow: 8px 8px 0 8px #f5f5f5;
+    }
+    
+    .active-menu-item::after {
+        content: '';
+        position: absolute;
+        bottom: -20px;
+        right: 0;
+        width: 20px;
+        height: 20px;
+        background: transparent;
+        border-top-right-radius: 20px;
+        box-shadow: 8px -8px 0 8px #f5f5f5;
+    }
+    
+    .menu-item {
+        margin-bottom: 0.125rem; /* Original spacing */
+        border-radius: 12px;
+        border-top-right-radius: 0%;
+        border-bottom-right-radius: 0%;
+        font-size: 0.95rem; /* Increased font size */
+    }
+    
+    .menu-item:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateX(4px);
+        color: #ffffff;
+        margin-left: 10px;
+    }
+    
+    .menu-item:hover i {
+        color: #ffffff !important;
+    }
+    
+    .active-menu-item:hover {
+        background: #f5f5f5 !important;
+        color: #FB3E05 !important; /* Orange for active hover */
+        transform: none;
+    }
+    
+    .active-menu-item:hover i {
+        color: #FB3E05 !important; /* Orange for active icons on hover */
+    }  
+    
+    .hover-glow:hover {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+    
+    .font-poppins {
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .sidebar-content {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding: 0 0rem 1rem 0rem; /* Removed top padding */
+        justify-content: space-between;
+    }
+    
+    .nav-section {
+        flex: 0 1 auto;
+    }
+    
+    .logout-section {
+        flex-shrink: 0;
+        padding: 1rem 0rem 0rem 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 0.5rem;
+        margin-right: 1rem;
+        margin-left: 0;
+    }
+    
+    .section-header {
+        margin-top: 1.5rem; /* Original spacing */
+        margin-bottom: 0.75rem; /* Original spacing */
+        font-size: 0.8rem; /* Slightly larger section headers */
+    }
+
+    .logo-section {
+        margin-bottom: 0; /* Remove bottom margin */
+        margin-right: 1rem;
+        padding: 1rem 0.8rem 1rem 1rem; /* Add vertical padding */
+    }
+
+    /* Logo Glow Effect */
+    .logo-glow {
+        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6)) 
+               drop-shadow(0 0 8px rgba(255, 255, 255, 0.4))
+               drop-shadow(0 0 12px rgba(255, 255, 255, 0.2));
+        transition: all 0.3s ease-in-out;
+    }
+
+    .logo-glow:hover {
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8)) 
+               drop-shadow(0 0 16px rgba(255, 255, 255, 0.6))
+               drop-shadow(0 0 18px rgba(255, 255, 255, 0.4));
+        transform: scale(1.05);
+    }
+
+    /* Alternative: White outline with glow */
+    .logo-outline-glow {
+        filter: drop-shadow(0 0 2px white) 
+               drop-shadow(0 0 4px white)
+               drop-shadow(0 0 6px rgba(255, 255, 255, 0.7))
+               drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+        transition: all 0.3s ease-in-out;
+    }
+
+    .logo-outline-glow:hover {
+        filter: drop-shadow(0 0 3px white) 
+               drop-shadow(0 0 6px white)
+               drop-shadow(0 0 9px rgba(255, 255, 255, 0.8))
+               drop-shadow(0 0 14px rgba(255, 255, 255, 0.6));
+    }
+
+    /* Strong glow effect */
+    .logo-strong-glow {
+        filter: drop-shadow(0 0 2px white) 
+               drop-shadow(0 0 4px rgba(255, 255, 255, 0.8))
+               drop-shadow(0 0 8px rgba(255, 255, 255, 0.6))
+               drop-shadow(0 0 16px rgba(255, 255, 255, 0.4));
+        transition: all 0.4s ease-in-out;
+    }
+
+    .logo-strong-glow:hover {
+        filter: drop-shadow(0 0 3px white) 
+               drop-shadow(0 0 6px rgba(255, 255, 255, 0.9))
+               drop-shadow(0 0 9px rgba(255, 255, 255, 0.7))
+               drop-shadow(0 0 14px rgba(255, 255, 255, 0.5));
+        transform: scale(1.02);
+    }
+
+    /* Mobile overlay */
+    .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+    }
+
+    .mobile-overlay.active {
+        display: block;
+    }
+
+    /* Ensure sidebar is above overlay */
+    .sidebar-gradient {
+        z-index: 50;
+    }
+
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+        .active-menu-item {
+            border-radius: 12px !important; /* Remove curved edges on mobile */
+            margin-left: 1rem !important; /* Standard margin on mobile */
+            margin-right: 1rem !important; /* Balanced margin */
+        }
+        
+        .active-menu-item::before,
+        .active-menu-item::after {
+            display: none !important; /* Hide the curved pseudo-elements on mobile */
+        }
+        
+        .menu-item {
+            margin-left: 1rem;
+            margin-right: 0rem;
+            font-size: 0.85rem;
+            border-radius: 12px; /* Consistent border radius on mobile */
+        }
+        
+        .menu-item:hover {
+            margin-left: 1rem; /* Consistent margin on hover for mobile */
+            
+        }
+        
+        .active-menu-item:hover {
+            margin-left: 1rem !important; /* Consistent margin for active hover on mobile */
+            margin-right: 1rem !important;
+        }
+        
+        /* Adjust sidebar rounded corners for mobile */
+        .sidebar-gradient {
+            border-radius: 0 !important; /* Remove rounded corners on mobile */
+        }
+    }
+
+    /* NEW: Connected Header Design */
+    .header-connected {
+        background: linear-gradient(270deg, #1F2937 100%, #131820 60%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .header-search {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .header-search::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .header-search:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+
+    .header-button {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .header-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* .notification-badge {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 8px;
+        height: 8px;
+        background: #EF4444;
+        border-radius: 50%;
+        border: 2px solid #1F2937;
+    } */
+
+    /* Smooth transitions for header elements */
+    .header-transition {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Glass morphism effect for header */
+    .header-glass {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* Connected design - seamless transition from sidebar */
+    .main-content-wrapper {
+        margin-left: 16rem; /* 64 * 4 = 256px equivalent to w-64 */
+        transition: margin-left 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+        .main-content-wrapper {
+            margin-left: 0;
+        }
+    }
+    </style>
 </head>
-<body class="font-sans antialiased text-sm"
+
+<body class="font-poppins antialiased text-sm"
       x-data="{ openSidebar: false, confirmLogout: false }">
 
 <div class="min-h-screen flex">
 
-    <!-- Sidebar -->
-    <aside class="bg-gradient-to-b from-gray-800 to-gray-900 text-white w-48 fixed inset-y-0 left-0 z-40 transform md:translate-x-0 transition-all duration-300 shadow-xl"
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay md:hidden" 
+         :class="{ 'active': openSidebar }"
+         @click="openSidebar = false"
+         x-show="openSidebar"
+         x-cloak>
+    </div>
+
+    <!-- Modern Gradient Sidebar -->
+    <aside class="sidebar-gradient text-white w-64 fixed inset-y-0 left-0 z-50 transform md:translate-x-0 transition-all duration-300  backdrop-blur-md animate-slide-in-left"
            :class="openSidebar ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
-        <!-- Logo -->
-        <div class="p-6 border-b border-gray-700/50">
-            <img src="{{ asset('images/caf-logo.png') }}" alt="Logo" class="h-12 mx-auto">
-        </div>
-
-        <!-- Menu -->
-        <nav class="p-4 space-y-1">
-            @if(Auth::user()->role === 'superadmin')
-                <a href="{{ route('superadmin.users') }}"
-                   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('superadmin.users') ? 'bg-green-600 shadow-lg' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                    </svg>
-                    Manage Users
-                </a>
-            @endif
-
-            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
-                <a href="{{ route('admin.dashboard') }}"
-                   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-green-600 shadow-lg' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                    Dashboard
-                </a>
-                <a href="{{ route('admin.reservations') }}"
-                   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.reservations') ? 'bg-green-600 shadow-lg' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    Reservations
-                </a>
-
-                <a href="{{ route('admin.reports.index') }}"
-                   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.reports.index') ? 'bg-green-600 shadow-lg' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    Reports
-                </a>
-                <a href="{{ route('admin.inventory.index') }}"
-                   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.inventory.index') ? 'bg-green-600 shadow-lg' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                    </svg>
-                    Inventory
-                </a>
-                <a href="{{ route('admin.menus.index', ['type' => 'standard', 'meal' => 'breakfast']) }}"
-                   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ (request()->routeIs('admin.menus.*') && !request()->routeIs('admin.menus.prices')) || request()->routeIs('admin.recipes.index') ? 'bg-green-600 shadow-lg' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                    </svg>
-                    Manage Menus
-                </a>
-                <a href="{{ route('admin.menus.prices') }}"
-                   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.menus.prices') ? 'bg-green-600 shadow-lg' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                    </svg>
-                    Manage Prices
-                </a>
-                <a href="{{ route('admin.calendar') }}"
-                   class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('admin.calendar') ? 'bg-green-600 shadow-lg' : '' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    Calendar
-                </a>
-            @endif
-
-            <!-- Account Settings -->
-            <a href="{{ route('profile.edit') }}"
-               class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 {{ request()->routeIs('profile.edit') ? 'bg-green-600 shadow-lg' : '' }}">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-                Account Settings
-            </a>
-
-            <!-- Logout -->
-            <button @click="confirmLogout = true"
-                    class="w-full text-left flex items-center px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition-all duration-200 shadow-lg">
-                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                </svg>
-                Logout
-            </button>
-        </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col md:ml-48 bg-gray-100">
-        <!-- Topbar (fixed) -->
-        <div class="flex justify-between items-center bg-white shadow-lg px-6 py-4 fixed top-0 left-0 right-0 md:left-48 z-30 border-b border-gray-200">
-            <div class="flex items-center space-x-4">
-                <!-- Mobile burger -->
-                <button @click="openSidebar = !openSidebar"
-                        class="md:hidden p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="flex items-center space-x-4">
-                <!-- Enhanced Search -->
-                <div class="relative">
-                    <input type="text" id="searchInput" placeholder="Search tables, data, or content..."
-                           class="border border-gray-300 rounded-lg px-4 py-2 pl-10 pr-10 w-80 focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
-                           oninput="filterTable(this.value)">
-                    <svg class="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <button id="clearSearch" class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 transition-colors duration-200" style="display: none;">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+        <div class="sidebar-content">
+            <!-- Top Section: Logo & Navigation -->
+            <div class="flex-1 overflow-hidden">
+                <!-- Logo Section - Moved to absolute top -->
+                <div class="logo-section flex items-center justify-center border-b border-white/10">
+                    <img src="{{ asset('images/ret-logo-nav.png') }}" 
+                         alt="RET Cafeteria Logo" 
+                        class="h-10 w-auto logo-strong-glow">
                 </div>
 
-                <!-- Notifications -->
-                <div class="relative" x-data="{ openNotif: false }">
-                    <button @click="openNotif = !openNotif"
-                            class="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200 relative">
-                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM15 7v5H9v6H5V7h10z"></path>
+                <!-- Navigation Menu -->
+                <nav class="nav-section">
+                    <div class="section-header text-xs px-6 py-1 font-semibold text-white/70 uppercase tracking-wider">
+                            Management
+                        </div>
+
+
+                    @if(Auth::user()->role === 'superadmin')
+                        <a href="{{ route('superadmin.users') }}"
+                           class="menu-item flex items-center px-10 py-2 transition-all duration-300 ease-in-out font-medium {{ request()->routeIs('superadmin.users') ? 'active-menu-item' : '' }}"
+                           @click="openSidebar = false"> <!-- Close sidebar on mobile click -->
+                            <span class="flex items-center justify-center w-5 h-5 mr-3"> <!-- Original icon size -->
+                                <i class="far fa-user {{ request()->routeIs('superadmin.users') ? 'text-[#FB3E05]' : 'text-white' }}"></i> <!-- Changed to orange -->
+                            </span>                  
+                            Manage Users
+                        </a>
+                    @endif
+
+                    @if(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
+                        <!-- Dashboard Section -->
+                        
+                        <a href="{{ route('admin.dashboard') }}"
+                           class="menu-item flex items-center px-10 py-2 transition-all duration-300 ease-in-out font-medium {{ request()->routeIs('admin.dashboard') ? 'active-menu-item' : '' }}"
+                           @click="openSidebar = false"> <!-- Close sidebar on mobile click -->
+                            <span class="flex items-center justify-center w-5 h-5 mr-3"> <!-- Original icon size -->
+                                <i class="fas fa-chart-line {{ request()->routeIs('admin.dashboard') ? 'text-[#FB3E05]' : 'text-white' }}"></i> <!-- Changed to orange -->
+                            </span>
+                            Dashboard
+                        </a>
+
+                        <a href="{{ route('admin.reservations') }}"
+                           class="menu-item flex items-center px-10 py-2 transition-all duration-300 ease-in-out font-medium {{ request()->routeIs('admin.reservations') ? 'active-menu-item' : '' }}"
+                           @click="openSidebar = false"> <!-- Close sidebar on mobile click -->
+                            <span class="flex items-center justify-center w-5 h-5 mr-3"> <!-- Original icon size -->
+                                <i class="far fa-calendar-check {{ request()->routeIs('admin.reservations') ? 'text-[#FB3E05]' : 'text-white' }}"></i> <!-- Changed to orange -->
+                            </span>
+                            Reservations
+                        </a>
+
+                        <a href="{{ route('admin.reports.index') }}"
+                           class="menu-item flex items-center px-10 py-2 transition-all duration-300 ease-in-out font-medium {{ request()->routeIs('admin.reports.index') ? 'active-menu-item' : '' }}"
+                           @click="openSidebar = false"> <!-- Close sidebar on mobile click -->
+                            <span class="flex items-center justify-center w-5 h-5 mr-3"> <!-- Original icon size -->
+                                <i class="fas fa-chart-pie {{ request()->routeIs('admin.reports.index') ? 'text-[#FB3E05]' : 'text-white' }}"></i> <!-- Changed to orange -->
+                            </span>
+                            Reports
+                        </a>
+
+                        <a href="{{ route('admin.inventory.index') }}"
+                           class="menu-item flex items-center px-10 py-2 transition-all duration-300 ease-in-out font-medium {{ request()->routeIs('admin.inventory.index') ? 'active-menu-item' : '' }}"
+                           @click="openSidebar = false"> <!-- Close sidebar on mobile click -->
+                            <span class="flex items-center justify-center w-5 h-5 mr-3"> <!-- Original icon size -->
+                                <i class="fas fa-boxes-stacked {{ request()->routeIs('admin.inventory.index') ? 'text-[#FB3E05]' : 'text-white' }}"></i> <!-- Changed to orange -->
+                            </span>
+                            Inventory
+                        </a>
+
+                        <a href="{{ route('admin.menus.index', ['type' => 'standard', 'meal' => 'breakfast']) }}"
+                           class="menu-item flex items-center px-10 py-2 transition-all duration-300 ease-in-out font-medium {{ (request()->routeIs('admin.menus.*') && !request()->routeIs('admin.menus.prices')) || request()->routeIs('admin.recipes.index') ? 'active-menu-item' : '' }}"
+                           @click="openSidebar = false"> <!-- Close sidebar on mobile click -->
+                            <span class="flex items-center justify-center w-5 h-5 mr-3"> <!-- Original icon size -->
+                                <i class="fas fa-utensils {{ (request()->routeIs('admin.menus.*') && !request()->routeIs('admin.menus.prices')) || request()->routeIs('admin.recipes.index') ? 'text-[#FB3E05]' : 'text-white' }}"></i> <!-- Changed to orange -->
+                            </span>
+                            Manage Menus
+                        </a>
+
+                        <a href="{{ route('admin.menus.prices') }}"
+                           class="menu-item flex items-center px-10 py-2 transition-all duration-300 ease-in-out font-medium {{ request()->routeIs('admin.menus.prices') ? 'active-menu-item' : '' }}"
+                           @click="openSidebar = false"> <!-- Close sidebar on mobile click -->
+                            <span class="flex items-center justify-center w-5 h-5 mr-3"> <!-- Original icon size -->
+                                <i class="fas fa-peso-sign {{ request()->routeIs('admin.menus.prices') ? 'text-[#FB3E05]' : 'text-white' }}"></i> <!-- Changed to orange -->
+                            </span>
+                            Manage Prices
+                        </a>
+
+                        <a href="{{ route('admin.calendar') }}"
+                           class="menu-item flex items-center px-10 py-2 transition-all duration-300 ease-in-out font-medium {{ request()->routeIs('admin.calendar') ? 'active-menu-item' : '' }}"
+                           @click="openSidebar = false"> <!-- Close sidebar on mobile click -->
+                            <span class="flex items-center justify-center w-5 h-5 mr-3"> <!-- Original icon size -->
+                                <i class="far fa-calendar-days {{ request()->routeIs('admin.calendar') ? 'text-[#FB3E05]' : 'text-white' }}"></i> <!-- Changed to orange -->
+                            </span>
+                            Calendar
+                        </a>
+                    @endif
+
+                    <!-- Account Settings Section -->
+                    <div class="section-header text-xs px-6 font-semibold text-white/70 uppercase tracking-wider">
+                        Settings
+                    </div>
+
+                    <a href="{{ route('profile.edit') }}"
+                       class="menu-item flex items-center px-10 py-2 transition-all duration-300 ease-in-out font-medium {{ request()->routeIs('profile.edit') ? 'active-menu-item' : '' }}"
+                       @click="openSidebar = false"> <!-- Close sidebar on mobile click -->
+                        <span class="flex items-center justify-center w-5 h-5 mr-3"> <!-- Original icon size -->
+                            <i class="fas fa-gear {{ request()->routeIs('profile.edit') ? 'text-[#FB3E05]' : 'text-white' }}"></i> <!-- Changed to orange -->
+                        </span>
+                        Account Settings
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Bottom Section: Logout Button -->
+            <div class="logout-section">
+                <button @click="confirmLogout = true"
+                        class="w-full flex items-center justify-center gap-2 bg-white/20 text-white hover:bg-red-500/90 hover-glow transition-all duration-300 rounded-full px-4 py-2.5 font-semibold shadow-md"> <!-- Original padding -->
+                    <i class="fas fa-right-from-bracket"></i> <!-- Original icon size -->
+                    Logout
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area with Connected Header -->
+    <div class="flex-1 flex flex-col main-content-wrapper">
+        <!-- Connected Header -->
+        <header class="header-connected header-glass px-6 py-3 fixed top-0 right-0 z-30 transition-all duration-300"
+                :class="openSidebar ? 'md:left-64' : 'md:left-0'"
+                style="left: 0; right: 0;">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <button @click="openSidebar = !openSidebar"
+                            class="md:hidden p-2 rounded-lg header-button header-transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                     </button>
-                    <div x-show="openNotif"
-                         @click.away="openNotif = false"
-                         class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-50"
-                         x-cloak>
-                        <div class="p-4 border-b border-gray-200 font-semibold text-gray-800">Notifications</div>
-                        <ul class="max-h-60 overflow-y-auto" id="notifications-list">
-                            <li class="px-4 py-3 hover:bg-gray-50 text-gray-600">Loading notifications...</li>
-                        </ul>
+                    <div class="hidden md:block">
+                        <h1 class="text-lg font-semibold text-white">@yield('page-title', 'Dashboard')</h1>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- Search Bar -->
+                    <div class="relative">
+                        <input type="text" 
+                               id="searchInput" 
+                               placeholder="Search tables, data, or content..."
+                               class="header-search rounded-lg px-5 py-3 pl-10 pr-10 w-80 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-200 header-transition"
+                               oninput="filterTable(this.value)">
+                        <svg class="w-5 h-5 absolute left-3 top-2.5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <button id="clearSearch" class="absolute right-3 top-2.5 text-white/70 hover:text-white transition-colors duration-200" style="display: none;">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="relative" x-data="{ openNotif: false }">
+                        <button @click="openNotif = !openNotif"
+                                class="header-button p-2 rounded-full header-transition relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM15 7v5H9v6H5V7h10z"></path>
+                            </svg>
+                            <div class="notification-badge"></div>
+                        </button>
+                        <div x-show="openNotif"
+                             @click.away="openNotif = false"
+                             class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-50 header-transition"
+                             x-cloak>
+                            <div class="p-4 border-b border-gray-200 font-semibold text-gray-800">Notifications</div>
+                            <ul class="max-h-60 overflow-y-auto" id="notifications-list">
+                                <li class="px-4 py-3 hover:bg-gray-50 text-gray-600">Loading notifications...</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <!-- Page Content -->
-        <main class="p-6 overflow-y-auto flex-1 mt-16">
+        <!-- Main Content -->
+        <main class="p-6 overflow-y-auto flex-1 mt-16 bg-gray-100">
             @yield('content')
         </main>
     </div>
@@ -203,7 +548,6 @@
     </div>
 </div>
 
-<!-- JS for search filter and notifications -->
 <script>
 function filterTable(query) {
     let rows = document.querySelectorAll("table tbody tr");
@@ -288,6 +632,11 @@ function loadNotifications() {
 
 // Refresh notifications every 30 seconds
 setInterval(loadNotifications, 30000);
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('DOMContentLoaded', function() {
+    // This is handled by Alpine.js now, but keeping for reference
+});
 </script>
 </body>
 </html>

@@ -5,104 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ ucfirst($reportType) }} Report - {{ $startDate->format('M d, Y') }} to {{ $endDate->format('M d, Y') }}</title>
     <style>
+        :root {
+            --primary: #00462E;
+            --primary-light: #057C3C;
+            --accent: #FF6B35;
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+            --success: #059669;
+        }
+
         body {
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 12px;
             margin: 0;
-            padding: 15px;
-            color: #333;
+            padding: 20px;
+            color: var(--neutral-800);
+            background: white;
         }
+
         .header {
             text-align: center;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid var(--primary);
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
+
         .header h1 {
             margin: 0;
             font-size: 18px;
-            color: #2563eb;
+            color: var(--primary);
+            font-weight: 700;
         }
+
         .header p {
             margin: 3px 0;
-            color: #666;
+            color: var(--neutral-600);
             font-size: 11px;
         }
+
         .summary {
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
-            background: #f8f9fa;
+            background: var(--neutral-50);
             padding: 15px;
-            border-radius: 6px;
+            border-radius: 8px;
+            border: 1px solid var(--neutral-200);
         }
+
         .summary-item {
             text-align: center;
             flex: 1;
         }
+
         .summary-item h3 {
             margin: 0 0 8px 0;
             font-size: 11px;
-            color: #666;
+            color: var(--neutral-600);
             text-transform: uppercase;
+            font-weight: 600;
         }
+
         .summary-item p {
             margin: 0;
             font-size: 16px;
             font-weight: bold;
-            color: #2563eb;
+            color: var(--primary);
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
             font-size: 11px;
+            border-radius: 6px;
+            overflow: hidden;
         }
+
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid var(--neutral-300);
             padding: 6px 8px;
             text-align: left;
             vertical-align: top;
         }
+
         th {
-            background-color: #f8f9fa;
-            font-weight: bold;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
             font-size: 10px;
             text-transform: uppercase;
-            color: #666;
         }
+
         tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: var(--neutral-50);
         }
+
         .reservation-header {
-            background-color: #e3f2fd !important;
-            font-weight: bold;
+            background-color: #e8f5e8 !important;
+            font-weight: 600;
         }
+
         .total-row {
-            background-color: #fff3cd !important;
+            background-color: var(--neutral-100) !important;
             font-weight: bold;
         }
+
         .total-row td {
-            border-top: 2px solid #333;
+            border-top: 2px solid var(--primary);
         }
+
         .footer {
             margin-top: 30px;
             padding-top: 15px;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid var(--neutral-300);
             text-align: center;
             font-size: 10px;
-            color: #666;
+            color: var(--neutral-500);
         }
+
         .currency {
             font-weight: bold;
-            color: #059669;
+            color: var(--success);
         }
+
         .no-data {
             text-align: center;
             padding: 30px;
-            color: #666;
+            color: var(--neutral-500);
             font-style: italic;
             font-size: 12px;
+            background: var(--neutral-50);
+            border-radius: 6px;
+            border: 1px solid var(--neutral-200);
         }
     </style>
 </head>
