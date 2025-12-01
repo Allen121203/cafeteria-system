@@ -16,13 +16,19 @@ class GoogleController extends Controller
     /** Create notification for admins/superadmin */
     protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
     {
-        NotificationModel::create([
-            'user_id' => Auth::id(),
-            'action' => $action,
-            'module' => $module,
-            'description' => $description,
-            'metadata' => $metadata,
-        ]);
+        // Get all admin and superadmin users
+        $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+        
+        // Create a notification for each admin/superadmin
+        foreach ($admins as $admin) {
+            NotificationModel::create([
+                'user_id' => $admin->id,
+                'action' => $action,
+                'module' => $module,
+                'description' => $description,
+                'metadata' => $metadata,
+            ]);
+        }
     }
 
     /**
