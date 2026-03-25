@@ -7,18 +7,27 @@ use App\Models\User;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use App\Models\AuditTrail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 class InventoryItemController extends Controller
 {
     public function index(): View
     {
         // Sorting options: name, qty, expiry_date
+        $allowedSorts = ['name', 'qty', 'expiry_date', 'category', 'updated_at'];
         $sort = request('sort', 'name');
-        $direction = request('direction', 'asc');
+        $direction = strtolower((string) request('direction', 'asc')) === 'desc' ? 'desc' : 'asc';
         $category = request('category');
+
+        if (! in_array($sort, $allowedSorts, true)) {
+            $sort = 'name';
+        }
 
         $query = InventoryItem::query();
 
@@ -39,7 +48,7 @@ class InventoryItemController extends Controller
         return view('admin.inventory.index');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         $data = $request->validate([
             'name'  => 'required|string|max:255',
@@ -67,6 +76,13 @@ class InventoryItemController extends Controller
             'updated_by' => Auth::user()->name,
         ]);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Item added successfully.',
+                'item' => $item->fresh(),
+            ]);
+        }
+
         return redirect()->route('admin.inventory.index')->with('success', 'Item added successfully.');
     }
 
@@ -75,7 +91,7 @@ class InventoryItemController extends Controller
         return view('admin.inventory.index', compact('inventory'));
     }
 
-    public function update(Request $request, InventoryItem $inventory): RedirectResponse
+    public function update(Request $request, InventoryItem $inventory): RedirectResponse|JsonResponse
     {
         $data = $request->validate([
             'name'  => 'required|string|max:255',
@@ -105,10 +121,17 @@ class InventoryItemController extends Controller
             'updated_by' => Auth::user()->name,
         ]);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Item updated successfully.',
+                'item' => $inventory->fresh(),
+            ]);
+        }
+
         return redirect()->route('admin.inventory.index')->with('success', 'Item updated successfully.');
     }
 
-    public function destroy(InventoryItem $inventory): RedirectResponse
+    public function destroy(Request $request, InventoryItem $inventory): RedirectResponse|JsonResponse
     {
         $itemName = $inventory->name;
         $inventory->delete();
@@ -126,23 +149,77 @@ class InventoryItemController extends Controller
             'updated_by' => Auth::user()->name,
         ]);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Item deleted.',
+            ]);
+        }
+
         return back()->with('success', 'Item deleted.');
     }
 
     /** Create notification for admins/superadmin */
     protected function createAdminNotification(string $action, string $module, string $description, array $metadata = []): void
     {
-        // Get all admin and superadmin users
-        $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
-        
-        // Create a notification for each admin/superadmin
-        foreach ($admins as $admin) {
-            Notification::create([
-                'user_id' => $admin->id,
+        try {
+            if (! Schema::hasTable('notifications')) {
+                return;
+            }
+
+            $admins = User::query()
+                ->whereIn('role', ['admin', 'superadmin'])
+                ->pluck('id');
+
+            if ($admins->isEmpty()) {
+                return;
+            }
+
+            $hasTitle = Schema::hasColumn('notifications', 'title');
+            $hasType = Schema::hasColumn('notifications', 'type');
+            $hasAction = Schema::hasColumn('notifications', 'action');
+            $hasModule = Schema::hasColumn('notifications', 'module');
+            $hasDescription = Schema::hasColumn('notifications', 'description');
+            $hasMetadata = Schema::hasColumn('notifications', 'metadata');
+            $hasRead = Schema::hasColumn('notifications', 'read');
+
+            foreach ($admins as $adminId) {
+                $payload = ['user_id' => $adminId];
+
+                if ($hasTitle) {
+                    $payload['title'] = ucwords(str_replace('_', ' ', $action));
+                }
+
+                if ($hasType) {
+                    $payload['type'] = $action;
+                }
+
+                if ($hasAction) {
+                    $payload['action'] = $action;
+                }
+
+                if ($hasModule) {
+                    $payload['module'] = $module;
+                }
+
+                if ($hasDescription) {
+                    $payload['description'] = $description;
+                }
+
+                if ($hasMetadata) {
+                    $payload['metadata'] = $metadata;
+                }
+
+                if ($hasRead) {
+                    $payload['read'] = false;
+                }
+
+                Notification::create($payload);
+            }
+        } catch (Throwable $e) {
+            Log::warning('Inventory admin notification creation failed.', [
                 'action' => $action,
                 'module' => $module,
-                'description' => $description,
-                'metadata' => $metadata,
+                'error' => $e->getMessage(),
             ]);
         }
     }
