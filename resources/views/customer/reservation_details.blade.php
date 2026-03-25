@@ -165,7 +165,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex flex-wrap gap-2">
-                                        @if($reservation->status === 'approved')
+                                        @if(in_array($reservation->status, ['pending', 'approved']))
                                             <button
                                                 type="button"
                                                 class="inline-flex items-center px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-150 text-xs font-semibold"
@@ -175,10 +175,6 @@
                                             >
                                                 Payment
                                             </button>
-                                        @else
-                                            <span class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold">
-                                                Payment available after approval
-                                            </span>
                                         @endif
 
                                         @if($reservation->status === 'pending')

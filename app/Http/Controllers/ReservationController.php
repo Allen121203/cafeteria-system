@@ -265,9 +265,9 @@ class ReservationController extends Controller
                 ->with('error', 'You are not authorized to upload a payment receipt for this reservation.');
         }
 
-        if ($reservation->status !== 'approved') {
+        if (!in_array($reservation->status, ['pending', 'approved'], true)) {
             return redirect()->route('reservation_details')
-                ->with('error', 'Payment upload is only available for approved reservations.');
+                ->with('error', 'Payment upload is only available for pending or approved reservations.');
         }
 
         $request->validate([

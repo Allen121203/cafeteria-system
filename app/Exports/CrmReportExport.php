@@ -47,6 +47,7 @@ class CrmReportExport implements FromCollection, WithHeadings, WithMapping, Shou
 
             return [
                 'name' => $customer->name ?? 'N/A',
+                'department' => $customer->department ?? 'N/A',
                 'total_reservations' => $totalReservations,
                 'approved_reservations' => $approvedReservations,
                 'total_spent' => $totalSpent,
@@ -63,6 +64,7 @@ class CrmReportExport implements FromCollection, WithHeadings, WithMapping, Shou
     {
         return [
             'Customer Name',
+            'Department/Office',
             'Total Reservations',
             'Approved Reservations',
             'Total Spent',
@@ -74,6 +76,7 @@ class CrmReportExport implements FromCollection, WithHeadings, WithMapping, Shou
     {
         return [
             $customer['name'],
+            $customer['department'],
             $customer['total_reservations'],
             $customer['approved_reservations'],
             $customer['total_spent'],

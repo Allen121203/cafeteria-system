@@ -539,7 +539,7 @@
                         <thead>
                             <tr>
                                 <th>Customer</th>
-                                <th>Email</th>
+                                <th>Department/Office</th>
                                 <th>Total Reservations</th>
                                 <th>Approved</th>
                                 <th>Total Spent</th>
@@ -552,8 +552,8 @@
                                 <td class="font-semibold text-gray-900 text-truncate" style="max-width: 150px;" title="{{ $customer['name'] }}">
                                     {{ $customer['name'] }}
                                 </td>
-                                <td class="text-gray-600 text-truncate" style="max-width: 180px;" title="{{ $customer['email'] }}">
-                                    {{ $customer['email'] }}
+                                <td class="text-gray-600 text-truncate" style="max-width: 180px;" title="{{ $customer['department'] }}">
+                                    {{ $customer['department'] }}
                                 </td>
                                 <td class="font-medium text-gray-900">{{ $customer['total_reservations'] }}</td>
                                 <td class="text-gray-600">{{ $customer['approved_reservations'] }}</td>

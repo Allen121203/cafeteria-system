@@ -238,7 +238,7 @@ class ReportsController extends Controller
 
             return [
                 'name' => $customer->name ?? 'N/A',
-                'email' => $customer->email ?? 'N/A',
+                'department' => $customer->department ?? 'N/A',
                 'total_reservations' => $totalReservations,
                 'approved_reservations' => $approvedReservations,
                 'total_spent' => $totalSpent,
@@ -430,6 +430,7 @@ class ReportsController extends Controller
 
                     return [
                         'name' => $customer->name ?? 'N/A',
+                        'department' => $customer->department ?? 'N/A',
                         'total_reservations' => $totalReservations,
                         'approved_reservations' => $approvedReservations,
                         'total_spent' => $totalSpent,

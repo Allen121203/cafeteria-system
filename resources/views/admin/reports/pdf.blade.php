@@ -314,17 +314,19 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 30%;">Customer Name</th>
-                        <th style="width: 15%;">Total Reservations</th>
-                        <th style="width: 15%;">Approved</th>
-                        <th style="width: 20%;">Total Spent</th>
-                        <th style="width: 20%;">Last Reservation</th>
+                        <th style="width: 25%;">Customer Name</th>
+                        <th style="width: 20%;">Department/Office</th>
+                        <th style="width: 12%;">Total Reservations</th>
+                        <th style="width: 12%;">Approved</th>
+                        <th style="width: 16%;">Total Spent</th>
+                        <th style="width: 15%;">Last Reservation</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($crmData as $customer)
                     <tr>
                         <td>{{ $customer['name'] }}</td>
+                        <td>{{ $customer['department'] }}</td>
                         <td style="text-align: center;">{{ $customer['total_reservations'] }}</td>
                         <td style="text-align: center;">{{ $customer['approved_reservations'] }}</td>
                         <td style="text-align: right;" class="currency">₱{{ number_format($customer['total_spent'], 2) }}</td>
