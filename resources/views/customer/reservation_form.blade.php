@@ -45,6 +45,15 @@ background-position: top;
         .calendar-day-inactive:hover {
             background-color: rgb(243 244 246); /* gray-100 */
         }
+        .calendar-day-reserved {
+            color: #991b1b !important;
+            background-color: #fee2e2 !important;
+            border: 1px solid #fecaca;
+            cursor: not-allowed !important;
+        }
+        .calendar-day-reserved:hover {
+            background-color: #fecaca !important;
+        }
         .calendar-day-other-month {
             color: rgb(156 163 175) !important; /* gray-400 */
             cursor: default;
@@ -272,6 +281,11 @@ background-position: top;
                                 <div id="calendar-days" class="calendar-grid">
                                     <!-- Days will be generated here by JavaScript -->
                                 </div>
+
+                                <div class="mt-3 flex items-center gap-2 text-xs text-gray-600">
+                                    <span class="inline-block w-3 h-3 rounded-sm bg-red-100 border border-red-300"></span>
+                                    <span>Already Reserved</span>
+                                </div>
                             </div>
                             
                             <!-- Day Tabs for Time Selection -->
@@ -320,6 +334,7 @@ background-position: top;
         let selectedDays = []; // Array to store all selected days
         let dayTimes = {}; // Object to store times for each day
         let activeDayTab = 0; // Index of currently active day tab
+        const reservedDates = @json($reservedDates ?? []);
         
         const calendarDaysEl = document.getElementById('calendar-days');
         const monthYearEl = document.getElementById('current-month-year');
@@ -443,11 +458,16 @@ background-position: top;
                 if (isPast) {
                     status = 'other-month'; // Treat past dates as disabled/other-month
                 }
+
+                const isReserved = reservedDates.includes(dateStr);
+                if (!isPast && isReserved) {
+                    status = 'reserved';
+                }
                 
                 const cell = createCalendarDay(day, status, dateStr);
                 
-                // Add click listener only for non-past dates
-                if (!isPast) {
+                // Add click listener only for selectable dates
+                if (!isPast && !isReserved) {
                     cell.addEventListener('click', () => handleDateSelection(dateStr, cell));
                 }
 
@@ -493,6 +513,12 @@ background-position: top;
                 cell.style.backgroundColor = 'transparent';
                 cell.style.color = '#374151';
                 cell.style.fontWeight = '500';
+            } else if (status === 'reserved') {
+                cell.classList.add('calendar-day-reserved');
+                cell.style.backgroundColor = '#fee2e2';
+                cell.style.color = '#991b1b';
+                cell.style.fontWeight = '600';
+                cell.title = 'Already Reserved';
             } else if (status === 'other-month') {
                 cell.classList.add('calendar-day-other-month');
                 // Force light gray text for other months

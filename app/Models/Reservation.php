@@ -15,6 +15,8 @@ class Reservation extends Model
         'special_requests',
         'status',
         'decline_reason',
+        'payment_receipt_path',
+        'payment_uploaded_at',
         // Legacy fields for backward compatibility
         'date',
         'time',
@@ -24,6 +26,7 @@ class Reservation extends Model
     protected $casts = [
         'event_date' => 'date',
         'event_time' => 'datetime',
+        'payment_uploaded_at' => 'datetime',
     ];
 
     public function user()

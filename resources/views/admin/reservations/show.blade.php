@@ -404,6 +404,32 @@
                 </dl>
             </div>
 
+            <!-- Payment Receipt -->
+            <div class="info-card">
+                <div class="info-card-header">
+                    <svg class="icon-md text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l2-2m0 0l2-2m-2 2l2 2m-2-2L9 10m10 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h2 class="info-card-title">Payment Receipt</h2>
+                </div>
+
+                @if(!empty($r->payment_receipt_path))
+                    <a href="{{ asset('storage/'.$r->payment_receipt_path) }}" target="_blank" class="block mb-3">
+                        <img
+                            src="{{ asset('storage/'.$r->payment_receipt_path) }}"
+                            alt="Payment Receipt"
+                            class="w-full rounded-lg border border-gray-200 object-cover max-h-64"
+                        >
+                    </a>
+                    <p class="text-xs text-gray-500">
+                        Uploaded:
+                        {{ $r->payment_uploaded_at ? $r->payment_uploaded_at->format('M d, Y h:i A') : 'N/A' }}
+                    </p>
+                @else
+                    <p class="text-sm text-gray-500">No payment receipt uploaded by customer yet.</p>
+                @endif
+            </div>
+
             @if($r->status !== 'approved' && $r->status !== 'declined')
             <!-- Actions -->
             <div class="info-card" id="decline">

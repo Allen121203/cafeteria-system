@@ -124,7 +124,16 @@ Route::get('/contact', function () {
 Route::middleware(['auth'])->group(function () {
     // 1. Route for displaying the initial reservation form (GET)
     Route::get('/reservation_form', function () {
-        return view('customer.reservation_form');
+        $reservedDates = \App\Models\Reservation::query()
+            ->where('status', 'approved')
+            ->whereNotNull('event_date')
+            ->pluck('event_date')
+            ->map(fn ($date) => \Carbon\Carbon::parse($date)->format('Y-m-d'))
+            ->unique()
+            ->values()
+            ->all();
+
+        return view('customer.reservation_form', compact('reservedDates'));
     })->name('reservation_form');
 
     // 2. Route for transitioning to the menu selection after basic reservation details are entered
@@ -134,15 +143,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reservations', [ReservationController::class, 'store'])->name('reservation.store');
 
     // 4. Route for viewing reservation details
-    Route::get('/reservation_details', function () {
-        return view('customer.reservation_details');
-    })->name('reservation_details');
+    Route::get('/reservation_details', [ReservationController::class, 'customerDetails'])->name('reservation_details');
 
     // 5. Route for billing information
     Route::get('/billing_info', function () {
         return view('customer.billing_info');
     })->name('billing_info');
 
-    // 6. Route for cancelling a reservation
+    // 6. Route for customer payment receipt upload
+    Route::post('/reservations/{reservation}/payment', [ReservationController::class, 'uploadPaymentReceipt'])->name('reservation.payment.upload');
+
+    // 7. Route for cancelling a reservation
     Route::patch('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservation.cancel');
 });

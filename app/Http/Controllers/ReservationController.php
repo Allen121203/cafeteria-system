@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 use App\Notifications\ReservationStatusChanged;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\AuditTrail;
 use App\Models\Notification as NotificationModel;
 
@@ -245,6 +246,57 @@ class ReservationController extends Controller
             'description' => $description,
             'metadata' => $metadata,
         ]);
+    }
+
+    public function customerDetails()
+    {
+        $reservations = Reservation::with(['items.menu'])
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
+
+        return view('customer.reservation_details', compact('reservations'));
+    }
+
+    public function uploadPaymentReceipt(Request $request, Reservation $reservation)
+    {
+        if ((int) $reservation->user_id !== (int) Auth::id()) {
+            return redirect()->route('reservation_details')
+                ->with('error', 'You are not authorized to upload a payment receipt for this reservation.');
+        }
+
+        if ($reservation->status !== 'approved') {
+            return redirect()->route('reservation_details')
+                ->with('error', 'Payment upload is only available for approved reservations.');
+        }
+
+        $request->validate([
+            'payment_receipt' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        if (!$request->hasFile('payment_receipt')) {
+            return redirect()->route('reservation_details')
+                ->with('success', 'Payment modal submitted. Receipt upload is optional.');
+        }
+
+        $newPath = $request->file('payment_receipt')->store('payment-receipts', 'public');
+
+        if (!empty($reservation->payment_receipt_path) && Storage::disk('public')->exists($reservation->payment_receipt_path)) {
+            Storage::disk('public')->delete($reservation->payment_receipt_path);
+        }
+
+        $reservation->payment_receipt_path = $newPath;
+        $reservation->payment_uploaded_at = now();
+        $reservation->save();
+
+        AuditTrail::create([
+            'user_id' => Auth::id(),
+            'action' => 'Uploaded Payment Receipt',
+            'module' => 'reservations',
+            'description' => 'uploaded payment receipt for reservation #' . $reservation->id,
+        ]);
+
+        return redirect()->route('reservation_details')->with('success', 'Payment receipt uploaded successfully.');
     }
 
     public function create(Request $request)

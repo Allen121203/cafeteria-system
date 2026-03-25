@@ -272,7 +272,6 @@
                         <div class="space-y-2">
                             <div class="font-gray-600">Name: </div>
                             <div class="text-gray-600">Department/Office: </div>
-                            <div class="text-gray-600">Email: </div>
                             <div class="text-gray-600">Phone: </div>
                             <div class="text-gray-600">Address: </div>
                             <div class="text-gray-600">Activity: </div> 
