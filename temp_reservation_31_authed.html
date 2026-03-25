@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="keBjAeemEm9si8se1BJ5mcea9vFupO4Toc2Uq3rY">
+    <title>Laravel</title>
+
+    <link rel="icon" type="image/png" href="https://cafeteria-app-m9wpa.ondigitalocean.app/images/Cafeteria-logo.png">
+    
+    <link rel="preload" as="style" href="https://cafeteria-app-m9wpa.ondigitalocean.app/build/assets/app-DVLxQa_V.css" /><link rel="modulepreload" as="script" href="https://cafeteria-app-m9wpa.ondigitalocean.app/build/assets/app-2-Wv9zck.js" /><link rel="stylesheet" href="https://cafeteria-app-m9wpa.ondigitalocean.app/build/assets/app-DVLxQa_V.css" data-navigate-track="reload" /><script type="module" src="https://cafeteria-app-m9wpa.ondigitalocean.app/build/assets/app-2-Wv9zck.js" data-navigate-track="reload"></script>    <!-- Livewire Styles --><style >[wire\:loading][wire\:loading], [wire\:loading\.delay][wire\:loading\.delay], [wire\:loading\.list-item][wire\:loading\.list-item], [wire\:loading\.inline-block][wire\:loading\.inline-block], [wire\:loading\.inline][wire\:loading\.inline], [wire\:loading\.block][wire\:loading\.block], [wire\:loading\.flex][wire\:loading\.flex], [wire\:loading\.table][wire\:loading\.table], [wire\:loading\.grid][wire\:loading\.grid], [wire\:loading\.inline-flex][wire\:loading\.inline-flex] {display: none;}[wire\:loading\.delay\.none][wire\:loading\.delay\.none], [wire\:loading\.delay\.shortest][wire\:loading\.delay\.shortest], [wire\:loading\.delay\.shorter][wire\:loading\.delay\.shorter], [wire\:loading\.delay\.short][wire\:loading\.delay\.short], [wire\:loading\.delay\.default][wire\:loading\.delay\.default], [wire\:loading\.delay\.long][wire\:loading\.delay\.long], [wire\:loading\.delay\.longer][wire\:loading\.delay\.longer], [wire\:loading\.delay\.longest][wire\:loading\.delay\.longest] {display: none;}[wire\:offline][wire\:offline] {display: none;}[wire\:dirty]:not(textarea):not(input):not(select) {display: none;}:root {--livewire-progress-bar-color: #2299dd;}[x-cloak] {display: none !important;}[wire\:cloak] {display: none !important;}dialog#livewire-error::backdrop {background-color: rgba(0, 0, 0, .6);}</style>
+</head>
+<body class="font-sans text-gray-900 antialiased">
+    <div class="min-h-screen flex items-start justify-center bg-admin-neutral-100 relative overflow-hidden px-3 py-4 sm:px-4 sm:py-6 lg:items-center lg:px-6 lg:py-8 font-admin text-admin-neutral-900"> 
+        <div class="absolute inset-0 opacity-30">
+            
+            <div class="hidden sm:block w-96 h-96 bg-green-700 rounded-full absolute -top-20 left-1/4 mix-blend-screen opacity-50 transform -translate-x-1/2"></div>
+            
+            <div class="w-40 h-40 sm:w-64 sm:h-64 bg-green-700 rounded-full absolute bottom-0 right-0 mix-blend-screen opacity-50 transform translate-x-1/4 translate-y-1/4"></div>
+            
+            <div class="hidden sm:block w-80 h-80 bg-green-700 rounded-full absolute top-1/4 left-0 mix-blend-screen opacity-50 transform -translate-x-1/2"></div>
+            
+            <div class="w-24 h-24 sm:w-40 sm:h-40 bg-green-700 rounded-full absolute -bottom-10 left-1/2 mix-blend-screen opacity-50 transform translate-x-1/4"></div>
+        </div>
+
+        
+            <div class="relative z-10 flex w-full max-w-5xl flex-col overflow-hidden rounded-admin-lg border border-admin-neutral-200 bg-white shadow-admin md:flex-row lg:min-h-[560px]"> 
+            
+            
+            <div class="hidden md:flex w-1/2 items-center justify-center bg-white p-8 relative"> 
+                <a href="https://cafeteria-app-m9wpa.ondigitalocean.app"
+                class="absolute top-6 left-6 z-20 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-green-800 transition hover:bg-orange-50 hover:text-orange-600">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    <span>Back To Site</span>
+                </a>
+                <img src="https://cafeteria-app-m9wpa.ondigitalocean.app/images/caf-logo.png" alt="RET Cafeteria Logo"
+                     class="max-h-64 object-contain w-auto -ml-6"> 
+
+            </div>
+
+            
+            <div class="relative w-full overflow-hidden overflow-x-hidden bg-green-100 px-5 py-6 sm:px-6 sm:py-8 md:w-7/12 md:p-10 lg:h-full lg:p-12"> 
+                <div class="absolute inset-0 pointer-events-none">
+                    <div class="h-40 w-40 sm:h-56 sm:w-56 bg-green-200 rounded-full absolute -top-16 sm:-top-20 -right-12 sm:-right-16"></div> 
+                    <div class="h-28 w-28 sm:h-40 sm:w-40 bg-green-200 rounded-full absolute -bottom-10 sm:-bottom-16 -left-10 sm:-left-16"></div> 
+                </div>
+
+                <div class="relative z-10 flex h-full flex-col"> 
+                    <div class="mb-4 flex flex-col gap-3 sm:mb-5">
+                        <a href="https://cafeteria-app-m9wpa.ondigitalocean.app"
+                            class="md:hidden inline-flex self-start items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold text-green-800 transition hover:bg-orange-50 hover:text-orange-600"
+                            aria-label="Back to home">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            <span>Back To Site</span>
+                        </a>
+                        <div class="flex items-start gap-3 sm:items-center">
+                            <div class="flex min-w-0 items-center gap-3 sm:gap-4">
+                                <div class="md:hidden flex h-16 w-16 items-center justify-center">
+                                    <img src="https://cafeteria-app-m9wpa.ondigitalocean.app/images/Cafeteria-logo.png" alt="RET Cafeteria Logo"
+                                         class="h-16 w-16 object-contain"> 
+                                </div>
+                                <div class="min-w-0">
+                                    <h2 class="mb-1 text-3xl font-extrabold text-green-900 sm:text-4xl">Welcome!</h2> 
+                                        <p class="text-base text-green-700 sm:text-lg">Log in to your account</p> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    
+                    <div x-data="{}" style="display: contents;">
+<template x-teleport="body">
+<div
+    x-data="{ show: false, closeTimer: null }"
+    x-init="
+        $watch('show', v => {
+            if (v) document.body.classList.add('overflow-hidden');
+            else document.body.classList.remove('overflow-hidden');
+            if (v) {
+                if (closeTimer) clearTimeout(closeTimer);
+                closeTimer = setTimeout(() => { show = false; }, 2000);
+            } else if (closeTimer) {
+                clearTimeout(closeTimer);
+                closeTimer = null;
+            }
+        });
+    "
+    @keydown.escape.window="if (show) show = false"
+    x-on:open-admin-modal.window="if ($event.detail === 'password-reset-success') show = true"
+    x-on:close-admin-modal.window="if ($event.detail === 'password-reset-success') show = false"
+    x-show="show"
+    x-cloak
+    class="fixed inset-0 z-[220] flex items-center justify-center p-4"
+    style="display: none;"
+>
+    <div
+        x-show="show"
+        x-transition:enter="ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        @click="show = false"
+        class="absolute inset-0 bg-admin-neutral-900/50 backdrop-blur-sm"
+        aria-hidden="true"
+    ></div>
+
+    <div
+        x-show="show"
+        x-transition:enter="ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        @click.stop
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title-password-reset-success"
+        class="relative w-full sm:max-w-sm overflow-hidden rounded-admin-lg border border-admin-neutral-200 bg-white shadow-admin-modal"
+    >
+        <div class="flex items-start justify-between gap-4 border-b border-admin-neutral-100 bg-admin-neutral-50 px-6 py-4">
+            <div class="flex items-center gap-3">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-admin bg-admin-success-light text-admin-success">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </span>
+                <div>
+                    <h2 id="modal-title-password-reset-success" class="text-lg font-semibold text-admin-neutral-900">Success!</h2>
+                    <p class="text-xs text-admin-neutral-600">Action completed successfully.</p>
+                </div>
+            </div>
+        </div>
+        <div class="px-6 py-5 text-sm text-admin-neutral-700">
+                            <p class="text-sm text-admin-neutral-600">Your password has been reset. You can now log in.</p>
+                    </div>
+            </div>
+</div>
+</template>
+</div>
+                    <div x-data="{}" style="display: contents;">
+<template x-teleport="body">
+<div
+    x-data="{ show: false, closeTimer: null }"
+    x-init="
+        $watch('show', v => {
+            if (v) document.body.classList.add('overflow-hidden');
+            else document.body.classList.remove('overflow-hidden');
+            if (v) {
+                if (closeTimer) clearTimeout(closeTimer);
+                closeTimer = setTimeout(() => { show = false; }, 2000);
+            } else if (closeTimer) {
+                clearTimeout(closeTimer);
+                closeTimer = null;
+            }
+        });
+    "
+    @keydown.escape.window="if (show) show = false"
+    x-on:open-admin-modal.window="if ($event.detail === 'email-verified-success') show = true"
+    x-on:close-admin-modal.window="if ($event.detail === 'email-verified-success') show = false"
+    x-show="show"
+    x-cloak
+    class="fixed inset-0 z-[220] flex items-center justify-center p-4"
+    style="display: none;"
+>
+    <div
+        x-show="show"
+        x-transition:enter="ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        @click="show = false"
+        class="absolute inset-0 bg-admin-neutral-900/50 backdrop-blur-sm"
+        aria-hidden="true"
+    ></div>
+
+    <div
+        x-show="show"
+        x-transition:enter="ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        @click.stop
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title-email-verified-success"
+        class="relative w-full sm:max-w-sm overflow-hidden rounded-admin-lg border border-admin-neutral-200 bg-white shadow-admin-modal"
+    >
+        <div class="flex items-start justify-between gap-4 border-b border-admin-neutral-100 bg-admin-neutral-50 px-6 py-4">
+            <div class="flex items-center gap-3">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-admin bg-admin-success-light text-admin-success">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </span>
+                <div>
+                    <h2 id="modal-title-email-verified-success" class="text-lg font-semibold text-admin-neutral-900">Success!</h2>
+                    <p class="text-xs text-admin-neutral-600">Action completed successfully.</p>
+                </div>
+            </div>
+        </div>
+        <div class="px-6 py-5 text-sm text-admin-neutral-700">
+                            <p class="text-sm text-admin-neutral-600">Account successfully verified. You can now log in your account.</p>
+                    </div>
+            </div>
+</div>
+</template>
+</div>
+
+                    <form method="POST" action="https://cafeteria-app-m9wpa.ondigitalocean.app/login" class="flex flex-col gap-5 sm:gap-6" data-action-loading>
+                        <input type="hidden" name="_token" value="keBjAeemEm9si8se1BJ5mcea9vFupO4Toc2Uq3rY" autocomplete="off">                        <input type="hidden" name="redirect" value="">
+                        
+                        
+                        <div>
+                            <div class="relative">
+                                <input type="email" autocomplete=&quot;username&quot;  class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition duration-200 block mt-1 w-full pl-10 h-12 !rounded-admin !shadow-none border border-admin-neutral-300 bg-admin-neutral-50 text-admin-neutral-900 placeholder-admin-neutral-400 focus:border-admin-primary focus:ring-admin-primary/20" id="email" name="email" placeholder="Enter your email" required="required" autofocus="autofocus">
+                                <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-admin-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                                </svg>
+                            </div>
+                             
+                        </div>
+
+                        
+                        <div>
+                            <div class="relative">
+                                <input type="password" autocomplete=&quot;current-password&quot;  class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition duration-200 block mt-1 w-full pl-10 pr-10 h-12 !rounded-admin !shadow-none border border-admin-neutral-300 bg-admin-neutral-50 text-admin-neutral-900 placeholder-admin-neutral-400 focus:border-admin-primary focus:ring-admin-primary/20" id="password" name="password" placeholder="Enter password" required="required">
+                                <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-admin-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                                <button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-admin-neutral-500 hover:text-admin-primary">
+                                    <svg id="eyeIcon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                             
+                        </div>
+
+                        
+                        <div class="flex w-full items-center justify-between gap-3 text-sm">
+                            <label for="remember_me" class="flex items-center gap-2 text-admin-neutral-600 whitespace-nowrap">
+                                <input id="remember_me" name="remember" type="checkbox" class="h-4 w-4 text-admin-primary focus:ring-admin-primary/20 border-admin-neutral-300 rounded">
+                                <span>Remember me</span>
+                            </label>
+                                                            <a id="openForgotPassword" href="https://cafeteria-app-m9wpa.ondigitalocean.app/forgot-password" class="ml-auto whitespace-nowrap text-right text-admin-primary hover:text-admin-primary-hover hover:underline transition duration-200">
+                                    Forgot Password?
+                                </a>
+                                                    </div>
+
+                        
+                        <div>
+                            <button type="submit" class="inline-flex items-center px-4 py-3 bg-green-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-green-700 focus:bg-green-700 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 w-full justify-center !rounded-admin bg-admin-primary hover:bg-admin-primary-hover focus:ring-admin-primary h-12 text-base font-semibold shadow-admin transition duration-200 text-white" data-loading-text="Logging In...">
+    Login
+</button>
+                        </div>
+                        </form>
+                        
+                        <div class="mt-3">
+                        <div class="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-admin-neutral-400">
+                            <span class="h-px flex-1 bg-admin-neutral-200"></span>
+                            <span>or</span>
+                            <span class="h-px flex-1 bg-admin-neutral-200"></span>
+                        </div>
+                        <div class="mt-4">
+                            
+                            <div class="mt-0">
+    <a href="https://cafeteria-app-m9wpa.ondigitalocean.app/auth/google" 
+       class="w-full flex justify-center items-center bg-white border border-admin-neutral-200 hover:bg-admin-neutral-50 focus:ring-2 focus:ring-admin-primary/20 focus:border-admin-primary h-12 text-sm font-semibold rounded-admin shadow-admin transition duration-200 text-admin-neutral-700"
+       aria-label="Continue with Google OAuth">
+        <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Continue with Google
+    </a>
+</div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="mt-5 text-center text-sm text-admin-neutral-600 sm:mt-6">
+                        Don&#039;t have an Account? 
+                        <a href="https://cafeteria-app-m9wpa.ondigitalocean.app/register" class="text-admin-primary hover:text-admin-primary-hover hover:underline transition duration-200 font-semibold">
+                            Register
+                        </a>
+                    </div>
+                </div> 
+
+                <div id="forgotPasswordModal"
+                    class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-hidden="true"
+                    aria-labelledby="forgotPasswordTitle">
+                    <div id="forgotPasswordBackdrop" class="absolute inset-0 bg-admin-neutral-900/50 backdrop-blur-sm"></div>
+                    <div class="relative w-full max-w-md overflow-hidden rounded-admin-lg border border-admin-neutral-200 bg-white shadow-admin-modal">
+                        <div class="flex items-start justify-between gap-4 border-b border-admin-neutral-100 bg-admin-neutral-50 px-4 py-4 sm:px-6">
+                            <div>
+                                <h2 id="forgotPasswordTitle" class="text-lg font-semibold text-admin-neutral-900">Reset Password</h2>
+                                <p class="text-xs text-admin-neutral-600 mt-1">We will email you a reset link.</p>
+                            </div>
+                            <button id="closeForgotPassword" type="button" class="rounded-full p-1 text-admin-neutral-500 hover:text-admin-primary">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="px-4 py-5 sm:px-6">
+                            <div class="mb-4 text-sm text-admin-neutral-600 bg-admin-neutral-50 p-3 rounded-admin border border-admin-neutral-200 border-l-4 border-l-admin-primary">
+                                Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.
+                            </div>
+
+                            
+                            
+                            <form method="POST" action="https://cafeteria-app-m9wpa.ondigitalocean.app/forgot-password" class="space-y-4"
+                                x-data="{
+                                    sending: false,
+                                    throttleSeconds: 0,
+                                    throttleTimer: null,
+                                    formatThrottle(value) {
+                                        const minutes = Math.floor(value / 60);
+                                        const seconds = value % 60;
+                                        return minutes + ':' + String(seconds).padStart(2, '0');
+                                    },
+                                    get throttleLabel() {
+                                        return this.formatThrottle(this.throttleSeconds);
+                                    },
+                                    get throttleActive() {
+                                        return this.throttleSeconds > 0;
+                                    },
+                                    init() {
+                                        if (!this.throttleActive) return;
+                                        this.throttleTimer = setInterval(() => {
+                                            if (this.throttleSeconds > 0) {
+                                                this.throttleSeconds--;
+                                            }
+                                            if (this.throttleSeconds <= 0 && this.throttleTimer) {
+                                                clearInterval(this.throttleTimer);
+                                                this.throttleTimer = null;
+                                            }
+                                        }, 1000);
+                                    }
+                                }"
+                                @submit="if (sending || throttleActive) { $event.preventDefault(); return; } sending = true"
+                                data-action-loading>
+                                <input type="hidden" name="_token" value="keBjAeemEm9si8se1BJ5mcea9vFupO4Toc2Uq3rY" autocomplete="off">
+                                
+                                <div class="relative">
+                                    <label class="block font-medium text-sm text-gray-700 text-admin-neutral-700 font-medium mb-2" for="forgot_email">
+    Email
+</label>
+                                    <div class="relative">
+                                        <input type="email" autocomplete=&quot;email&quot;  class="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition duration-200 block mt-1 w-full pl-10 h-12 !rounded-admin !shadow-none border border-admin-neutral-300 bg-admin-neutral-50 text-admin-neutral-900 placeholder-admin-neutral-400 transition-all duration-300 focus:ring-2 focus:ring-admin-primary/20 focus:border-admin-primary" id="forgot_email" name="email" required="required">
+                                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-admin-neutral-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                                        </svg>
+                                    </div>
+                                                                                                                                                </div>
+
+                                <div class="flex items-center justify-end">
+                                    <button type="submit" class="inline-flex items-center px-4 py-3 bg-green-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-green-700 focus:bg-green-700 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 w-full justify-center !rounded-admin bg-admin-primary hover:bg-admin-primary-hover focus:ring-admin-primary h-12 text-base font-semibold shadow-admin transition duration-300" data-loading-text="Sending Reset Link..." x-bind:disabled="sending || throttleActive" x-bind:class="(sending || throttleActive) ? 'opacity-70 cursor-not-allowed' : ''">
+    <span x-text="sending ? 'Email is currently sending...' : (throttleActive ? 'Try again in ' + throttleLabel : 'Email Password Reset Link')">Email Password Reset Link</span>
+</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                
+                
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const togglePassword = document.getElementById('togglePassword');
+                        const passwordInput = document.getElementById('password');
+                        const eyeIcon = document.getElementById('eyeIcon');
+
+                        togglePassword?.addEventListener('click', () => {
+                            if (!passwordInput || !eyeIcon) return;
+                            if (passwordInput.type === 'password') {
+                                passwordInput.type = 'text';
+                                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>';
+                            } else {
+                                passwordInput.type = 'password';
+                                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>';
+                            }
+                        });
+
+                        const forgotModal = document.getElementById('forgotPasswordModal');
+                        const openForgotPassword = document.getElementById('openForgotPassword');
+                        const closeForgotPassword = document.getElementById('closeForgotPassword');
+                        const forgotPasswordBackdrop = document.getElementById('forgotPasswordBackdrop');
+
+                        const setForgotModalOpen = (isOpen) => {
+                            if (!forgotModal) return;
+                            forgotModal.classList.toggle('hidden', !isOpen);
+                            forgotModal.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+                            if (isOpen) {
+                                document.getElementById('forgot_email')?.focus();
+                            }
+                        };
+
+                        const shouldOpenForgotModal = false;
+                        if (shouldOpenForgotModal) {
+                            setForgotModalOpen(true);
+                        }
+
+                        openForgotPassword?.addEventListener('click', (event) => {
+                            event.preventDefault();
+                            setForgotModalOpen(true);
+                        });
+
+                        closeForgotPassword?.addEventListener('click', () => setForgotModalOpen(false));
+                        forgotPasswordBackdrop?.addEventListener('click', () => setForgotModalOpen(false));
+                        document.addEventListener('keydown', (event) => {
+                            if (event.key === 'Escape' && forgotModal && !forgotModal.classList.contains('hidden')) {
+                                setForgotModalOpen(false);
+                            }
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+    <!-- Livewire Scripts -->
+<script src="https://cafeteria-app-m9wpa.ondigitalocean.app/livewire-4c56858c/livewire.js?id=8a1734eb"   data-csrf="keBjAeemEm9si8se1BJ5mcea9vFupO4Toc2Uq3rY" data-module-url="https://cafeteria-app-m9wpa.ondigitalocean.app/livewire-4c56858c" data-update-uri="https://cafeteria-app-m9wpa.ondigitalocean.app/livewire-4c56858c/update" data-navigate-once="true"></script>
+</body>
+</html>
+
